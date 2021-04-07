@@ -35,7 +35,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
 
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5519,6 +5519,14 @@
+@@ -5530,6 +5530,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -136,7 +136,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -536,6 +536,9 @@ extern int panic_on_warn;
+@@ -548,6 +548,9 @@ extern int panic_on_warn;
  extern unsigned long panic_on_taint;
  extern bool panic_on_taint_nousertaint;
  extern int sysctl_panic_on_rcu_stall;
@@ -146,7 +146,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  extern int sysctl_panic_on_stackoverflow;
  
  extern bool crash_kexec_post_notifiers;
-@@ -605,6 +608,23 @@ extern enum system_states {
+@@ -617,6 +620,23 @@ extern enum system_states {
  #define TAINT_FLAGS_COUNT		18
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
  
@@ -207,7 +207,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
 +
 --- a/kernel/ksysfs.c
 +++ b/kernel/ksysfs.c
-@@ -208,6 +208,30 @@ static struct bin_attribute notes_attr _
+@@ -217,6 +217,30 @@ static struct bin_attribute notes_attr _
  struct kobject *kernel_kobj;
  EXPORT_SYMBOL_GPL(kernel_kobj);
  
@@ -238,9 +238,9 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  static struct attribute * kernel_attrs[] = {
  	&fscaps_attr.attr,
  	&uevent_seqnum_attr.attr,
-@@ -229,6 +253,9 @@ static struct attribute * kernel_attrs[]
- 	&rcu_expedited_attr.attr,
- 	&rcu_normal_attr.attr,
+@@ -241,6 +265,9 @@ static struct attribute * kernel_attrs[]
+ #ifdef CONFIG_PREEMPT_RT
+ 	&realtime_attr.attr,
  #endif
 +#ifdef CONFIG_SUSE_KERNEL_SUPPORTED
 +	&supported_attr.attr,
@@ -368,7 +368,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  out_unreg_modinfo_attrs:
  	module_remove_modinfo_attrs(mod, -1);
  out_unreg_param:
-@@ -4590,6 +4671,9 @@ void print_modules(void)
+@@ -4607,6 +4688,9 @@ void print_modules(void)
  	if (last_unloaded_module[0])
  		pr_cont(" [last unloaded: %s]", last_unloaded_module);
  	pr_cont("\n");
@@ -380,7 +380,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  #ifdef CONFIG_MODVERSIONS
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -386,6 +386,9 @@ const struct taint_flag taint_flags[TAIN
+@@ -388,6 +388,9 @@ const struct taint_flag taint_flags[TAIN
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
