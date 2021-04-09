@@ -1,4 +1,4 @@
-Git-commit: 7a1baf6e4ca848dceade260544040f4e9ee1bac6
+Git-commit: 498a7d0dca225854a47f21b054495d6063e9e854
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -22,7 +22,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  2 files changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/arch/s390/kernel/vtime.c b/arch/s390/kernel/vtime.c
-index 7b3af2d6b9ba..8b2d43ffd96f 100644
+index 579ec3a8c816..710135905deb 100644
 --- a/arch/s390/kernel/vtime.c
 +++ b/arch/s390/kernel/vtime.c
 @@ -227,7 +227,7 @@ void vtime_flush(struct task_struct *tsk)

@@ -1,4 +1,4 @@
-Git-commit: b8019ab2e5aad069aedc84252580e883e26bb681
+Git-commit: 56b0f8cc14b7d5f430e66b678f0c05459a43562b
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -36,10 +36,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 96e03924bf5e..8347616c49a6 100644
+index ee9a2a278a56..63f403961d8f 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4782,7 +4782,7 @@ static int netif_rx_internal(struct sk_buff *skb)
+@@ -4794,7 +4794,7 @@ static int netif_rx_internal(struct sk_buff *skb)
  		struct rps_dev_flow voidflow, *rflow = &voidflow;
  		int cpu;
  
@@ -48,7 +48,7 @@ index 96e03924bf5e..8347616c49a6 100644
  		rcu_read_lock();
  
  		cpu = get_rps_cpu(skb->dev, skb, &rflow);
-@@ -4792,14 +4792,14 @@ static int netif_rx_internal(struct sk_buff *skb)
+@@ -4804,14 +4804,14 @@ static int netif_rx_internal(struct sk_buff *skb)
  		ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
  
  		rcu_read_unlock();

@@ -1,4 +1,4 @@
-Git-commit: 1779a8ea2c96be05b8bf285521935c6581e82ea6
+Git-commit: 271695c3592f3d06e2eeb233ba4f65f3c0165be2
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -91,10 +91,10 @@ index 2f17b488d58e..7557bf7ecf1f 100644
  	return 0;
  }
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 75ca6c6d01d6..d4e8cca8153d 100644
+index 62ff7121b22d..8098f2f38b53 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3036,6 +3036,7 @@ static void __netif_reschedule(struct Qdisc *q)
+@@ -3048,6 +3048,7 @@ static void __netif_reschedule(struct Qdisc *q)
  	sd->output_queue_tailp = &q->next_sched;
  	raise_softirq_irqoff(NET_TX_SOFTIRQ);
  	local_irq_restore(flags);
@@ -102,7 +102,7 @@ index 75ca6c6d01d6..d4e8cca8153d 100644
  }
  
  void __netif_schedule(struct Qdisc *q)
-@@ -3098,6 +3099,7 @@ void __dev_kfree_skb_irq(struct sk_buff *skb, enum skb_free_reason reason)
+@@ -3110,6 +3111,7 @@ void __dev_kfree_skb_irq(struct sk_buff *skb, enum skb_free_reason reason)
  	__this_cpu_write(softnet_data.completion_queue, skb);
  	raise_softirq_irqoff(NET_TX_SOFTIRQ);
  	local_irq_restore(flags);
@@ -110,7 +110,7 @@ index 75ca6c6d01d6..d4e8cca8153d 100644
  }
  EXPORT_SYMBOL(__dev_kfree_skb_irq);
  
-@@ -4560,6 +4562,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+@@ -4572,6 +4574,7 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
  	rps_unlock(sd);
  
  	local_irq_restore(flags);
@@ -118,7 +118,7 @@ index 75ca6c6d01d6..d4e8cca8153d 100644
  
  	atomic_long_inc(&skb->dev->rx_dropped);
  	kfree_skb(skb);
-@@ -6278,12 +6281,14 @@ static void net_rps_action_and_irq_enable(struct softnet_data *sd)
+@@ -6290,12 +6293,14 @@ static void net_rps_action_and_irq_enable(struct softnet_data *sd)
  		sd->rps_ipi_list = NULL;
  
  		local_irq_enable();
@@ -133,7 +133,7 @@ index 75ca6c6d01d6..d4e8cca8153d 100644
  }
  
  static bool sd_has_rps_ipi_waiting(struct softnet_data *sd)
-@@ -6361,6 +6366,7 @@ void __napi_schedule(struct napi_struct *n)
+@@ -6373,6 +6378,7 @@ void __napi_schedule(struct napi_struct *n)
  	local_irq_save(flags);
  	____napi_schedule(this_cpu_ptr(&softnet_data), n);
  	local_irq_restore(flags);
@@ -141,7 +141,7 @@ index 75ca6c6d01d6..d4e8cca8153d 100644
  }
  EXPORT_SYMBOL(__napi_schedule);
  
-@@ -10892,6 +10898,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
+@@ -10904,6 +10910,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
  
  	raise_softirq_irqoff(NET_TX_SOFTIRQ);
  	local_irq_enable();

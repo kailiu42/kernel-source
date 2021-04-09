@@ -1,4 +1,4 @@
-Git-commit: 58bd781afe42f36e1965c883962b7c69a0518a24
+Git-commit: af362f4117417e0405268242de03c6710cfe4081
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -23,7 +23,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  2 files changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/kernel/fork.c b/kernel/fork.c
-index c1d119046a25..7d0389bb071c 100644
+index 8624090a7440..eaa47c928f96 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -42,6 +42,7 @@

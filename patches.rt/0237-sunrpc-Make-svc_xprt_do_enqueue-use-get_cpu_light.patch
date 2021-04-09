@@ -1,4 +1,4 @@
-Git-commit: f86017c81e5b546ca3da49362108364a4e7de5d7
+Git-commit: e3a7b78b68506d11682c5ee454f4383c0444555a
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -38,7 +38,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
-index 43cf8dbde898..d5516102491b 100644
+index 06e503466c32..16bd1278a989 100644
 --- a/net/sunrpc/svc_xprt.c
 +++ b/net/sunrpc/svc_xprt.c
 @@ -422,7 +422,7 @@ void svc_xprt_do_enqueue(struct svc_xprt *xprt)

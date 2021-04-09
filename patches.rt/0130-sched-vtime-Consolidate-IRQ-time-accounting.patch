@@ -1,4 +1,4 @@
-Git-commit: a3b534c982c17b54749116447ff5462c7a9204dd
+Git-commit: 9453fc1f5a39892a008c2db468d64763667f281e
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -166,7 +166,7 @@ index 1d20f0f77a92..7e0a497a36ee 100644
  			       struct cpu_accounting_data *acct)
  {
 diff --git a/arch/s390/kernel/vtime.c b/arch/s390/kernel/vtime.c
-index e6e661ace8cd..978a35ea6081 100644
+index 18a97631af43..9b3c5978b668 100644
 --- a/arch/s390/kernel/vtime.c
 +++ b/arch/s390/kernel/vtime.c
 @@ -223,31 +223,50 @@ void vtime_flush(struct task_struct *tsk)

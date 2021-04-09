@@ -1,4 +1,4 @@
-Git-commit: 7cf712b53383f8e3060830ea92559a38031a1750
+Git-commit: 686f3571342a93b2d03afd056ef066c0ddfe0a3a
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 9c6351450e45..3b5046683cbe 100644
+index dee3b8de569e..1302658f6f6e 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -2349,7 +2349,7 @@ static void drain_all_stock(struct mem_cgroup *root_memcg)

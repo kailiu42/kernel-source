@@ -1,4 +1,4 @@
-Git-commit: 48b8f107c95e0921fb3a79e5ffc3db0a13ab4189
+Git-commit: ea701ea764967aa5a4a1bac34eb6c8d16d73fe97
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -18,10 +18,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index a2f1f9811ea7..ef4c1343bd0c 100644
+index 8857ffa6e0e1..de00a0599afe 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -2717,7 +2717,7 @@ EXPORT_SYMBOL_GPL(irq_get_irqchip_state);
+@@ -2721,7 +2721,7 @@ EXPORT_SYMBOL_GPL(irq_get_irqchip_state);
   *	This call sets the internal irqchip state of an interrupt,
   *	depending on the value of @which.
   *

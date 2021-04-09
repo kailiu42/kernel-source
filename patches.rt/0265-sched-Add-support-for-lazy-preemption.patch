@@ -1,4 +1,4 @@
-Git-commit: d5263b6ca9b55eb93f003637cb36102d4d602812
+Git-commit: fbd8384937e61e533ecb7cb013e3ee7a1d077afe
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -228,10 +228,10 @@ index 05d0d463f30b..28509a37eb71 100644
  {
  	if (task->state & (__TASK_STOPPED | __TASK_TRACED))
 diff --git a/include/linux/thread_info.h b/include/linux/thread_info.h
-index e93e249a4e9b..c88b9cecc78a 100644
+index f3040b0b4b23..3cb02ced141b 100644
 --- a/include/linux/thread_info.h
 +++ b/include/linux/thread_info.h
-@@ -97,7 +97,17 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
+@@ -110,7 +110,17 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
  #define test_thread_flag(flag) \
  	test_ti_thread_flag(current_thread_info(), flag)
  

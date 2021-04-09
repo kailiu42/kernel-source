@@ -1,4 +1,4 @@
-Git-commit: d6c12464fe6e7899f360be1d7ed860265826c181
+Git-commit: 7700f9295f3fe48f28acef48243fbc0470902796
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -23,10 +23,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 3c7a42239d0a..0c291ca6ae95 100644
+index 78ec0b5be76e..610494d8acd0 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -10910,7 +10910,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
+@@ -10922,7 +10922,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
  		netif_rx_ni(skb);
  		input_queue_head_incr(oldsd);
  	}

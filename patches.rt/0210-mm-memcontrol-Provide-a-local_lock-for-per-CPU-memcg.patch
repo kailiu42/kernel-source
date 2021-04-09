@@ -1,4 +1,4 @@
-Git-commit: 72824d7f87c9b903e917d8cd72fb78fba9f97ee5
+Git-commit: 35bbc8da4b436f601b762b3fc5a1b61b94d38c4d
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -25,7 +25,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 18 insertions(+), 13 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index cc1d21a5a445..9c6351450e45 100644
+index bc99242d3415..dee3b8de569e 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -2202,6 +2202,7 @@ void unlock_page_memcg(struct page *page)
@@ -125,7 +125,7 @@ index cc1d21a5a445..9c6351450e45 100644
  }
  
  int obj_cgroup_charge(struct obj_cgroup *objcg, gfp_t gfp, size_t size)
-@@ -7141,9 +7142,13 @@ static int __init mem_cgroup_init(void)
+@@ -7140,9 +7141,13 @@ static int __init mem_cgroup_init(void)
  	cpuhp_setup_state_nocalls(CPUHP_MM_MEMCQ_DEAD, "mm/memctrl:dead", NULL,
  				  memcg_hotplug_cpu_dead);
  

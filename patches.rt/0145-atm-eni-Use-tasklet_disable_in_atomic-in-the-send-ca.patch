@@ -1,4 +1,4 @@
-Git-commit: 7f5a92fcc5bc6ab3a1ef7c0f5488bb2cb54b4961
+Git-commit: 061eabeca690b8bcb2fc58875bb48e899b5a32f5
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/atm/eni.c b/drivers/atm/eni.c
-index 316a9947541f..e96a4e8a4a10 100644
+index b574cce98dc3..422753d52244 100644
 --- a/drivers/atm/eni.c
 +++ b/drivers/atm/eni.c
 @@ -2054,7 +2054,7 @@ static int eni_send(struct atm_vcc *vcc,struct sk_buff *skb)

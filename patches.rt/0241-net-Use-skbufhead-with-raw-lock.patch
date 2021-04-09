@@ -1,4 +1,4 @@
-Git-commit: 799dde9045cdec2628563a0c616da602af690b2b
+Git-commit: c08530bbaac04ece08a5370c534c310f4202d0fb
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -43,7 +43,7 @@ index a828cf99c521..2e4f80cd41df 100644
  		struct lock_class_key *class)
  {
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 7443bbdfeb63..3c7a42239d0a 100644
+index 7b4148b97ebe..78ec0b5be76e 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -221,14 +221,14 @@ static inline struct hlist_head *dev_index_hash(struct net *net, int ifindex)
@@ -63,7 +63,7 @@ index 7443bbdfeb63..3c7a42239d0a 100644
  #endif
  }
  
-@@ -11226,7 +11226,7 @@ static int __init net_dev_init(void)
+@@ -11238,7 +11238,7 @@ static int __init net_dev_init(void)
  
  		INIT_WORK(flush, flush_backlog);
  

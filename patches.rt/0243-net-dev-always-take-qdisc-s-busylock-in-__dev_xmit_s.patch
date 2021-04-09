@@ -1,4 +1,4 @@
-Git-commit: 2e50584226a59f7b892fed08322578e72b83162b
+Git-commit: 858a8b2242781c3d12208a82c18762c5ab892b47
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -25,10 +25,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 0c291ca6ae95..96e03924bf5e 100644
+index 610494d8acd0..ee9a2a278a56 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3767,7 +3767,11 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+@@ -3779,7 +3779,11 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
  	 * This permits qdisc->running owner to get the lock more
  	 * often and dequeue packets faster.
  	 */

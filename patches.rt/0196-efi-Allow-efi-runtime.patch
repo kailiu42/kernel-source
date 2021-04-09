@@ -1,4 +1,4 @@
-Git-commit: 3bd54a23b38209e60e394556aae03a20cac44704
+Git-commit: a0e68bfdc6f79c8868da8758736c8f1162669a8a
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 1819da1c9fec..709c65c0a816 100644
+index 85496063022d..abb18c958e3b 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -97,6 +97,9 @@ static int __init parse_efi_cmdline(char *str)

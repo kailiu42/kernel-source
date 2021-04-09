@@ -1,4 +1,4 @@
-Git-commit: ee121ab31b0b40bce8d9c7ffa2825968ff1cdd16
+Git-commit: 6fbfe46f79ddb703d5d8b766d6b040869df0d79c
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -80,7 +80,7 @@ index 1d0e2ce6b6d9..02b37178b54f 100644
 +
  #endif /* defined(_LINUX_DELAY_H) */
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 4416f5d72c11..7b89688374ca 100644
+index 9505b1f21cdf..1256f2ce948b 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
 @@ -2006,6 +2006,36 @@ SYSCALL_DEFINE2(nanosleep_time32, struct old_timespec32 __user *, rqtp,

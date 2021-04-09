@@ -1,4 +1,4 @@
-Git-commit: db43d63bcc15a7a5a024979d7e698b19961b7875
+Git-commit: e15b5ea2db3b8dcf8f381fc5b31debc670f0a348
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -80,7 +80,7 @@ index 3622d4ebc73a..fac6a67988eb 100644
  
  #endif /* _S390_VTIME_H */
 diff --git a/arch/s390/kernel/vtime.c b/arch/s390/kernel/vtime.c
-index 8b2d43ffd96f..e6e661ace8cd 100644
+index 710135905deb..18a97631af43 100644
 --- a/arch/s390/kernel/vtime.c
 +++ b/arch/s390/kernel/vtime.c
 @@ -248,10 +248,6 @@ void vtime_account_kernel(struct task_struct *tsk)

@@ -1,4 +1,4 @@
-Git-commit: 2f20189f98111b13784438486883a6d5dff2f253
+Git-commit: 38e2335d682fca041980e4e9ac283cd493f8b4fe
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -39,10 +39,10 @@ Link: https://lkml.kernel.org/r/a23a826af7c108ea5651e73b8fbae5e653f16e86.camel@g
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index c460e0496006..079688d122a7 100644
+index 79dc02b956dc..0558f75c0b85 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -1155,6 +1155,8 @@ static int irq_thread(void *data)
+@@ -1159,6 +1159,8 @@ static int irq_thread(void *data)
  	irqreturn_t (*handler_fn)(struct irq_desc *desc,
  			struct irqaction *action);
  
@@ -51,7 +51,7 @@ index c460e0496006..079688d122a7 100644
  	if (force_irqthreads && test_bit(IRQTF_FORCED_THREAD,
  					&action->thread_flags))
  		handler_fn = irq_forced_thread_fn;
-@@ -1320,8 +1322,6 @@ setup_irq_thread(struct irqaction *new, unsigned int irq, bool secondary)
+@@ -1324,8 +1326,6 @@ setup_irq_thread(struct irqaction *new, unsigned int irq, bool secondary)
  	if (IS_ERR(t))
  		return PTR_ERR(t);
  

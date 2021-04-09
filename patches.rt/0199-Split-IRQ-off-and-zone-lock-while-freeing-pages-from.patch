@@ -1,4 +1,4 @@
-Git-commit: aad3930902a03eccc53bc2af1501d3759c656ba5
+Git-commit: 7b31a4c77f857abf84faab67464eed5584ed8231
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -21,7 +21,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 51 insertions(+), 30 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 690f79c781cf..7bb265b839c1 100644
+index 7ffa706e5c30..0ad4f4aaa36d 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -1331,7 +1331,7 @@ static inline void prefetch_buddy(struct page *page)

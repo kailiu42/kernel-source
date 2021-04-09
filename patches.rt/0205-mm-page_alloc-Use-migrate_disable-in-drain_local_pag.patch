@@ -1,4 +1,4 @@
-Git-commit: c3b9f4c5a90180bada9888cf5cf56dffde50aa62
+Git-commit: 6b1a27fedc65b315b518df1b7faf9b6e0a031441
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -22,7 +22,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index f0891d608c0e..0ebb398a15ef 100644
+index 84ee66afc232..b8350cbe66f9 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -3048,9 +3048,9 @@ static void drain_local_pages_wq(struct work_struct *work)

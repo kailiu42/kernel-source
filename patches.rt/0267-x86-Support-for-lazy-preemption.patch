@@ -1,4 +1,4 @@
-Git-commit: 002f8251e56991520314ec5f0bf6edffca5dca4e
+Git-commit: ad3b69a59b210ced3f9c50c3a9d348a44aec4faf
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -85,7 +85,7 @@ index 5ef93c81b274..471dec2d78e1 100644
  
  #ifdef CONFIG_PREEMPTION
 diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
-index 44733a4bfc42..f16f2ea58be4 100644
+index e701f29b4881..596a46c4a05d 100644
 --- a/arch/x86/include/asm/thread_info.h
 +++ b/arch/x86/include/asm/thread_info.h
 @@ -56,17 +56,24 @@ struct task_struct;

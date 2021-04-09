@@ -1,4 +1,4 @@
-Git-commit: b7f394fb7dbb87e265b907fe2c1e06d76c9b0973
+Git-commit: 83b81033f46b733aec9bbec2758d64a3d331eb42
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -22,10 +22,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index d4e8cca8153d..7443bbdfeb63 100644
+index 8098f2f38b53..7b4148b97ebe 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4834,11 +4834,9 @@ int netif_rx_ni(struct sk_buff *skb)
+@@ -4846,11 +4846,9 @@ int netif_rx_ni(struct sk_buff *skb)
  
  	trace_netif_rx_ni_entry(skb);
  

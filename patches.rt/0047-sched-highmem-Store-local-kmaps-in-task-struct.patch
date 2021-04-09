@@ -1,4 +1,4 @@
-Git-commit: 502df89b62a245798021b22e3833d86d70c1f74f
+Git-commit: 272e3b59d0a370b6c2204ff0cfa5199a45b6df1d
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -109,7 +109,7 @@ index e289e6773292..59c666d9d43c 100644
  	lockdep_sys_exit();
  }
 diff --git a/kernel/fork.c b/kernel/fork.c
-index c675fdbd3dce..ee4da2ad359c 100644
+index 7c044d377926..356104c1e0a3 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -930,6 +930,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)

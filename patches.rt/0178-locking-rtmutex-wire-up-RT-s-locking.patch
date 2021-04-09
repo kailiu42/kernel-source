@@ -1,4 +1,4 @@
-Git-commit: 418bfaadf4feb44aaa38c5026f64a0139fe877ca
+Git-commit: 2810960891efd79fe9805cb79fe6e2cace74b5c3
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -24,7 +24,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  11 files changed, 77 insertions(+), 19 deletions(-)
 
 diff --git a/include/linux/mutex.h b/include/linux/mutex.h
-index dcd185cbfe79..a0e973561d7c 100644
+index 4d671fba3cab..e45774a337d2 100644
 --- a/include/linux/mutex.h
 +++ b/include/linux/mutex.h
 @@ -22,6 +22,20 @@

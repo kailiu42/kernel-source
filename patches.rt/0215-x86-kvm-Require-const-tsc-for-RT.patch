@@ -1,4 +1,4 @@
-Git-commit: d3cfeec6c8570b22c8e16d300d197e06876e100f
+Git-commit: dfb86318cb20a12acd59bc4f99ca46968c9766d8
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -18,10 +18,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 8 insertions(+)
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index fa5f059c2b94..9503e0500af8 100644
+index 0d8383b82bca..b53e8e693ee5 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -7884,6 +7884,14 @@ int kvm_arch_init(void *opaque)
+@@ -7908,6 +7908,14 @@ int kvm_arch_init(void *opaque)
  		goto out;
  	}
  

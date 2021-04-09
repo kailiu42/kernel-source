@@ -1,4 +1,4 @@
-Git-commit: 6f9966d23afec88150d9d26ea815ac4079154244
+Git-commit: 9c69602a7782bd8a5517373aa1d9158523193801
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -57,10 +57,10 @@ index d13d67fc5f4e..f5933bd07932 100644
  	spin_unlock(&sighand->siglock);
  
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 7d0389bb071c..12661e346e23 100644
+index eaa47c928f96..1e97f271ac59 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -2017,6 +2017,7 @@ static __latent_entropy struct task_struct *copy_process(
+@@ -2025,6 +2025,7 @@ static __latent_entropy struct task_struct *copy_process(
  	spin_lock_init(&p->alloc_lock);
  
  	init_sigpending(&p->pending);

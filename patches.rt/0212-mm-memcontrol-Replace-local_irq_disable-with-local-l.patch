@@ -1,4 +1,4 @@
-Git-commit: 3ff3a57ad61792b9589a0d980e3ed874b3532f3f
+Git-commit: 2af09ac0c45c0a5b7361ee543a2079b89d37e519
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -19,7 +19,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 21 insertions(+), 8 deletions(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 3b5046683cbe..b5692d2165c8 100644
+index 1302658f6f6e..4f9cd45aaf50 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -63,6 +63,7 @@
@@ -44,7 +44,7 @@ index 3b5046683cbe..b5692d2165c8 100644
  /* Whether legacy memory+swap accounting is active */
  static bool do_memsw_account(void)
  {
-@@ -5727,12 +5735,12 @@ static int mem_cgroup_move_account(struct page *page,
+@@ -5726,12 +5734,12 @@ static int mem_cgroup_move_account(struct page *page,
  
  	ret = 0;
  
@@ -59,7 +59,7 @@ index 3b5046683cbe..b5692d2165c8 100644
  out_unlock:
  	unlock_page(page);
  out:
-@@ -6802,10 +6810,10 @@ int mem_cgroup_charge(struct page *page, struct mm_struct *mm, gfp_t gfp_mask)
+@@ -6801,10 +6809,10 @@ int mem_cgroup_charge(struct page *page, struct mm_struct *mm, gfp_t gfp_mask)
  	css_get(&memcg->css);
  	commit_charge(page, memcg);
  
@@ -72,7 +72,7 @@ index 3b5046683cbe..b5692d2165c8 100644
  
  	/*
  	 * Cgroup1's unified memory+swap counter has been charged with the
-@@ -6861,11 +6869,11 @@ static void uncharge_batch(const struct uncharge_gather *ug)
+@@ -6860,11 +6868,11 @@ static void uncharge_batch(const struct uncharge_gather *ug)
  		memcg_oom_recover(ug->memcg);
  	}
  
@@ -86,7 +86,7 @@ index 3b5046683cbe..b5692d2165c8 100644
  
  	/* drop reference from uncharge_page */
  	css_put(&ug->memcg->css);
-@@ -7019,10 +7027,10 @@ void mem_cgroup_migrate(struct page *oldpage, struct page *newpage)
+@@ -7018,10 +7026,10 @@ void mem_cgroup_migrate(struct page *oldpage, struct page *newpage)
  	css_get(&memcg->css);
  	commit_charge(newpage, memcg);
  
@@ -99,7 +99,7 @@ index 3b5046683cbe..b5692d2165c8 100644
  }
  
  DEFINE_STATIC_KEY_FALSE(memcg_sockets_enabled_key);
-@@ -7197,6 +7205,7 @@ void mem_cgroup_swapout(struct page *page, swp_entry_t entry)
+@@ -7196,6 +7204,7 @@ void mem_cgroup_swapout(struct page *page, swp_entry_t entry)
  	struct mem_cgroup *memcg, *swap_memcg;
  	unsigned int nr_entries;
  	unsigned short oldid;
@@ -107,7 +107,7 @@ index 3b5046683cbe..b5692d2165c8 100644
  
  	VM_BUG_ON_PAGE(PageLRU(page), page);
  	VM_BUG_ON_PAGE(page_count(page), page);
-@@ -7242,9 +7251,13 @@ void mem_cgroup_swapout(struct page *page, swp_entry_t entry)
+@@ -7241,9 +7250,13 @@ void mem_cgroup_swapout(struct page *page, swp_entry_t entry)
  	 * important here to have the interrupts disabled because it is the
  	 * only synchronisation we have for updating the per-CPU variables.
  	 */

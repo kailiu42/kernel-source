@@ -1,4 +1,4 @@
-Git-commit: cddd648306d505c8768446f4c69bf63635157dfa
+Git-commit: 5668b2602beeafc6addcf4a489593412ae6a11b4
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -170,10 +170,10 @@ index 762a928e18f9..7929fcdb7817 100644
  	if (!noirqdebug)
  		note_interrupt(desc, retval);
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 079688d122a7..a2f1f9811ea7 100644
+index 0558f75c0b85..8857ffa6e0e1 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -1177,6 +1177,12 @@ static int irq_thread(void *data)
+@@ -1181,6 +1181,12 @@ static int irq_thread(void *data)
  		if (action_ret == IRQ_WAKE_THREAD)
  			irq_wake_secondary(desc, action);
  
