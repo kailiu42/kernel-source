@@ -1,4 +1,4 @@
-Git-commit: fbd8384937e61e533ecb7cb013e3ee7a1d077afe
+Git-commit: 9acec9b2ed67dbb276865ea038d3cb63b6eba9b8
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -558,7 +558,7 @@ index 32ac4fc0ce76..a6dc180ae5ef 100644
  extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
  
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 1d8d537157ae..24166ab83304 100644
+index 255b3f027dfd..b3cc666223ce 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2605,8 +2605,16 @@ unsigned int tracing_gen_ctx_irq_test(unsigned int irqs_status)
@@ -580,7 +580,7 @@ index 1d8d537157ae..24166ab83304 100644
  }
  
  struct ring_buffer_event *
-@@ -3807,15 +3815,17 @@ unsigned long trace_total_entries(struct trace_array *tr)
+@@ -3808,15 +3816,17 @@ unsigned long trace_total_entries(struct trace_array *tr)
  
  static void print_lat_help_header(struct seq_file *m)
  {
@@ -607,7 +607,7 @@ index 1d8d537157ae..24166ab83304 100644
  }
  
  static void print_event_info(struct array_buffer *buf, struct seq_file *m)
-@@ -3849,14 +3859,16 @@ static void print_func_help_header_irq(struct array_buffer *buf, struct seq_file
+@@ -3850,14 +3860,16 @@ static void print_func_help_header_irq(struct array_buffer *buf, struct seq_file
  
  	print_event_info(buf, m);
  

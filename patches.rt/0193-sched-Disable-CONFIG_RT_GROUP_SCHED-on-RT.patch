@@ -1,4 +1,4 @@
-Git-commit: e8f1096807a2d2829ff856a3e07b5b805b0521c6
+Git-commit: de44e6bd2ca4d159329e2ba3e93db6f0b1eaabd9
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -22,10 +22,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 1 insertion(+)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index 87f95c327104..ace3755f4d09 100644
+index 1f6c20e56ea9..3fe140f4f0ed 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -969,6 +969,7 @@ config CFS_BANDWIDTH
+@@ -968,6 +968,7 @@ config CFS_BANDWIDTH
  config RT_GROUP_SCHED
  	bool "Group scheduling for SCHED_RR/FIFO"
  	depends on CGROUP_SCHED

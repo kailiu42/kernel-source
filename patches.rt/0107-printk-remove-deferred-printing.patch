@@ -1,4 +1,4 @@
-Git-commit: 802e7079d21c2451be17821b26f68865ae44d5a6
+Git-commit: 8bc8727b9c6f8763c060678036b0abccb4898dfe
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -411,10 +411,10 @@ index c23b127a6545..000000000000
 -	return vprintk_default(fmt, args);
 -}
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 0cb5a41d3d23..4ce8c53aedbe 100644
+index 57fb77628df1..ea5ed64017ec 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
-@@ -9295,7 +9295,6 @@ void ftrace_dump(enum ftrace_dump_mode oops_dump_mode)
+@@ -9296,7 +9296,6 @@ void ftrace_dump(enum ftrace_dump_mode oops_dump_mode)
  	tracing_off();
  
  	local_irq_save(flags);
@@ -422,7 +422,7 @@ index 0cb5a41d3d23..4ce8c53aedbe 100644
  
  	/* Simulate the iterator */
  	trace_init_global_iter(&iter);
-@@ -9375,7 +9374,6 @@ void ftrace_dump(enum ftrace_dump_mode oops_dump_mode)
+@@ -9376,7 +9375,6 @@ void ftrace_dump(enum ftrace_dump_mode oops_dump_mode)
  		atomic_dec(&per_cpu_ptr(iter.array_buffer->data, cpu)->disabled);
  	}
  	atomic_dec(&dump_running);

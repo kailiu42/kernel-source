@@ -1,4 +1,4 @@
-Git-commit: 91943b5b8dba01dfd348b9b846e590c3f8e34861
+Git-commit: 219d2ed8ca98e05eed940f2437661a1f26e4ce22
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -115,7 +115,7 @@ index 3441ffa740f3..2fcae5cfd272 100644
  	if (!o->nodeid) {
  		/*
 diff --git a/fs/namei.c b/fs/namei.c
-index 7af66d5a0c1b..b3f51efa5066 100644
+index 4c9d0c36545d..5a6e15a7eed7 100644
 --- a/fs/namei.c
 +++ b/fs/namei.c
 @@ -1520,7 +1520,7 @@ static struct dentry *__lookup_slow(const struct qstr *name,

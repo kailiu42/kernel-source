@@ -1,4 +1,4 @@
-Git-commit: 0dbf22fe0c44bef3231949dcca2d7d6e1c6c4210
+Git-commit: 8c9f40ba6c6a09d78e70206f28c382e3218d325f
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -92,7 +92,7 @@ index 091250b0895a..67ae708de40d 100644
  struct trace_event_file;
  
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index f223504e8de5..a391780afd69 100644
+index bb1ffaaede17..992bebf4edf0 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2578,20 +2578,13 @@ enum print_line_t trace_handle_return(struct trace_seq *s)

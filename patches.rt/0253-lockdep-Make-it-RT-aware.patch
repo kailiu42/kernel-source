@@ -1,4 +1,4 @@
-Git-commit: e2dcb8fd4b8282183f78920754d208155c2e3411
+Git-commit: d01635a8a16b4d220c46f6b671b21c36a43580d2
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -57,7 +57,7 @@ index 3ed4e8771b64..a437b2e70d37 100644
  	defined(CONFIG_PREEMPT_TRACER)
   extern void stop_critical_timings(void);
 diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
-index 780012eb2f3f..886c5165fb69 100644
+index eead7efbe7e5..39fce1c9c8ee 100644
 --- a/kernel/locking/lockdep.c
 +++ b/kernel/locking/lockdep.c
 @@ -5291,6 +5291,7 @@ static noinstr void check_flags(unsigned long flags)

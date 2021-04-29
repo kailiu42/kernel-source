@@ -1,4 +1,4 @@
-Git-commit: f5ebc23197eea7fcbeb142ccd61e483a479dfefc
+Git-commit: 758888770fd3f8a6b91116ccdb33ad0bd9eaf6f6
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -40,10 +40,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index ace3755f4d09..5b0b58f49e11 100644
+index 3fe140f4f0ed..7ba2b602b707 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1985,7 +1985,7 @@ config SHUFFLE_PAGE_ALLOCATOR
+@@ -1984,7 +1984,7 @@ config SHUFFLE_PAGE_ALLOCATOR
  
  config SLUB_CPU_PARTIAL
  	default y

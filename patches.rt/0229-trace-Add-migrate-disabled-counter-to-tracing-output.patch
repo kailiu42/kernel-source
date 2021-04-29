@@ -1,4 +1,4 @@
-Git-commit: 263b6375e8db718fe138bf19b1fdec74fac7cf60
+Git-commit: 9ee1abba243d59d79ea13bb1ecb99c2aad9ffb89
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -36,7 +36,7 @@ index 5d1eeac4bfbe..29c24ec33ffd 100644
  	entry->type			= type;
  	entry->flags =			trace_ctx >> 16;
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 4ce8c53aedbe..1d8d537157ae 100644
+index ea5ed64017ec..255b3f027dfd 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2578,6 +2578,15 @@ enum print_line_t trace_handle_return(struct trace_seq *s)
@@ -65,7 +65,7 @@ index 4ce8c53aedbe..1d8d537157ae 100644
  }
  
  struct ring_buffer_event *
-@@ -3802,9 +3812,10 @@ static void print_lat_help_header(struct seq_file *m)
+@@ -3803,9 +3813,10 @@ static void print_lat_help_header(struct seq_file *m)
  		    "#                  | / _----=> need-resched    \n"
  		    "#                  || / _---=> hardirq/softirq \n"
  		    "#                  ||| / _--=> preempt-depth   \n"
@@ -79,7 +79,7 @@ index 4ce8c53aedbe..1d8d537157ae 100644
  }
  
  static void print_event_info(struct array_buffer *buf, struct seq_file *m)
-@@ -3842,9 +3853,10 @@ static void print_func_help_header_irq(struct array_buffer *buf, struct seq_file
+@@ -3843,9 +3854,10 @@ static void print_func_help_header_irq(struct array_buffer *buf, struct seq_file
  	seq_printf(m, "#                            %.*s / _----=> need-resched\n", prec, space);
  	seq_printf(m, "#                            %.*s| / _---=> hardirq/softirq\n", prec, space);
  	seq_printf(m, "#                            %.*s|| / _--=> preempt-depth\n", prec, space);

@@ -1,4 +1,4 @@
-Git-commit: c9e19283ceb2ecb640c59be15234f9b44bd7c26f
+Git-commit: 412a423ce9106811dc2f1cf7ca29f23a63ac0a00
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -33,7 +33,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index a391780afd69..0cb5a41d3d23 100644
+index 992bebf4edf0..57fb77628df1 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2589,8 +2589,7 @@ unsigned int tracing_gen_ctx_irq_test(unsigned int irqs_status)

@@ -1,4 +1,4 @@
-Git-commit: 507867aa49d50813560e18930e39028b94947c39
+Git-commit: e80d1571401a4b8ccd180b4df4736ef92f2e8f69
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -13,10 +13,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 727ea1cc633c..8179c8072e6f 100644
+index c75c1e723a84..5dcdc71839e6 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -3037,12 +3037,11 @@ void lock_sock_nested(struct sock *sk, int subclass)
+@@ -3031,12 +3031,11 @@ void lock_sock_nested(struct sock *sk, int subclass)
  	if (sk->sk_lock.owned)
  		__lock_sock(sk);
  	sk->sk_lock.owned = 1;
@@ -30,7 +30,7 @@ index 727ea1cc633c..8179c8072e6f 100644
  }
  EXPORT_SYMBOL(lock_sock_nested);
  
-@@ -3091,12 +3090,11 @@ bool lock_sock_fast(struct sock *sk)
+@@ -3085,12 +3084,11 @@ bool lock_sock_fast(struct sock *sk)
  
  	__lock_sock(sk);
  	sk->sk_lock.owned = 1;

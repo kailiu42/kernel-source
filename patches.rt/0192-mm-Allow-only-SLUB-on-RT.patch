@@ -1,4 +1,4 @@
-Git-commit: 1848b31ca46fd0f2af3cc96cd54aa197cf092079
+Git-commit: 548e833971df92544e6ca33aa2e357361aaff9cb
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
@@ -26,10 +26,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index d559abf38c90..87f95c327104 100644
+index fc4c9f416fad..1f6c20e56ea9 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1896,6 +1896,7 @@ choice
+@@ -1895,6 +1895,7 @@ choice
  
  config SLAB
  	bool "SLAB"
@@ -37,7 +37,7 @@ index d559abf38c90..87f95c327104 100644
  	select HAVE_HARDENED_USERCOPY_ALLOCATOR
  	help
  	  The regular slab allocator that is established and known to work
-@@ -1916,6 +1917,7 @@ config SLUB
+@@ -1915,6 +1916,7 @@ config SLUB
  config SLOB
  	depends on EXPERT
  	bool "SLOB (Simple Allocator)"

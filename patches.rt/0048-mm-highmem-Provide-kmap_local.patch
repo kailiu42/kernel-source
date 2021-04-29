@@ -1,4 +1,4 @@
-Git-commit: 3c99247a9f9cb3d2f4cdd9ae72907dd286c11a2f
+Git-commit: 226f627302a5fb879b530a52df33b4ba2c73326d
 Git-repo: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git
 Patch-mainline: Queued in subsystem maintainer repository
 References: PREEMPT_RT
