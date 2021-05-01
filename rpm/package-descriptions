@@ -11,6 +11,14 @@
 # Descriptions of the -base and -extra subpackages are derived from the
 # main descriptions. The "Summary:" keyword can be omitted
 
+=== kernel-openEuler ===
+The openEuler kernel.
+
+This is the kernel of the openEuler distro. Ported from:
+  https://gitee.com/openeuler/kernel.git
+
+With few SUSE specific modifications.
+
 === kernel-debug ===
 A Debug Version of the Kernel
 

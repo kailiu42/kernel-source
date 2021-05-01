@@ -1,7 +1,7 @@
 # The version of the main tarball to use
 SRCVERSION=5.10
 # variant of the kernel-source package, either empty or "-rt"
-VARIANT=
+VARIANT="-openEuler"
 # enable kernel module compression
 COMPRESS_MODULES="xz"
 COMPRESS_VMLINUX="xz"
