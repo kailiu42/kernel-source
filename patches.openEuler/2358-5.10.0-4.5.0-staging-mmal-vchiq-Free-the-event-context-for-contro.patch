@@ -1,0 +1,44 @@
+Git-commit: 8db84eb9b102d597b6e0f057fb1e21fb6ddfcee0
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Wed, 1 May 2019 13:27:23 +0100
+Subject: [PATCH] staging: mmal-vchiq: Free the event context for control ports
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+vchiq_mmal_component_init calls init_event_context for the
+control port, but vchiq_mmal_component_finalise didn't free
+it, causing a memory leak..
+
+Add the free call.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+index 3e2209847761..d4d9ad3500b6 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+@@ -1901,6 +1901,8 @@ int vchiq_mmal_component_finalise(struct vchiq_mmal_instance *instance,
+ 	for (idx = 0; idx < component->clocks; idx++)
+ 		free_event_context(&component->clock[idx]);
+ 
++	free_event_context(&component->control);
++
+ 	mutex_unlock(&instance->vchiq_mutex);
+ 
+ 	return ret;
+-- 
+2.31.1
+

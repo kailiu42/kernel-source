@@ -1,0 +1,45 @@
+Git-commit: 04c4d2fc588626d6e50e21b39f50564d382a9dfc
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Wed, 31 Oct 2018 14:59:40 +0000
+Subject: [PATCH] MAINTAINERS: Add entry for BCM2835 Unicam driver
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Adds entry for the new BCM2835 Unicam (CSI-2 receiver) driver
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 20a66da62914..af0f69e2e04c 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3417,6 +3417,13 @@ N:	bcm113*
+ N:	bcm216*
+ N:	kona
+ 
++BROADCOM BCM2835 CAMERA DRIVER
++M:	Dave Stevenson <dave.stevenson@raspberrypi.org>
++L:	linux-media@vger.kernel.org
++S:	Maintained
++F:	drivers/media/platform/bcm2835/
++F:	Documentation/devicetree/bindings/media/bcm2835-unicam.txt
++
+ BROADCOM BCM47XX MIPS ARCHITECTURE
+ M:	Hauke Mehrtens <hauke@hauke-m.de>
+ M:	Rafał Miłecki <zajec5@gmail.com>
+-- 
+2.31.1
+

@@ -1,0 +1,50 @@
+Git-commit: 60014db5d432cc0609a146b004b51040925ce90a
+From: Andres Freund <andres@anarazel.de>
+Date: Tue, 19 Jan 2021 11:25:36 +0000
+Subject: [PATCH] block: add debugfs stanza for QUEUE_FLAG_NOWAIT
+Patch-mainline: v5.10.7
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.7
+commit bfb39e6d67a5fb3875e0cfb2e108e4bcc56d7747
+bugzilla: 47429
+
+--------------------------------
+
+[ Upstream commit dc30432605bbbd486dfede3852ea4d42c40a84b4 ]
+
+This was missed in 021a24460dc2. Leads to the numeric value of
+QUEUE_FLAG_NOWAIT (i.e. 29) showing up in
+/sys/kernel/debug/block/*/state.
+
+Fixes: 021a24460dc28e7412aecfae89f60e1847e685c0
+Cc: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
+Cc: Mike Snitzer <snitzer@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Andres Freund <andres@anarazel.de>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ block/blk-mq-debugfs.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
+index 3094542e12ae..e21eed20a155 100644
+--- a/block/blk-mq-debugfs.c
++++ b/block/blk-mq-debugfs.c
+@@ -129,6 +129,7 @@ static const char *const blk_queue_flag_name[] = {
+ 	QUEUE_FLAG_NAME(PCI_P2PDMA),
+ 	QUEUE_FLAG_NAME(ZONE_RESETALL),
+ 	QUEUE_FLAG_NAME(RQ_ALLOC_TIME),
++	QUEUE_FLAG_NAME(NOWAIT),
+ };
+ #undef QUEUE_FLAG_NAME
+ 
+-- 
+2.31.1
+

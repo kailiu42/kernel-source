@@ -1,0 +1,56 @@
+Git-commit: 6830c486c519cd65d46175cb8e8754ebbb933627
+From: Martin Wilck <mwilck@suse.com>
+Date: Tue, 9 Feb 2021 14:46:36 +0800
+Subject: [PATCH] scsi: scsi_transport_srp: Don't block target in failfast
+ state
+Patch-mainline: v5.10.14
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.14
+commit 28693cc0fc0d45d771820cd54f16f4aed6c1790c
+bugzilla: 48051
+
+--------------------------------
+
+[ Upstream commit 72eeb7c7151302ef007f1acd018cbf6f30e50321 ]
+
+If the port is in SRP_RPORT_FAIL_FAST state when srp_reconnect_rport() is
+entered, a transition to SDEV_BLOCK would be illegal, and a kernel WARNING
+would be triggered. Skip scsi_target_block() in this case.
+
+Link: https://lore.kernel.org/r/20210111142541.21534-1-mwilck@suse.com
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin Wilck <mwilck@suse.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/scsi/scsi_transport_srp.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/scsi/scsi_transport_srp.c b/drivers/scsi/scsi_transport_srp.c
+index cba1cf6a1c12..1e939a2a387f 100644
+--- a/drivers/scsi/scsi_transport_srp.c
++++ b/drivers/scsi/scsi_transport_srp.c
+@@ -541,7 +541,14 @@ int srp_reconnect_rport(struct srp_rport *rport)
+ 	res = mutex_lock_interruptible(&rport->mutex);
+ 	if (res)
+ 		goto out;
+-	scsi_target_block(&shost->shost_gendev);
++	if (rport->state != SRP_RPORT_FAIL_FAST)
++		/*
++		 * sdev state must be SDEV_TRANSPORT_OFFLINE, transition
++		 * to SDEV_BLOCK is illegal. Calling scsi_target_unblock()
++		 * later is ok though, scsi_internal_device_unblock_nowait()
++		 * treats SDEV_TRANSPORT_OFFLINE like SDEV_BLOCK.
++		 */
++		scsi_target_block(&shost->shost_gendev);
+ 	res = rport->state != SRP_RPORT_LOST ? i->f->reconnect(rport) : -ENODEV;
+ 	pr_debug("%s (state %d): transport.reconnect() returned %d\n",
+ 		 dev_name(&shost->shost_gendev), rport->state, res);
+-- 
+2.31.1
+

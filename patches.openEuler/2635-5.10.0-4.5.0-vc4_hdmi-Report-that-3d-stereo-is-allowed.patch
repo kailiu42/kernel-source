@@ -1,0 +1,37 @@
+Git-commit: 974ac07401003075950d3af26d0c16f416de6644
+From: Dom Cobley <popcornmix@gmail.com>
+Date: Mon, 9 Nov 2020 19:49:32 +0000
+Subject: [PATCH] vc4_hdmi: Report that 3d/stereo is allowed
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 9682b55f74dc..4f5146547850 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -540,6 +540,7 @@ static int vc4_hdmi_connector_init(struct drm_device *dev,
+ 
+ 	connector->interlace_allowed = 1;
+ 	connector->doublescan_allowed = 0;
++	connector->stereo_allowed = 1;
+ 
+ 	drm_connector_attach_encoder(connector, encoder);
+ 
+-- 
+2.31.1
+

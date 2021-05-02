@@ -1,0 +1,71 @@
+Git-commit: 0b38a2068cac852f1210d3d100700fa80a4ff4ea
+From: Roberto Sassu <roberto.sassu@huawei.com>
+Date: Wed, 3 Mar 2021 08:43:37 +0100
+Subject: [PATCH] evm: Execute evm_inode_init_security() only when an HMAC key
+ is loaded
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.7.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+feature: IMA Digest Lists extension
+bugzilla: 46797
+
+---------------------------
+
+evm_inode_init_security() requires an HMAC key to calculate the HMAC on
+initial xattrs provided by LSMs. However, it checks generically whether a
+key has been loaded, including also public keys, which is not correct as
+public keys are not suitable to calculate the HMAC.
+
+Originally, support for signature verification was introduced to verify a
+possibly immutable initial ram disk, when no new files are created, and to
+switch to HMAC for the root filesystem. By that time, an HMAC key should
+have been loaded and usable to calculate HMACs for new files.
+
+More recently support for requiring an HMAC key was removed from the
+kernel, so that signature verification can be used alone. Since this is a
+legitimate use case, evm_inode_init_security() should not return an error
+when no HMAC key has been loaded.
+
+This patch fixes this problem by replacing the evm_key_loaded() check with
+a check of the EVM_INIT_HMAC flag in evm_initialized.
+
+Cc: stable@vger.kernel.org # 4.5.x
+Fixes: 26ddabfe96b ("evm: enable EVM when X509 certificate is loaded")
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+Reviewed-by: Jason Yan <yanaijie@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ security/integrity/evm/evm_main.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/security/integrity/evm/evm_main.c b/security/integrity/evm/evm_main.c
+index 76d19146d74b..f1ca3cac9b86 100644
+--- a/security/integrity/evm/evm_main.c
++++ b/security/integrity/evm/evm_main.c
+@@ -521,7 +521,7 @@ void evm_inode_post_setattr(struct dentry *dentry, int ia_valid)
+ }
+ 
+ /*
+- * evm_inode_init_security - initializes security.evm
++ * evm_inode_init_security - initializes security.evm HMAC value
+  */
+ int evm_inode_init_security(struct inode *inode,
+ 				 const struct xattr *lsm_xattr,
+@@ -530,7 +530,8 @@ int evm_inode_init_security(struct inode *inode,
+ 	struct evm_xattr *xattr_data;
+ 	int rc;
+ 
+-	if (!evm_key_loaded() || !evm_protected_xattr(lsm_xattr->name))
++	if (!(evm_initialized & EVM_INIT_HMAC) ||
++	    !evm_protected_xattr(lsm_xattr->name))
+ 		return 0;
+ 
+ 	xattr_data = kzalloc(sizeof(*xattr_data), GFP_NOFS);
+-- 
+2.31.1
+

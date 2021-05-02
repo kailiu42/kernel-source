@@ -1,0 +1,45 @@
+Git-commit: 49b0f84a404593d549f79483dce68dbf77e295f9
+From: David Plowman <david.plowman@raspberrypi.com>
+Date: Thu, 4 Feb 2021 21:21:44 +0000
+Subject: [PATCH] media: i2c: imx290: Fix number of controls in
+ v4l2_ctrl_handler_init
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The number is only a hint, but may as well be correct.
+
+Fixes: 471e0029e98aa ("media: i2c: imx290: Convert HMAX setting into V4L2_CID_HBLANK")
+Fixes: be0b9b7ad1c27 ("media: i2c: imx290: Add support for V4L2_CID_VBLANK")
+Fixes: 8483f0d7599aa ("media: i2c: imx290: Add exposure control to the driver.")
+Fixes: 9764f3459c401 ("media: i2c: imx290: Add H and V flip controls")
+Signed-off-by: David Plowman <david.plowman@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/imx290.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/i2c/imx290.c b/drivers/media/i2c/imx290.c
+index a2df46e4aabc..33ce80686163 100644
+--- a/drivers/media/i2c/imx290.c
++++ b/drivers/media/i2c/imx290.c
+@@ -1328,7 +1328,7 @@ static int imx290_probe(struct i2c_client *client)
+ 	 */
+ 	imx290_entity_init_cfg(&imx290->sd, NULL);
+ 
+-	v4l2_ctrl_handler_init(&imx290->ctrls, 4);
++	v4l2_ctrl_handler_init(&imx290->ctrls, 9);
+ 
+ 	v4l2_ctrl_new_std(&imx290->ctrls, &imx290_ctrl_ops,
+ 			  V4L2_CID_ANALOGUE_GAIN, 0, 100, 1, 0);
+-- 
+2.31.1
+

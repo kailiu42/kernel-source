@@ -1,0 +1,48 @@
+Git-commit: f65a5648681d3b65dc1b3f0e23c598af229b62de
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Tue, 25 Feb 2020 17:38:20 +0000
+Subject: [PATCH] pinctrl: bcm2835: Accept fewer than expected IRQs
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The downstream .dts files only request two GPIO IRQs. Truncate the
+array of parent IRQs when irq_of_parse_and_map returns 0.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index edb3a863871d..bda29f421e78 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -1288,9 +1288,13 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ 		char *name;
+ 
+ 		girq->parents[i] = irq_of_parse_and_map(np, i);
+-		if (!is_7211)
++		if (!is_7211) {
++			if (!girq->parents[i]) {
++				girq->num_parents = i;
++				break;
++			}
+ 			continue;
+-
++		}
+ 		/* Skip over the all banks interrupts */
+ 		pc->wake_irq[i] = irq_of_parse_and_map(np, i +
+ 						       BCM2835_NUM_IRQS + 1);
+-- 
+2.31.1
+

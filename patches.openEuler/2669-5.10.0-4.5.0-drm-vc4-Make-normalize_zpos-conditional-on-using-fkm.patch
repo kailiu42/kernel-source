@@ -1,0 +1,45 @@
+Git-commit: c81134360338f57368a27013d0022d208ba354a0
+From: Dom Cobley <popcornmix@gmail.com>
+Date: Tue, 15 Dec 2020 16:26:51 +0000
+Subject: [PATCH] drm/vc4: Make normalize_zpos conditional on using fkms
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Eric's view was that there was no point in having zpos
+support on vc4 as all the planes had the same functionality.
+
+Can be later squashed into (and fixes):
+drm/vc4: Add firmware-kms mode
+
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/vc4/vc4_kms.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index 65513a90d606..5d0974cdeaaa 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -923,7 +923,8 @@ int vc4_kms_load(struct drm_device *dev)
+ 	dev->mode_config.preferred_depth = 24;
+ 	dev->mode_config.async_page_flip = true;
+ 	dev->mode_config.allow_fb_modifiers = true;
+-	dev->mode_config.normalize_zpos = true;
++	if (vc4->firmware_kms)
++		dev->mode_config.normalize_zpos = true;
+ 
+ 	ret = vc4_ctm_obj_init(vc4);
+ 	if (ret)
+-- 
+2.31.1
+

@@ -1,0 +1,40 @@
+Git-commit: ee46d0fadf053012b35c5928d0ed1be459f5fb9a
+From: popcornmix <popcornmix@gmail.com>
+Date: Tue, 5 Apr 2016 19:40:12 +0100
+Subject: [PATCH] reboot: Use power off rather than busy spinning when halt is
+ requested
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/kernel/reboot.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/arch/arm/kernel/reboot.c b/arch/arm/kernel/reboot.c
+index 0ce388f15422..63373adab475 100644
+--- a/arch/arm/kernel/reboot.c
++++ b/arch/arm/kernel/reboot.c
+@@ -102,9 +102,7 @@ void machine_shutdown(void)
+  */
+ void machine_halt(void)
+ {
+-	local_irq_disable();
+-	smp_send_stop();
+-	while (1);
++	machine_power_off();
+ }
+ 
+ /*
+-- 
+2.31.1
+

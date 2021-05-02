@@ -1,0 +1,120 @@
+Git-commit: beb42167fd0bc44376916b211a2c20376f497aa6
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date: Tue, 16 Mar 2021 10:27:46 +0800
+Subject: [PATCH] arm64: mm: Move reserve_crashkernel() into mem_init()
+Patch-mainline: v5.11-rc1
+References: openEuler-21.03
+
+mainline inclusion
+from mainline-5.11-rc1
+commit 0a30c53573b07d5561457e41fb0ab046cd857da5
+category: bugfix
+bugzilla: 50423
+CVE: NA
+
+---------------------------------------------
+
+crashkernel might reserve memory located in ZONE_DMA. We plan to delay
+ZONE_DMA's initialization after unflattening the devicetree and ACPI's
+boot table initialization, so move it later in the boot process.
+Specifically into bootmem_init() since request_standard_resources()
+depends on it.
+
+Conflict:
+	arch/arm64/mm/init.c
+
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Tested-by: Jeremy Linton <jeremy.linton@arm.com>
+Link: https://lore.kernel.org/r/20201119175400.9995-2-nsaenzjulienne@suse.de
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Jing Xiangfeng <jingxiangfeng@huawei.com>
+Reviewed-by: Liu Shixin <liushixin2@huawei.com>
+Reviewed-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/mm/init.c | 59 +++++++++++++++++++++++++-------------------
+ 1 file changed, 34 insertions(+), 25 deletions(-)
+
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index dfb89b7f8d37..c8a927891e10 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -590,33 +590,8 @@ void __init arm64_memblock_init(void)
+ 	else
+ 		arm64_dma32_phys_limit = PHYS_MASK + 1;
+ 
+-	/*
+-	 * Reserve park memory before crashkernel and quick kexec.
+-	 * Because park memory must be specified by address, but
+-	 * crashkernel and quickkexec may be specified by memory length,
+-	 * then find one sutiable memory region to reserve.
+-	 *
+-	 * So reserve park memory firstly is better, but it may cause
+-	 * crashkernel or quickkexec reserving failed.
+-	 */
+-#ifdef CONFIG_ARM64_CPU_PARK
+-	reserve_park_mem();
+-#endif
+-
+-	reserve_crashkernel();
+-
+-#ifdef CONFIG_QUICK_KEXEC
+-	reserve_quick_kexec();
+-#endif
+-
+-	reserve_pin_memory_res();
+-
+ 	reserve_elfcorehdr();
+ 
+-#ifdef CONFIG_ARM64_PMEM_RESERVE
+-	reserve_pmem();
+-#endif
+-
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+ 
+ 	dma_contiguous_reserve(arm64_dma32_phys_limit);
+@@ -654,6 +629,40 @@ void __init bootmem_init(void)
+ 	sparse_init();
+ 	zone_sizes_init(min, max);
+ 
++	/*
++	 * Reserve park memory before crashkernel and quick kexec.
++	 * Because park memory must be specified by address, but
++	 * crashkernel and quickkexec may be specified by memory length,
++	 * then find one sutiable memory region to reserve.
++	 *
++	 * So reserve park memory firstly is better, but it may cause
++	 * crashkernel or quickkexec reserving failed.
++	 */
++#ifdef CONFIG_ARM64_CPU_PARK
++	reserve_park_mem();
++#endif
++
++	/*
++	 * request_standard_resources() depends on crashkernel's memory being
++	 * reserved, so do it here.
++	 */
++	reserve_crashkernel();
++
++#ifdef CONFIG_QUICK_KEXEC
++	reserve_quick_kexec();
++#endif
++
++	/*
++	 * request_standard_resources() depends on crashkernel's memory being
++	 * reserved, so do it here.
++	 */
++	reserve_crashkernel();
++
++	reserve_pin_memory_res();
++#ifdef CONFIG_ARM64_PMEM_RESERVE
++	reserve_pmem();
++#endif
++
+ 	memblock_dump_all();
+ }
+ 
+-- 
+2.31.1
+

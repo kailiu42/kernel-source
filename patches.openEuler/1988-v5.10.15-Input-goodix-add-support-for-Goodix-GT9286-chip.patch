@@ -1,0 +1,58 @@
+Git-commit: 9909dd11faaa7fb807935ce7a3848189cd4c775f
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Date: Fri, 19 Feb 2021 16:41:22 +0800
+Subject: [PATCH] Input: goodix - add support for Goodix GT9286 chip
+Patch-mainline: v5.10.15
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.15
+commit b442912f678a495a922c54c5c5a8c3f529b84111
+bugzilla: 48167
+
+--------------------------------
+
+commit 2dce6db70c77bbe639f5cd9cc796fb8f2694a7d0 upstream.
+
+The Goodix GT9286 is a capacitive touch sensor IC based on GT1x.
+
+This chip can be found on a number of smartphones, including the
+F(x)tec Pro 1 and the Elephone U.
+
+This has been tested on F(x)Tec Pro1 (MSM8998).
+
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Link: https://lore.kernel.org/r/20210109135512.149032-2-angelogioacchino.delregno@somainline.org
+Reviewed-by: Bastien Nocera <hadess@hadess.net>
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/input/touchscreen/goodix.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/input/touchscreen/goodix.c b/drivers/input/touchscreen/goodix.c
+index 6612f9e2d7e8..45113767db96 100644
+--- a/drivers/input/touchscreen/goodix.c
++++ b/drivers/input/touchscreen/goodix.c
+@@ -157,6 +157,7 @@ static const struct goodix_chip_id goodix_chip_ids[] = {
+ 	{ .id = "5663", .data = &gt1x_chip_data },
+ 	{ .id = "5688", .data = &gt1x_chip_data },
+ 	{ .id = "917S", .data = &gt1x_chip_data },
++	{ .id = "9286", .data = &gt1x_chip_data },
+ 
+ 	{ .id = "911", .data = &gt911_chip_data },
+ 	{ .id = "9271", .data = &gt911_chip_data },
+@@ -1445,6 +1446,7 @@ static const struct of_device_id goodix_of_match[] = {
+ 	{ .compatible = "goodix,gt927" },
+ 	{ .compatible = "goodix,gt9271" },
+ 	{ .compatible = "goodix,gt928" },
++	{ .compatible = "goodix,gt9286" },
+ 	{ .compatible = "goodix,gt967" },
+ 	{ }
+ };
+-- 
+2.31.1
+

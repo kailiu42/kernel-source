@@ -1,0 +1,53 @@
+Git-commit: f505e36c1c28c6267b3a60a9cf08c5360fe345e7
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Thu, 7 Jan 2021 07:41:43 +0000
+Subject: [PATCH] ASoC: qcom: fix QDSP6 dependencies, attempt #3
+Patch-mainline: v5.10.4
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.4
+commit 5ae5c3f9f4d9abce72932680f368bf832f53778b
+bugzilla: 46903
+
+--------------------------------
+
+[ Upstream commit b1b8eb1283c90a953089d988930d7b6156418958 ]
+
+The previous fix left another warning in randconfig builds:
+
+WARNING: unmet direct dependencies detected for SND_SOC_QDSP6
+  Depends on [n]: SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && SND_SOC_QCOM [=y] && QCOM_APR [=y] && COMMON_CLK [=n]
+  Selected by [y]:
+  - SND_SOC_MSM8996 [=y] && SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && SND_SOC_QCOM [=y] && QCOM_APR [=y]
+
+Add one more dependency for this one.
+
+Fixes: 2bc8831b135c ("ASoC: qcom: fix SDM845 & QDSP6 dependencies more")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20201203231443.1483763-1-arnd@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ sound/soc/qcom/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/soc/qcom/Kconfig b/sound/soc/qcom/Kconfig
+index 2696ffcba880..a824f793811b 100644
+--- a/sound/soc/qcom/Kconfig
++++ b/sound/soc/qcom/Kconfig
+@@ -106,6 +106,7 @@ config SND_SOC_QDSP6
+ config SND_SOC_MSM8996
+ 	tristate "SoC Machine driver for MSM8996 and APQ8096 boards"
+ 	depends on QCOM_APR
++	depends on COMMON_CLK
+ 	select SND_SOC_QDSP6
+ 	select SND_SOC_QCOM_COMMON
+ 	help
+-- 
+2.31.1
+

@@ -1,0 +1,50 @@
+Git-commit: a3b787dd75ee494b93f44cf32f3e50a2af8b118e
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 28 Sep 2020 20:23:30 +0100
+Subject: [PATCH] char: Add broadcom char drivers back to build files
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+See: https://github.com/raspberrypi/linux/issues/3875
+Signed-off-by: popcornmix <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/char/Kconfig  | 2 ++
+ drivers/char/Makefile | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/drivers/char/Kconfig b/drivers/char/Kconfig
+index 02dca67cb2c5..68bc26f98a86 100644
+--- a/drivers/char/Kconfig
++++ b/drivers/char/Kconfig
+@@ -5,6 +5,8 @@
+ 
+ menu "Character devices"
+ 
++source "drivers/char/broadcom/Kconfig"
++
+ source "drivers/tty/Kconfig"
+ 
+ config TTY_PRINTK
+diff --git a/drivers/char/Makefile b/drivers/char/Makefile
+index 71d76fd62692..3ad819383e9d 100644
+--- a/drivers/char/Makefile
++++ b/drivers/char/Makefile
+@@ -47,4 +47,5 @@ obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
+ obj-$(CONFIG_XILLYBUS)		+= xillybus/
+ obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o
+ obj-$(CONFIG_ADI)		+= adi.o
++obj-$(CONFIG_BRCM_CHAR_DRIVERS) += broadcom/
+ obj-$(CONFIG_PIN_MEMORY_DEV)	+= pin_memory.o
+-- 
+2.31.1
+

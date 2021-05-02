@@ -1,0 +1,55 @@
+Git-commit: 77dc5a6d6ef23a99b0f232d79483d27d594ef024
+From: =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Date: Thu, 7 Jan 2021 07:40:16 +0000
+Subject: [PATCH] arm64: dts: armada-3720-turris-mox: update ethernet-phy
+ handle name
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Patch-mainline: v5.10.4
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.4
+commit 8d4ba95a41fb3c2738cc5e2b2da940515f2f61cc
+bugzilla: 46903
+
+--------------------------------
+
+[ Upstream commit 3aa669a994c9110a2dc7e08a5c0958a9ea5eb17c ]
+
+Use property name `phy-handle` instead of the deprecated `phy` to
+connect eth2 to the PHY.
+
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Fixes: 7109d817db2e ("arm64: dts: marvell: add DTS for Turris Mox")
+Cc: Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+index f3a678e0fd99..bf76ebe46379 100644
+--- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
++++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
+@@ -146,7 +146,7 @@ &eth0 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&rgmii_pins>;
+ 	phy-mode = "rgmii-id";
+-	phy = <&phy1>;
++	phy-handle = <&phy1>;
+ 	status = "okay";
+ };
+ 
+-- 
+2.31.1
+

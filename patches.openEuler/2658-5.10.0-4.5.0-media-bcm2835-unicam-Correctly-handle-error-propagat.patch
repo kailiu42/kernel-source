@@ -1,0 +1,44 @@
+Git-commit: 79373070cc79d4e2f39b0020a1e55a2f4d77cb4d
+From: Naushir Patuck <naush@raspberrypi.com>
+Date: Wed, 2 Dec 2020 15:22:23 +0000
+Subject: [PATCH] media: bcm2835-unicam: Correctly handle error propagation for
+ stream on
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+On a failure in start_streaming(), the error code would not propagate to
+the calling function on all conditions. This would cause the userland
+caller to not know of the failure.
+
+Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/platform/bcm2835/bcm2835-unicam.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/bcm2835/bcm2835-unicam.c b/drivers/media/platform/bcm2835/bcm2835-unicam.c
+index 6501fb205e20..c13a0a20fd12 100644
+--- a/drivers/media/platform/bcm2835/bcm2835-unicam.c
++++ b/drivers/media/platform/bcm2835/bcm2835-unicam.c
+@@ -1730,8 +1730,7 @@ static int unicam_start_streaming(struct vb2_queue *vq, unsigned int count)
+ 	unicam_disable(dev);
+ 	clk_disable_unprepare(dev->clock);
+ err_vpu_clock:
+-	ret = clk_set_min_rate(dev->vpu_clock, 0);
+-	if (ret)
++	if (clk_set_min_rate(dev->vpu_clock, 0))
+ 		unicam_err(dev, "failed to reset the VPU clock\n");
+ 	clk_disable_unprepare(dev->vpu_clock);
+ err_pm_put:
+-- 
+2.31.1
+

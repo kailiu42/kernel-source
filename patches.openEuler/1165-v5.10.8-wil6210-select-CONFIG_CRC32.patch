@@ -1,0 +1,49 @@
+Git-commit: 4ee06b6bc14e200a366144c892a2ff79dd15ab93
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Sat, 23 Jan 2021 12:48:34 +0000
+Subject: [PATCH] wil6210: select CONFIG_CRC32
+Patch-mainline: v5.10.8
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.8
+commit 0d813da1bde0be501b2b6f21fb545c32d7b58c9e
+bugzilla: 47450
+
+--------------------------------
+
+commit e186620d7bf11b274b985b839c38266d7918cc05 upstream.
+
+Without crc32, the driver fails to link:
+
+arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o: in function `wil_fw_verify':
+fw.c:(.text+0x74c): undefined reference to `crc32_le'
+arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o:fw.c:(.text+0x758): more undefined references to `crc32_le' follow
+
+Fixes: 151a9706503f ("wil6210: firmware download")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/net/wireless/ath/wil6210/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/ath/wil6210/Kconfig b/drivers/net/wireless/ath/wil6210/Kconfig
+index 6a95b199bf62..f074e9c31aa2 100644
+--- a/drivers/net/wireless/ath/wil6210/Kconfig
++++ b/drivers/net/wireless/ath/wil6210/Kconfig
+@@ -2,6 +2,7 @@
+ config WIL6210
+ 	tristate "Wilocity 60g WiFi card wil6210 support"
+ 	select WANT_DEV_COREDUMP
++	select CRC32
+ 	depends on CFG80211
+ 	depends on PCI
+ 	default n
+-- 
+2.31.1
+

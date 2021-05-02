@@ -1,0 +1,46 @@
+Git-commit: 6bac8d5636678ddae972b3c8dabb4b51e5209c8d
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Tue, 19 Jan 2021 11:24:56 +0000
+Subject: [PATCH] atm: idt77252: call pci_disable_device() on error path
+Patch-mainline: v5.10.7
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.7
+commit 8ece401fa3d617fc17d192aa48069727b97f3d5c
+bugzilla: 47429
+
+--------------------------------
+
+[ Upstream commit 8df66af5c1e5f80562fe728db5ec069b21810144 ]
+
+This error path needs to disable the pci device before returning.
+
+Fixes: ede58ef28e10 ("atm: remove deprecated use of pci api")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/X93dmC4NX0vbTpGp@mwanda
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/atm/idt77252.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/atm/idt77252.c b/drivers/atm/idt77252.c
+index 65a3886f68c9..5f0472c18bcb 100644
+--- a/drivers/atm/idt77252.c
++++ b/drivers/atm/idt77252.c
+@@ -3607,7 +3607,7 @@ static int idt77252_init_one(struct pci_dev *pcidev,
+ 
+ 	if ((err = dma_set_mask_and_coherent(&pcidev->dev, DMA_BIT_MASK(32)))) {
+ 		printk("idt77252: can't enable DMA for PCI device at %s\n", pci_name(pcidev));
+-		return err;
++		goto err_out_disable_pdev;
+ 	}
+ 
+ 	card = kzalloc(sizeof(struct idt77252_dev), GFP_KERNEL);
+-- 
+2.31.1
+

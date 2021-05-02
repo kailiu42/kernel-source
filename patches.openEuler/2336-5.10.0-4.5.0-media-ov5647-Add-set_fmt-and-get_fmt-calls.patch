@@ -1,0 +1,64 @@
+Git-commit: e75d5e99fdf7d77b62670d58c03b282740cf6284
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Wed, 31 Oct 2018 14:55:37 +0000
+Subject: [PATCH] media: ov5647: Add set_fmt and get_fmt calls.
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+There's no way to query the subdevice for the supported
+resolutions.
+Add set_fmt and get_fmt implementations.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/ov5647.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/media/i2c/ov5647.c b/drivers/media/i2c/ov5647.c
+index e7d2e5b4ad4b..3e587eb0a30e 100644
+--- a/drivers/media/i2c/ov5647.c
++++ b/drivers/media/i2c/ov5647.c
+@@ -463,8 +463,30 @@ static int ov5647_enum_mbus_code(struct v4l2_subdev *sd,
+ 	return 0;
+ }
+ 
++static int ov5647_set_get_fmt(struct v4l2_subdev *sd,
++			      struct v4l2_subdev_pad_config *cfg,
++			      struct v4l2_subdev_format *format)
++{
++	struct v4l2_mbus_framefmt *fmt = &format->format;
++
++	if (format->pad != 0)
++		return -EINVAL;
++
++	/* Only one format is supported, so return that */
++	memset(fmt, 0, sizeof(*fmt));
++	fmt->code = MEDIA_BUS_FMT_SBGGR8_1X8;
++	fmt->colorspace = V4L2_COLORSPACE_SRGB;
++	fmt->field = V4L2_FIELD_NONE;
++	fmt->width = 640;
++	fmt->height = 480;
++
++	return 0;
++}
++
+ static const struct v4l2_subdev_pad_ops ov5647_subdev_pad_ops = {
+ 	.enum_mbus_code = ov5647_enum_mbus_code,
++	.set_fmt =	  ov5647_set_get_fmt,
++	.get_fmt =	  ov5647_set_get_fmt,
+ };
+ 
+ static const struct v4l2_subdev_ops ov5647_subdev_ops = {
+-- 
+2.31.1
+

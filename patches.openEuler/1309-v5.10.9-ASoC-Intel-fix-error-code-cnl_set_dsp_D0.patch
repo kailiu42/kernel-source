@@ -1,0 +1,48 @@
+Git-commit: 8d6041f70747b2a6993cb0232c38291ebdf72dd3
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Mon, 25 Jan 2021 07:16:09 +0000
+Subject: [PATCH] ASoC: Intel: fix error code cnl_set_dsp_D0()
+Patch-mainline: v5.10.9
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.9
+commit a835cff329a52583cf48c67a46229ca524e418b3
+bugzilla: 47457
+
+--------------------------------
+
+commit f373a811fd9a69fc8bafb9bcb41d2cfa36c62665 upstream.
+
+Return -ETIMEDOUT if the dsp boot times out instead of returning
+success.
+
+Fixes: cb6a55284629 ("ASoC: Intel: cnl: Add sst library functions for cnl platform")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/X9NEvCzuN+IObnTN@mwanda
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ sound/soc/intel/skylake/cnl-sst.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/sound/soc/intel/skylake/cnl-sst.c b/sound/soc/intel/skylake/cnl-sst.c
+index fcd8dff27ae8..1275c149acc0 100644
+--- a/sound/soc/intel/skylake/cnl-sst.c
++++ b/sound/soc/intel/skylake/cnl-sst.c
+@@ -224,6 +224,7 @@ static int cnl_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
+ 				"dsp boot timeout, status=%#x error=%#x\n",
+ 				sst_dsp_shim_read(ctx, CNL_ADSP_FW_STATUS),
+ 				sst_dsp_shim_read(ctx, CNL_ADSP_ERROR_CODE));
++			ret = -ETIMEDOUT;
+ 			goto err;
+ 		}
+ 	} else {
+-- 
+2.31.1
+

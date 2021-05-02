@@ -1,0 +1,49 @@
+Git-commit: eb6fb7fe52ecfbf2d03998da0e47eda201103dfa
+From: Yang Yingliang <yangyingliang@huawei.com>
+Date: Fri, 26 Feb 2021 20:21:22 +0800
+Subject: [PATCH] arm64/mpam: fix compile warning
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: bugfix
+bugzilla: 48265
+CVE: NA
+
+--------------------------------
+
+Fix the compile warning
+fs/resctrlfs.c: In function ‘resctrl_mount’:
+fs/resctrlfs.c:358:1: warning: label ‘out_mongrp’ defined but not used [-Wunused-label]
+ out_mongrp:
+
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Reviewed-by: Cheng Jian <cj.chengjian@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ fs/resctrlfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fs/resctrlfs.c b/fs/resctrlfs.c
+index 31ecedf433ec..4377406be131 100644
+--- a/fs/resctrlfs.c
++++ b/fs/resctrlfs.c
+@@ -352,8 +352,8 @@ static int resctrl_get_tree(struct fs_context *fc)
+ #ifndef CONFIG_ARM64 /* [FIXME] arch specific code */
+ 	if (resctrl_mon_capable)
+ 		kernfs_remove(kn_mondata);
+-#endif
+ out_mongrp:
++#endif
+ 	if (resctrl_mon_capable)
+ 		kernfs_remove(kn_mongrp);
+ out_info:
+-- 
+2.31.1
+

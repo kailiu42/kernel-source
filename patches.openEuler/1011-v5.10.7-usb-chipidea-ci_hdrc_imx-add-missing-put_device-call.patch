@@ -1,0 +1,56 @@
+Git-commit: a3ac1ba0fd5eb4e30ed5261caf2c21a39ee55f64
+From: Yu Kuai <yukuai3@huawei.com>
+Date: Tue, 19 Jan 2021 11:26:11 +0000
+Subject: [PATCH] usb: chipidea: ci_hdrc_imx: add missing put_device() call in
+ usbmisc_get_init_data()
+Patch-mainline: v5.10.7
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.7
+commit 4485bdb99624602d3486fa7bbb6880b76e33dd0f
+bugzilla: 47429
+
+--------------------------------
+
+commit 83a43ff80a566de8718dfc6565545a0080ec1fb5 upstream.
+
+if of_find_device_by_node() succeed, usbmisc_get_init_data() doesn't have
+a corresponding put_device(). Thus add put_device() to fix the exception
+handling for this function implementation.
+
+Fixes: ef12da914ed6 ("usb: chipidea: imx: properly check for usbmisc")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20201117011430.642589-1-yukuai3@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/usb/chipidea/ci_hdrc_imx.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/chipidea/ci_hdrc_imx.c b/drivers/usb/chipidea/ci_hdrc_imx.c
+index 5e07a0a86d11..ee565bdb44d6 100644
+--- a/drivers/usb/chipidea/ci_hdrc_imx.c
++++ b/drivers/usb/chipidea/ci_hdrc_imx.c
+@@ -139,9 +139,13 @@ static struct imx_usbmisc_data *usbmisc_get_init_data(struct device *dev)
+ 	misc_pdev = of_find_device_by_node(args.np);
+ 	of_node_put(args.np);
+ 
+-	if (!misc_pdev || !platform_get_drvdata(misc_pdev))
++	if (!misc_pdev)
+ 		return ERR_PTR(-EPROBE_DEFER);
+ 
++	if (!platform_get_drvdata(misc_pdev)) {
++		put_device(&misc_pdev->dev);
++		return ERR_PTR(-EPROBE_DEFER);
++	}
+ 	data->dev = &misc_pdev->dev;
+ 
+ 	/*
+-- 
+2.31.1
+

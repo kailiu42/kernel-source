@@ -1,0 +1,48 @@
+Git-commit: 4e8c9dd08a1d0e2332611e96efc51f5569463384
+From: Laurentiu Palcu <laurentiu.palcu@nxp.com>
+Date: Wed, 27 Nov 2019 14:42:35 +0000
+Subject: [PATCH] drm: fix HDR static metadata type field numbering
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+According to CTA-861 specification, HDR static metadata data block allows a
+sink to indicate which HDR metadata types it supports by setting the SM_0 to
+SM_7 bits. Currently, only Static Metadata Type 1 is supported and this is
+indicated by setting the SM_0 bit to 1.
+
+However, the connector->hdr_sink_metadata.hdmi_type1.metadata_type is always
+0, because hdr_metadata_type() in drm_edid.c checks the wrong bit.
+
+This patch corrects the HDMI_STATIC_METADATA_TYPE1 bit position.
+
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@nxp.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ include/linux/hdmi.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/hdmi.h b/include/linux/hdmi.h
+index 9850d59d6f1c..c8ec982ff498 100644
+--- a/include/linux/hdmi.h
++++ b/include/linux/hdmi.h
+@@ -156,7 +156,7 @@ enum hdmi_content_type {
+ };
+ 
+ enum hdmi_metadata_type {
+-	HDMI_STATIC_METADATA_TYPE1 = 1,
++	HDMI_STATIC_METADATA_TYPE1 = 0,
+ };
+ 
+ enum hdmi_eotf {
+-- 
+2.31.1
+

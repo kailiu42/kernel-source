@@ -1,0 +1,43 @@
+Git-commit: 162dca78bef9b85dbac3d98308e81a47073509b9
+From: Xie XiuQi <xiexiuqi@huawei.com>
+Date: Fri, 26 Feb 2021 20:21:05 +0800
+Subject: [PATCH] arm64/mpam: mon: add WARN_ON for debug free_pmg
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+feature: ARM MPAM support
+bugzilla: 48265
+CVE: NA
+
+--------------------------------
+
+Signed-off-by: Xie XiuQi <xiexiuqi@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Reviewed-by: Cheng Jian <cj.chengjian@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/mpam_mon.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/kernel/mpam_mon.c b/arch/arm64/kernel/mpam_mon.c
+index ae946b2ee681..0a3a202afc9f 100644
+--- a/arch/arm64/kernel/mpam_mon.c
++++ b/arch/arm64/kernel/mpam_mon.c
+@@ -64,6 +64,8 @@ int alloc_pmg(void)
+ 
+ void free_pmg(u32 pmg)
+ {
++	WARN_ON(!pmg);
++
+ 	pmg_free_map |= 1 << pmg;
+ }
+ 
+-- 
+2.31.1
+

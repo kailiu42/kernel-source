@@ -1,0 +1,43 @@
+Git-commit: d9b3cb5309050b48488fae39ba89866713ae0484
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Mon, 26 Oct 2020 10:21:23 +0000
+Subject: [PATCH] overlays: Enable headphone audio in audremap
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/overlays/audremap-overlay.dts | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/arch/arm/boot/dts/overlays/audremap-overlay.dts b/arch/arm/boot/dts/overlays/audremap-overlay.dts
+index d624bb3a3fea..7324890ead86 100644
+--- a/arch/arm/boot/dts/overlays/audremap-overlay.dts
++++ b/arch/arm/boot/dts/overlays/audremap-overlay.dts
+@@ -26,6 +26,13 @@ __dormant__ {
+ 		};
+ 	};
+ 
++	fragment@3 {
++		target = <&audio>;
++		__overlay__  {
++			brcm,disable-headphones = <0>;
++		};
++	};
++
+ 	__overrides__ {
+ 		swap_lr = <&frag0>, "swap_lr?";
+ 		enable_jack = <&frag0>, "enable_jack?";
+-- 
+2.31.1
+

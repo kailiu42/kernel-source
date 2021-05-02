@@ -1,0 +1,49 @@
+Git-commit: fd02776bea1433990151a1d3012f0b493f178482
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Date: Mon, 1 Feb 2021 08:40:03 +0000
+Subject: [PATCH] media: v4l2-subdev.h: BIT() is not available in userspace
+Patch-mainline: v5.10.12
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.12
+commit 77727dfda786ce1d333ebc9c8777d821fe86466a
+bugzilla: 47876
+
+--------------------------------
+
+commit a53e3c189cc6460b60e152af3fc24edf8e0ea9d2 upstream.
+
+The BIT macro is not available in userspace, so replace BIT(0) by
+0x00000001.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 6446ec6cbf46 ("media: v4l2-subdev: add VIDIOC_SUBDEV_QUERYCAP ioctl")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ include/uapi/linux/v4l2-subdev.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/v4l2-subdev.h b/include/uapi/linux/v4l2-subdev.h
+index 00850b98078a..a38454d9e0f5 100644
+--- a/include/uapi/linux/v4l2-subdev.h
++++ b/include/uapi/linux/v4l2-subdev.h
+@@ -176,7 +176,7 @@ struct v4l2_subdev_capability {
+ };
+ 
+ /* The v4l2 sub-device video device node is registered in read-only mode. */
+-#define V4L2_SUBDEV_CAP_RO_SUBDEV		BIT(0)
++#define V4L2_SUBDEV_CAP_RO_SUBDEV		0x00000001
+ 
+ /* Backwards compatibility define --- to be removed */
+ #define v4l2_subdev_edid v4l2_edid
+-- 
+2.31.1
+

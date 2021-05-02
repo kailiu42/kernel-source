@@ -1,0 +1,65 @@
+Git-commit: 3693aa3de291754fbdc689caf3af392cfcf5749d
+From: Alistair Francis <alistair.francis@wdc.com>
+Date: Wed, 23 Dec 2020 10:40:44 +0800
+Subject: [PATCH] Revert "riscv: Use latest system call ABI"
+Patch-mainline: Queued in openEuler repo, version 5.10.0-1.0.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+euleros inclusion
+category: feature
+feature: initial KVM RISC-V support
+bugzilla: 46845
+CVE: NA
+
+This reverts commit d4c08b9776b392e20efc6198ebe1bc8ec1911d9b.
+
+The latest RISC-V 32bit glibc submission doesn't work with this patch,
+so let's revert it. This revert can be reverted when the glibc
+submission is updated to work on the 5.1 kernel.
+
+Reference: https://gitee.com/openeuler/kernel/issues/I26X9V
+Signed-off-by: Alistair Francis <alistair.francis@wdc.com>
+Upstream-Status: Inappropriate [enable feature]
+Reviewed-by: Yifei Jiang <jiangyifei@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/riscv/Kconfig                   | 1 +
+ arch/riscv/include/uapi/asm/unistd.h | 5 ++++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 44377fd7860e..35aed0796b33 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -12,6 +12,7 @@ config 32BIT
+ 
+ config RISCV
+ 	def_bool y
++	select ARCH_32BIT_OFF_T if !64BIT
+ 	select ARCH_CLOCKSOURCE_INIT
+ 	select ARCH_SUPPORTS_ATOMIC_RMW
+ 	select ARCH_HAS_BINFMT_FLAT
+diff --git a/arch/riscv/include/uapi/asm/unistd.h b/arch/riscv/include/uapi/asm/unistd.h
+index 4b989ae15d59..4c14aa5947cc 100644
+--- a/arch/riscv/include/uapi/asm/unistd.h
++++ b/arch/riscv/include/uapi/asm/unistd.h
+@@ -17,9 +17,12 @@
+ 
+ #ifdef __LP64__
+ #define __ARCH_WANT_NEW_STAT
+-#define __ARCH_WANT_SET_GET_RLIMIT
+ #define __ARCH_WANT_SYS_CLONE3
+ #endif /* __LP64__ */
++#define __ARCH_WANT_SET_GET_RLIMIT
++#ifndef __LP64__
++#define __ARCH_WANT_TIME32_SYSCALLS
++#endif
+ 
+ #include <asm-generic/unistd.h>
+ 
+-- 
+2.31.1
+

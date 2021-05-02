@@ -1,0 +1,43 @@
+Git-commit: b9066d7944cd1891834b8fde35e49fd63a0a2e58
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Wed, 17 Feb 2021 09:29:26 +0000
+Subject: [PATCH] overlays: fsm-demo: Ensure all LEDs are turned off
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+If the shutdown process is delayed enough to trigger the shutdown
+timeout then one or more states in the shutdown sequence might be
+skipped. Ensure that all LEDs are turned off regardless by explicitly
+doing so in the shutdown state, as an example of good practices.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/overlays/fsm-demo-overlay.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/overlays/fsm-demo-overlay.dts b/arch/arm/boot/dts/overlays/fsm-demo-overlay.dts
+index 9b5da179914f..e9944f5cd258 100644
+--- a/arch/arm/boot/dts/overlays/fsm-demo-overlay.dts
++++ b/arch/arm/boot/dts/overlays/fsm-demo-overlay.dts
+@@ -92,7 +92,7 @@ shutdown3 {
+ 
+ 				shutdown4 {
+ 					shutdown_state;
+-					set = <RED 0>;
++					set = <RED 0>, <AMBER 0>, <GREEN 0>;
+ 				};
+ 			};
+ 	       };
+-- 
+2.31.1
+

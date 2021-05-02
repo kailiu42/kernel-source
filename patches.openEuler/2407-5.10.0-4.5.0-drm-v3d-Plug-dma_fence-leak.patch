@@ -1,0 +1,45 @@
+Git-commit: 8eba8a615015abe32d78407e6e9254f9ad8e478d
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Tue, 12 Nov 2019 16:41:21 +0000
+Subject: [PATCH] drm/v3d: Plug dma_fence leak
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The irq_fence and done_fence are given a reference that is never
+released. The necessary dma_fence_put()s seem to have been
+deleted in error in an earlier commit.
+
+Fixes: 0b73676836b2 ("drm/v3d: Clock V3D down when not in use.")
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/v3d/v3d_gem.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/v3d/v3d_gem.c b/drivers/gpu/drm/v3d/v3d_gem.c
+index 49c7920608e2..bfbe33a9492d 100644
+--- a/drivers/gpu/drm/v3d/v3d_gem.c
++++ b/drivers/gpu/drm/v3d/v3d_gem.c
+@@ -410,6 +410,9 @@ v3d_job_free(struct kref *ref)
+ 	}
+ 	xa_destroy(&job->deps);
+ 
++	dma_fence_put(job->irq_fence);
++	dma_fence_put(job->done_fence);
++
+ 	v3d_clock_up_put(v3d);
+ 
+ 	kfree(job);
+-- 
+2.31.1
+

@@ -1,0 +1,51 @@
+Git-commit: efa986963c02cee60d725db1b317ddbff41ae59c
+From: Naushir Patuck <naush@raspberrypi.com>
+Date: Fri, 19 Feb 2021 11:06:40 +0000
+Subject: [PATCH] media: i2c: imx477: Remove unused function parameter
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The struct imx477 *ctrl parameter is not used in the function
+imx477_adjust_exposure_range(), so remove it.
+
+Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/imx477.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/media/i2c/imx477.c b/drivers/media/i2c/imx477.c
+index f43c86407d97..34bfd22cadc6 100644
+--- a/drivers/media/i2c/imx477.c
++++ b/drivers/media/i2c/imx477.c
+@@ -1276,8 +1276,7 @@ static int imx477_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
+ 	return 0;
+ }
+ 
+-static void imx477_adjust_exposure_range(struct imx477 *imx477,
+-					 struct v4l2_ctrl *ctrl)
++static void imx477_adjust_exposure_range(struct imx477 *imx477)
+ {
+ 	int exposure_max, exposure_def;
+ 
+@@ -1322,7 +1321,7 @@ static int imx477_set_ctrl(struct v4l2_ctrl *ctrl)
+ 	 * and adjust if necessary.
+ 	 */
+ 	if (ctrl->id == V4L2_CID_VBLANK)
+-		imx477_adjust_exposure_range(imx477, ctrl);
++		imx477_adjust_exposure_range(imx477);
+ 
+ 	/*
+ 	 * Applying V4L2 control value only happens
+-- 
+2.31.1
+

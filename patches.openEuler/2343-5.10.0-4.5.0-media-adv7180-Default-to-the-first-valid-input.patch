@@ -1,0 +1,62 @@
+Git-commit: e5f2fd1a08b41a95603207d15fa6b24c027c7cc6
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Wed, 31 Oct 2018 14:57:46 +0000
+Subject: [PATCH] media: adv7180: Default to the first valid input
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The hardware default is differential CVBS on AIN1 & 2, which
+isn't very useful.
+
+Select the first input that is defined as valid for the
+chip variant (typically CVBS_AIN1).
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/adv7180.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/drivers/media/i2c/adv7180.c b/drivers/media/i2c/adv7180.c
+index 4498d14d3429..e98dd2bee1e5 100644
+--- a/drivers/media/i2c/adv7180.c
++++ b/drivers/media/i2c/adv7180.c
+@@ -1259,6 +1259,7 @@ static const struct adv7180_chip_info adv7282_m_info = {
+ static int init_device(struct adv7180_state *state)
+ {
+ 	int ret;
++	int i;
+ 
+ 	mutex_lock(&state->mutex);
+ 
+@@ -1305,6 +1306,18 @@ static int init_device(struct adv7180_state *state)
+ 			goto out_unlock;
+ 	}
+ 
++	/* Select first valid input */
++	for (i = 0; i < 32; i++) {
++		if (BIT(i) & state->chip_info->valid_input_mask) {
++			ret = state->chip_info->select_input(state, i);
++
++			if (ret == 0) {
++				state->input = i;
++				break;
++			}
++		}
++	}
++
+ out_unlock:
+ 	mutex_unlock(&state->mutex);
+ 
+-- 
+2.31.1
+

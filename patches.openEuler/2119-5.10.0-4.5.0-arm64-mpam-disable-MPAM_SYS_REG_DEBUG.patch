@@ -1,0 +1,43 @@
+Git-commit: 128b3aadf420921dd2bc14e9e1d66d17c6d32ebf
+From: Xie XiuQi <xiexiuqi@huawei.com>
+Date: Fri, 26 Feb 2021 20:21:01 +0800
+Subject: [PATCH] arm64/mpam: disable MPAM_SYS_REG_DEBUG
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+feature: ARM MPAM support
+bugzilla: 48265
+CVE: NA
+
+--------------------------------
+
+Signed-off-by: Xie XiuQi <xiexiuqi@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Reviewed-by: Cheng Jian <cj.chengjian@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/include/asm/mpam.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/arm64/include/asm/mpam.h b/arch/arm64/include/asm/mpam.h
+index 65a115b69cfe..b4c7d68b24a4 100644
+--- a/arch/arm64/include/asm/mpam.h
++++ b/arch/arm64/include/asm/mpam.h
+@@ -243,8 +243,6 @@ static inline int __resctrl_group_show_options(struct seq_file *seq)
+ 
+ void post_resctrl_mount(void);
+ 
+-#define MPAM_SYS_REG_DEBUG
+-
+ #ifdef MPAM_SYS_REG_DEBUG
+ static inline u64 mpam_read_sysreg_s(u64 reg, char *name)
+ {
+-- 
+2.31.1
+

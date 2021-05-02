@@ -1,0 +1,49 @@
+Git-commit: dd0c2d0101cdfc4c61789b0abe9ee353dc634814
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Tue, 29 Jan 2019 16:13:25 +0000
+Subject: [PATCH] staging: vchiq_arm: Set up dma ranges on child devices
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The VCHIQ driver now loads the audio, camera, codec, and vc-sm
+drivers as platform drivers. However they were not being given
+the correct DMA configuration.
+
+Call of_dma_configure with the parent (VCHIQ) parameters to be
+inherited by the child.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ .../staging/vc04_services/interface/vchiq_arm/vchiq_arm.c   | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 3a2a7c1539af..a9502b0a53a5 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -2708,6 +2708,12 @@ vchiq_register_child(struct platform_device *pdev, const char *name)
+ 		child = NULL;
+ 	}
+ 
++	/*
++	 * We want the dma-ranges etc to be copied from the parent VCHIQ device
++	 * to be passed on to the children too.
++	 */
++	of_dma_configure(&new_dev->dev, pdev->dev.of_node, true);
++
+ 	return child;
+ }
+ 
+-- 
+2.31.1
+

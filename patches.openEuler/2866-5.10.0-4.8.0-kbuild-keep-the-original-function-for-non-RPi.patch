@@ -1,0 +1,81 @@
+Git-commit: a4a4d07f0cfa4cd554f8620ce1c33af85f8bcc63
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Thu, 4 Mar 2021 22:58:25 +0800
+Subject: [PATCH] kbuild: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following kbuild related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+d2864887f73 Kbuild: Allow .dtbo overlays to be built, adjust.
+0131a56ecdc kbuild: Disable gcc plugins
+4894352ec98 kbuild: Silence unavoidable dtc overlay warnings
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ Makefile              | 2 ++
+ scripts/Makefile.lib  | 2 ++
+ scripts/gcc-plugin.sh | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index 44cb8cdb48c6..115ee9024a37 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1333,8 +1333,10 @@ ifneq ($(dtstree),)
+ %.dtb: include/config/kernel.release scripts_dtc
+ 	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
+ 
++ifdef CONFIG_OPENEULER_RASPBERRYPI
+ %.dtbo: include/config/kernel.release scripts_dtc
+ 	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
++endif
+ 
+ PHONY += dtbs dtbs_install dtbs_check
+ dtbs: include/config/kernel.release scripts_dtc
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 43758c8d4b68..c23e3ae7ef40 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -348,12 +348,14 @@ cmd_dtco = mkdir -p $(dir ${dtc-tmp}) ; \
+ 	$(DTC) -@ -H epapr -O dtb -o $@ -b 0 \
+ 		-i $(dir $<) $(DTC_FLAGS) \
+ 		-Wno-interrupts_property \
++ifeq ($(CONFIG_OPENEULER_RASPBERRYPI),y) \
+ 		-Wno-label_is_string \
+ 		-Wno-reg_format \
+ 		-Wno-pci_device_bus_num \
+ 		-Wno-i2c_bus_reg \
+ 		-Wno-spi_bus_reg \
+ 		-Wno-avoid_default_addr_size \
++endif \
+ 		-d $(depfile).dtc.tmp $(dtc-tmp) ; \
+ 	cat $(depfile).pre.tmp $(depfile).dtc.tmp > $(depfile)
+ 
+diff --git a/scripts/gcc-plugin.sh b/scripts/gcc-plugin.sh
+index c3d0c8fedbdd..c6418f690dc9 100755
+--- a/scripts/gcc-plugin.sh
++++ b/scripts/gcc-plugin.sh
+@@ -1,6 +1,8 @@
+ #!/bin/sh
+ # SPDX-License-Identifier: GPL-2.0
++if [ -n "${CONFIG_OPENEULER_RASPBERRYPI}" ]; then
+ exit 1 # Disable plugins
++fi
+ 
+ set -e
+ 
+-- 
+2.31.1
+

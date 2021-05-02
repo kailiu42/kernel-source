@@ -1,0 +1,50 @@
+Git-commit: bbcfc32db54f729a1337455a62eb953be95dc999
+From: Mike Snitzer <snitzer@redhat.com>
+Date: Mon, 25 Jan 2021 07:16:41 +0000
+Subject: [PATCH] dm: eliminate potential source of excessive kernel log noise
+Patch-mainline: v5.10.9
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.9
+commit 0eb56457d239f5ee555ad9dc0c086a0abd933f1b
+bugzilla: 47457
+
+--------------------------------
+
+commit 0378c625afe80eb3f212adae42cc33c9f6f31abf upstream.
+
+There wasn't ever a real need to log an error in the kernel log for
+ioctls issued with insufficient permissions. Simply return an error
+and if an admin/user is sufficiently motivated they can enable DM's
+dynamic debugging to see an explanation for why the ioctls were
+disallowed.
+
+Reported-by: Nir Soffer <nsoffer@redhat.com>
+Fixes: e980f62353c6 ("dm: don't allow ioctls to targets that don't map to whole devices")
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/md/dm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 4e0cbfe3f14d..1e99a4c1eca4 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -562,7 +562,7 @@ static int dm_blk_ioctl(struct block_device *bdev, fmode_t mode,
+ 		 * subset of the parent bdev; require extra privileges.
+ 		 */
+ 		if (!capable(CAP_SYS_RAWIO)) {
+-			DMWARN_LIMIT(
++			DMDEBUG_LIMIT(
+ 	"%s: sending ioctl %x to DM device without required privilege.",
+ 				current->comm, cmd);
+ 			r = -ENOIOCTLCMD;
+-- 
+2.31.1
+

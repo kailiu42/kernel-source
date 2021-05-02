@@ -1,0 +1,38 @@
+Git-commit: 5652f862c81e1e4ed2078e6d4323d8239e4bafc1
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 21 Sep 2020 14:02:44 +0100
+Subject: [PATCH] rpivid_h265: Fix width/height typo
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: popcornmix <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/media/rpivid/rpivid_h265.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/media/rpivid/rpivid_h265.c b/drivers/staging/media/rpivid/rpivid_h265.c
+index 47d4de42c584..b677910e237c 100644
+--- a/drivers/staging/media/rpivid/rpivid_h265.c
++++ b/drivers/staging/media/rpivid/rpivid_h265.c
+@@ -2178,7 +2178,7 @@ static int rpivid_h265_start(struct rpivid_ctx *ctx)
+ 	if (w > 4096)
+ 		w = 4096;
+ 	if (h == 0)
+-		w = 1088;
++		h = 1088;
+ 	if (h > 4096)
+ 		h = 4096;
+ 	wxh = w * h;
+-- 
+2.31.1
+

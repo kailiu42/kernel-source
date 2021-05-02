@@ -1,0 +1,46 @@
+Git-commit: d3898bf3cd84c2386596f218f19827b2ac3a8e26
+From: Tim Gover <tim.gover@raspberrypi.org>
+Date: Thu, 22 Oct 2020 15:30:55 +0100
+Subject: [PATCH] watchdog: bcm2835: Ignore params after the partition number
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Use sscanf to extract the partition number and ignore extra parameters
+which are only relevant to other reboot notifiers.
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/watchdog/bcm2835_wdt.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/watchdog/bcm2835_wdt.c b/drivers/watchdog/bcm2835_wdt.c
+index 62937e6f83ca..de25e3682f03 100644
+--- a/drivers/watchdog/bcm2835_wdt.c
++++ b/drivers/watchdog/bcm2835_wdt.c
+@@ -126,10 +126,12 @@ static int bcm2835_restart(struct watchdog_device *wdog,
+ {
+ 	struct bcm2835_wdt *wdt = watchdog_get_drvdata(wdog);
+ 
+-	unsigned long long val;
++	unsigned long val;
+ 	u8 partition = 0;
+ 
+-	if (data && !kstrtoull(data, 0, &val) && val <= 63)
++	// Allow extra arguments separated by spaces after
++	// the partition number.
++	if (data && sscanf(data, "%lu", &val) && val < 63)
+ 		partition = val;
+ 
+ 	__bcm2835_restart(wdt, partition);
+-- 
+2.31.1
+

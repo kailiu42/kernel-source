@@ -1,0 +1,76 @@
+Git-commit: aa03ec3a0750d3e79e43ebafacb45c9077620c96
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Fri, 19 Mar 2021 15:04:13 +0800
+Subject: [PATCH] fbdev: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.15.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following fbdev related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+29df1382f6 Speed up console framebuffer imageblit function
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/video/fbdev/core/cfbimgblt.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/cfbimgblt.c b/drivers/video/fbdev/core/cfbimgblt.c
+index 436494fba15a..fb0e9cc0a0ba 100644
+--- a/drivers/video/fbdev/core/cfbimgblt.c
++++ b/drivers/video/fbdev/core/cfbimgblt.c
+@@ -266,7 +266,8 @@ static inline void fast_imageblit(const struct fb_image *image, struct fb_info *
+ 		s += spitch;
+ 	}
+ }	
+-	
++
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ /*
+  * Optimized fast_imageblit for bpp == 16. ppw = 2, bit_mask = 3 folded
+  * into the code, main loop unrolled.
+@@ -393,6 +394,7 @@ static inline void fast_imageblit32(const struct fb_image *image,
+ 		s += spitch;
+ 	}
+ }
++#endif
+ 
+ void cfb_imageblit(struct fb_info *p, const struct fb_image *image)
+ {
+@@ -425,7 +427,8 @@ void cfb_imageblit(struct fb_info *p, const struct fb_image *image)
+ 			fgcolor = image->fg_color;
+ 			bgcolor = image->bg_color;
+ 		}	
+-		
++
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		if (!start_index && !pitch_index) {
+ 			if (bpp == 32)
+ 				fast_imageblit32(image, p, dst1, fgcolor,
+@@ -441,6 +444,13 @@ void cfb_imageblit(struct fb_info *p, const struct fb_image *image)
+ 					       bgcolor,
+ 					       start_index, pitch_index);
+ 		} else
++#else
++		if (32 % bpp == 0 && !start_index && !pitch_index &&
++		    ((width & (32/bpp-1)) == 0) &&
++		    bpp >= 8 && bpp <= 32)
++			fast_imageblit(image, p, dst1, fgcolor, bgcolor);
++		else
++#endif
+ 			slow_imageblit(image, p, dst1, fgcolor, bgcolor,
+ 					start_index, pitch_index);
+ 	} else
+-- 
+2.31.1
+

@@ -1,0 +1,65 @@
+Git-commit: 9facd6ded9c196bd22cf81259a94ea10063af7a6
+From: Baoquan He <bhe@redhat.com>
+Date: Sun, 7 Feb 2021 15:08:36 +0800
+Subject: [PATCH] kernel: kexec: remove the lock operation of
+ system_transition_mutex
+Patch-mainline: v5.10.13
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.13
+commit aa9a6dc6261109d72787d0b4c5bc27238ffabdbf
+bugzilla: 47995
+
+--------------------------------
+
+commit 56c91a18432b631ca18438841fd1831ef756cabf upstream.
+
+Function kernel_kexec() is called with lock system_transition_mutex
+held in reboot system call. While inside kernel_kexec(), it will
+acquire system_transition_mutex agin. This will lead to dead lock.
+
+The dead lock should be easily triggered, it hasn't caused any
+failure report just because the feature 'kexec jump' is almost not
+used by anyone as far as I know. An inquiry can be made about who
+is using 'kexec jump' and where it's used. Before that, let's simply
+remove the lock operation inside CONFIG_KEXEC_JUMP ifdeffery scope.
+
+Fixes: 55f2503c3b69 ("PM / reboot: Eliminate race between reboot and suspend")
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Pingfan Liu <kernelfans@gmail.com>
+Cc: 4.19+ <stable@vger.kernel.org> # 4.19+
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ kernel/kexec_core.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/kernel/kexec_core.c b/kernel/kexec_core.c
+index 2ca887514145..1e27969ff191 100644
+--- a/kernel/kexec_core.c
++++ b/kernel/kexec_core.c
+@@ -1118,7 +1118,6 @@ int kernel_kexec(void)
+ 
+ #ifdef CONFIG_KEXEC_JUMP
+ 	if (kexec_image->preserve_context) {
+-		lock_system_sleep();
+ 		pm_prepare_console();
+ 		error = freeze_processes();
+ 		if (error) {
+@@ -1181,7 +1180,6 @@ int kernel_kexec(void)
+ 		thaw_processes();
+  Restore_console:
+ 		pm_restore_console();
+-		unlock_system_sleep();
+ 	}
+ #endif
+ 
+-- 
+2.31.1
+

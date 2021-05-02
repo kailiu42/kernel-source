@@ -1,0 +1,47 @@
+Git-commit: e8fbe0279221cc251d08925041498a3cc41eac5c
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Mon, 25 Jan 2021 07:15:55 +0000
+Subject: [PATCH] cfg80211: select CONFIG_CRC32
+Patch-mainline: v5.10.9
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.9
+commit 4ac5d20182c7d55c17f78b1e3afc0dfd1bc873cd
+bugzilla: 47457
+
+--------------------------------
+
+[ Upstream commit 152a8a6c017bfdeda7f6d052fbc6e151891bd9b6 ]
+
+Without crc32 support, this fails to link:
+
+arm-linux-gnueabi-ld: net/wireless/scan.o: in function `cfg80211_scan_6ghz':
+scan.c:(.text+0x928): undefined reference to `crc32_le'
+
+Fixes: c8cb5b854b40 ("nl80211/cfg80211: support 6 GHz scanning")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ net/wireless/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/wireless/Kconfig b/net/wireless/Kconfig
+index 27026f587fa6..f620acd2a0f5 100644
+--- a/net/wireless/Kconfig
++++ b/net/wireless/Kconfig
+@@ -21,6 +21,7 @@ config CFG80211
+ 	tristate "cfg80211 - wireless configuration API"
+ 	depends on RFKILL || !RFKILL
+ 	select FW_LOADER
++	select CRC32
+ 	# may need to update this when certificates are changed and are
+ 	# using a different algorithm, though right now they shouldn't
+ 	# (this is here rather than below to allow it to be a module)
+-- 
+2.31.1
+

@@ -1,0 +1,44 @@
+Git-commit: a729589b6a9f80bff60b040c3c8a4dfb99bb9033
+From: Hristo Venev <hristo@venev.name>
+Date: Wed, 19 Aug 2020 17:02:22 +0300
+Subject: [PATCH] media: bcm2835: unicam: Select MEDIA_CONTROLLER and
+ VIDEO_V4L2_SUBDEV_API
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+That is what almost all other drivers appear to be doing.
+
+Signed-off-by: Hristo Venev <hristo@venev.name>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/platform/bcm2835/Kconfig | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/bcm2835/Kconfig b/drivers/media/platform/bcm2835/Kconfig
+index ec46e3ef053c..7d5a0e6ba762 100644
+--- a/drivers/media/platform/bcm2835/Kconfig
++++ b/drivers/media/platform/bcm2835/Kconfig
+@@ -2,8 +2,10 @@
+ 
+ config VIDEO_BCM2835_UNICAM
+ 	tristate "Broadcom BCM2835 Unicam video capture driver"
+-	depends on VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API && MEDIA_CONTROLLER
++	depends on VIDEO_V4L2
+ 	depends on ARCH_BCM2835 || COMPILE_TEST
++	select VIDEO_V4L2_SUBDEV_API
++	select MEDIA_CONTROLLER
+ 	select VIDEOBUF2_DMA_CONTIG
+ 	select V4L2_FWNODE
+ 	help
+-- 
+2.31.1
+

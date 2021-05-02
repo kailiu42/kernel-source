@@ -1,0 +1,46 @@
+Git-commit: 1b2eb7e5809734be329ea7e9f5dca9f95c44dd62
+From: Sagar Shrikant Kadam <sagar.kadam@sifive.com>
+Date: Thu, 28 Jan 2021 20:45:08 +0800
+Subject: [PATCH] riscv: defconfig: enable gpio support for HiFive Unleashed
+Patch-mainline: v5.10.11
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.11
+commit 9e82f2aa5912e89000997d1d680dceec94a686b7
+bugzilla: 47621
+
+--------------------------------
+
+[ Upstream commit 0983834a83931606a647c275e5d4165ce4e7b49f ]
+
+Ethernet phy VSC8541-01 on HiFive Unleashed has its reset line
+connected to a gpio, so enable GPIO driver's required to reset
+the phy.
+
+Signed-off-by: Sagar Shrikant Kadam <sagar.kadam@sifive.com>
+Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/riscv/configs/defconfig | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
+index 651b044d74b1..a20c51dadef2 100644
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -68,6 +68,8 @@ CONFIG_HW_RANDOM=y
+ CONFIG_HW_RANDOM_VIRTIO=y
+ CONFIG_SPI=y
+ CONFIG_SPI_SIFIVE=y
++CONFIG_GPIOLIB=y
++CONFIG_GPIO_SIFIVE=y
+ # CONFIG_PTP_1588_CLOCK is not set
+ CONFIG_DRM=y
+ CONFIG_DRM_RADEON=y
+-- 
+2.31.1
+

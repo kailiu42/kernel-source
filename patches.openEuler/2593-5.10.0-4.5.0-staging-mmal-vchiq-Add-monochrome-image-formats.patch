@@ -1,0 +1,46 @@
+Git-commit: 14b667e922e1726c62e84f879cbc6f2ecc4f24f0
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Wed, 6 May 2020 18:11:14 +0100
+Subject: [PATCH] staging: mmal-vchiq: Add monochrome image formats
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Adds support for monochrome image formats in the various
+MIPI packings.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h b/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h
+index be8af09a6c80..897e6cdf8dd9 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h
+@@ -102,6 +102,13 @@
+ #define MMAL_ENCODING_BAYER_SGRBG16    MMAL_FOURCC('G', 'R', '1', '6')
+ #define MMAL_ENCODING_BAYER_SRGGB16    MMAL_FOURCC('R', 'G', '1', '6')
+ 
++/* MIPI packed monochrome images */
++#define MMAL_ENCODING_GREY    MMAL_FOURCC('G', 'R', 'E', 'Y')
++#define MMAL_ENCODING_Y10P    MMAL_FOURCC('Y', '1', '0', 'P')
++#define MMAL_ENCODING_Y12P    MMAL_FOURCC('Y', '1', '2', 'P')
++#define MMAL_ENCODING_Y14P    MMAL_FOURCC('Y', '1', '4', 'P')
++#define MMAL_ENCODING_Y16     MMAL_FOURCC('Y', '1', '6', ' ')
++
+ /** An EGL image handle
+  */
+ #define MMAL_ENCODING_EGL_IMAGE        MMAL_FOURCC('E', 'G', 'L', 'I')
+-- 
+2.31.1
+

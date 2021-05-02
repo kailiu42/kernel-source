@@ -1,0 +1,41 @@
+Git-commit: f2c5a15fa2d72458d3dc57c6c30420c4d2afac3f
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Thu, 18 Mar 2021 17:35:52 +0800
+Subject: [PATCH] x86: config: disable CONFIG_BOOTPARAM_HOTPLUG_CPU0 by default
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.13.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: config
+bugzilla: 50784
+CVE: NA
+
+---------------------------
+
+Disable CONFIG_BOOTPARAM_HOTPLUG_CPU0 for x86 openeuler_defconfig
+by default.
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/x86/configs/openeuler_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/configs/openeuler_defconfig b/arch/x86/configs/openeuler_defconfig
+index c310e38fd6e7..addf175482e5 100644
+--- a/arch/x86/configs/openeuler_defconfig
++++ b/arch/x86/configs/openeuler_defconfig
+@@ -460,7 +460,7 @@ CONFIG_DYNAMIC_MEMORY_LAYOUT=y
+ CONFIG_RANDOMIZE_MEMORY=y
+ CONFIG_RANDOMIZE_MEMORY_PHYSICAL_PADDING=0xa
+ CONFIG_HOTPLUG_CPU=y
+-CONFIG_BOOTPARAM_HOTPLUG_CPU0=y
++CONFIG_BOOTPARAM_HOTPLUG_CPU0 is not set
+ # CONFIG_DEBUG_HOTPLUG_CPU0 is not set
+ # CONFIG_COMPAT_VDSO is not set
+ CONFIG_LEGACY_VSYSCALL_EMULATE=y
+-- 
+2.31.1
+

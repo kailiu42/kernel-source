@@ -1,0 +1,42 @@
+Git-commit: 4a4c51dd96cec7019d44a5683598b9b2a4a5e472
+From: Naushir Patuck <naush@raspberrypi.com>
+Date: Tue, 19 May 2020 16:56:33 +0100
+Subject: [PATCH] media: i2c: imx477: Return correct result on sensor id
+ verification
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The test should return -EIO if the register read id does not match
+the expected sensor id.
+
+Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/imx477.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/i2c/imx477.c b/drivers/media/i2c/imx477.c
+index bd0e2c291a32..e42a8633087d 100644
+--- a/drivers/media/i2c/imx477.c
++++ b/drivers/media/i2c/imx477.c
+@@ -1919,7 +1919,7 @@ static int imx477_identify_module(struct imx477 *imx477)
+ 	if (val != IMX477_CHIP_ID) {
+ 		dev_err(&client->dev, "chip id mismatch: %x!=%x\n",
+ 			IMX477_CHIP_ID, val);
+-		ret = -EINVAL;
++		return -EIO;
+ 	}
+ 
+ 	return 0;
+-- 
+2.31.1
+

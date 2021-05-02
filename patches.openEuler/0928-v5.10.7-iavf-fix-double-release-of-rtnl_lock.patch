@@ -1,0 +1,52 @@
+Git-commit: 19414446b4fc46a361692652bc700110c44fe616
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Tue, 19 Jan 2021 11:24:48 +0000
+Subject: [PATCH] iavf: fix double-release of rtnl_lock
+Patch-mainline: v5.10.7
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.7
+commit e2572423ab92014d3194282e737e6972d2424b37
+bugzilla: 47429
+
+--------------------------------
+
+[ Upstream commit f1340265726e0edf8a8cef28e665b28ad6302ce9 ]
+
+This code does not jump to exit on an error in iavf_lan_add_device(),
+so the rtnl_unlock() from the normal path will follow.
+
+Fixes: b66c7bc1cd4d ("iavf: Refactor init state machine")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/net/ethernet/intel/iavf/iavf_main.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 95543dfd4fe7..0a867d64d467 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -1834,11 +1834,9 @@ static int iavf_init_get_resources(struct iavf_adapter *adapter)
+ 	netif_tx_stop_all_queues(netdev);
+ 	if (CLIENT_ALLOWED(adapter)) {
+ 		err = iavf_lan_add_device(adapter);
+-		if (err) {
+-			rtnl_unlock();
++		if (err)
+ 			dev_info(&pdev->dev, "Failed to add VF to client API service list: %d\n",
+ 				 err);
+-		}
+ 	}
+ 	dev_info(&pdev->dev, "MAC address: %pM\n", adapter->hw.mac.addr);
+ 	if (netdev->features & NETIF_F_GRO)
+-- 
+2.31.1
+

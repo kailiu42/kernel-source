@@ -1,0 +1,60 @@
+Git-commit: cc8af2bf4f4e07e683483f29b8bd7562a5a46b27
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Mon, 1 Mar 2021 09:14:35 +0000
+Subject: [PATCH] Revert "Bluetooth: Always request for user confirmation for
+ Just Works"
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+This reverts commit 92516cd97fd4d8ad5b1421a0d51771044f453a5f.
+
+Thi commit "Bluetooth: Always request for user confirmation for Just
+Works" prevents BLE devices pairing in (at least) the Raspberry Pi OS
+GUI. After reverting it, pairing works again.
+
+If another solution to the problem is found then this reversion will
+be removed.
+
+See: https://github.com/raspberrypi/linux/issues/4139
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ net/bluetooth/smp.c | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
+
+diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
+index 248cdaf77a5f..0f820decf511 100644
+--- a/net/bluetooth/smp.c
++++ b/net/bluetooth/smp.c
+@@ -883,16 +883,9 @@ static int tk_request(struct l2cap_conn *conn, u8 remote_oob, u8 auth,
+ 	    hcon->io_capability == HCI_IO_NO_INPUT_OUTPUT)
+ 		smp->method = JUST_WORKS;
+ 
+-	/* If Just Works, Continue with Zero TK and ask user-space for
+-	 * confirmation */
++	/* If Just Works, Continue with Zero TK */
+ 	if (smp->method == JUST_WORKS) {
+-		ret = mgmt_user_confirm_request(hcon->hdev, &hcon->dst,
+-						hcon->type,
+-						hcon->dst_type,
+-						passkey, 1);
+-		if (ret)
+-			return ret;
+-		set_bit(SMP_FLAG_WAIT_USER, &smp->flags);
++		set_bit(SMP_FLAG_TK_VALID, &smp->flags);
+ 		return 0;
+ 	}
+ 
+-- 
+2.31.1
+

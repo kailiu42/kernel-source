@@ -1,0 +1,47 @@
+Git-commit: b6b9fba83b7854dac38e1a5b9e75085f38be6e42
+From: Kevin Lo <kevlo@kevlo.org>
+Date: Fri, 19 Feb 2021 16:40:08 +0800
+Subject: [PATCH] igc: check return value of ret_val in
+ igc_config_fc_after_link_up
+Patch-mainline: v5.10.15
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.15
+commit 1ac8bec2205efbcef59ec989e9a9a4e57428a64e
+bugzilla: 48167
+
+--------------------------------
+
+[ Upstream commit b881145642ce0bbe2be521e0882e72a5cebe93b8 ]
+
+Check return value from ret_val to make error check actually work.
+
+Fixes: 4eb8080143a9 ("igc: Add setup link functionality")
+Signed-off-by: Kevin Lo <kevlo@kevlo.org>
+Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/net/ethernet/intel/igc/igc_mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/intel/igc/igc_mac.c b/drivers/net/ethernet/intel/igc/igc_mac.c
+index 09cd0ec7ee87..67b8ffd21d8a 100644
+--- a/drivers/net/ethernet/intel/igc/igc_mac.c
++++ b/drivers/net/ethernet/intel/igc/igc_mac.c
+@@ -638,7 +638,7 @@ s32 igc_config_fc_after_link_up(struct igc_hw *hw)
+ 	}
+ 
+ out:
+-	return 0;
++	return ret_val;
+ }
+ 
+ /**
+-- 
+2.31.1
+

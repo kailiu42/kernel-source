@@ -1,0 +1,69 @@
+Git-commit: 1c40b186979f97d59f9aea76289e19c4f5db8be1
+From: Roberto Sassu <roberto.sassu@huawei.com>
+Date: Wed, 3 Mar 2021 08:43:39 +0100
+Subject: [PATCH] evm: Refuse EVM_ALLOW_METADATA_WRITES only if an HMAC key is
+ loaded
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.7.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+feature: IMA Digest Lists extension
+bugzilla: 46797
+
+---------------------------
+
+EVM_ALLOW_METADATA_WRITES is an EVM initialization flag that can be set to
+temporarily disable metadata verification until all xattrs/attrs necessary
+to verify an EVM portable signature are copied to the file. This flag is
+cleared when EVM is initialized with an HMAC key, to avoid that the HMAC is
+calculated on unverified xattrs/attrs.
+
+Currently EVM unnecessarily denies setting this flag if EVM is initialized
+with a public key, which is not a concern as it cannot be used to trust
+xattrs/attrs updates. This patch removes this limitation.
+
+Cc: stable@vger.kernel.org # 4.16.x
+Fixes: ae1ba1676b88e ("EVM: Allow userland to permit modification of EVM-protected metadata")
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+Reviewed-by: Jason Yan <yanaijie@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ Documentation/ABI/testing/evm      | 5 +++--
+ security/integrity/evm/evm_secfs.c | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/ABI/testing/evm b/Documentation/ABI/testing/evm
+index 3c477ba48a31..eb6d70fd6fa2 100644
+--- a/Documentation/ABI/testing/evm
++++ b/Documentation/ABI/testing/evm
+@@ -49,8 +49,9 @@ Description:
+ 		modification of EVM-protected metadata and
+ 		disable all further modification of policy
+ 
+-		Note that once a key has been loaded, it will no longer be
+-		possible to enable metadata modification.
++		Note that once an HMAC key has been loaded, it will no longer
++		be possible to enable metadata modification and, if it is
++		already enabled, it will be disabled.
+ 
+ 		Until key loading has been signaled EVM can not create
+ 		or validate the 'security.evm' xattr, but returns
+diff --git a/security/integrity/evm/evm_secfs.c b/security/integrity/evm/evm_secfs.c
+index cfc3075769bb..92fe26ace797 100644
+--- a/security/integrity/evm/evm_secfs.c
++++ b/security/integrity/evm/evm_secfs.c
+@@ -84,7 +84,7 @@ static ssize_t evm_write_key(struct file *file, const char __user *buf,
+ 	 * keys are loaded.
+ 	 */
+ 	if ((i & EVM_ALLOW_METADATA_WRITES) &&
+-	    ((evm_initialized & EVM_KEY_MASK) != 0) &&
++	    ((evm_initialized & EVM_INIT_HMAC) != 0) &&
+ 	    !(evm_initialized & EVM_ALLOW_METADATA_WRITES))
+ 		return -EPERM;
+ 
+-- 
+2.31.1
+

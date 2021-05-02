@@ -1,0 +1,41 @@
+Git-commit: de0831013e00be3de3223f36ab4f631134687ab5
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Thu, 14 Nov 2019 11:59:01 +0000
+Subject: [PATCH] net: bcmgenet: The second IRQ is optional
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+As of 5.4, the kernel logs errors for absent IRQs unless requested
+with platform_get_irq_optional.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/v3d/v3d_irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/v3d/v3d_irq.c b/drivers/gpu/drm/v3d/v3d_irq.c
+index 063418907a19..0f7a23f051df 100644
+--- a/drivers/gpu/drm/v3d/v3d_irq.c
++++ b/drivers/gpu/drm/v3d/v3d_irq.c
+@@ -217,7 +217,7 @@ v3d_irq_init(struct v3d_dev *v3d)
+ 		V3D_CORE_WRITE(core, V3D_CTL_INT_CLR, V3D_CORE_IRQS);
+ 	V3D_WRITE(V3D_HUB_INT_CLR, V3D_HUB_IRQS);
+ 
+-	irq1 = platform_get_irq(v3d_to_pdev(v3d), 1);
++	irq1 = platform_get_irq_optional(v3d_to_pdev(v3d), 1);
+ 	if (irq1 == -EPROBE_DEFER)
+ 		return irq1;
+ 	if (irq1 > 0) {
+-- 
+2.31.1
+

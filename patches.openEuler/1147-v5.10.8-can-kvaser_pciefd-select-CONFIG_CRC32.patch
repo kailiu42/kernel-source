@@ -1,0 +1,49 @@
+Git-commit: fa1b3dc44ecf5e307dad104ccaf0db418c0bc913
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Sat, 23 Jan 2021 12:48:16 +0000
+Subject: [PATCH] can: kvaser_pciefd: select CONFIG_CRC32
+Patch-mainline: v5.10.8
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.8
+commit 175465cb6d87b4a791120d09a09bf7cd7fdee8f9
+bugzilla: 47450
+
+--------------------------------
+
+commit 1d48595c786b1b9dc6be301e8d7f6fc74e9882aa upstream.
+
+Without crc32, this driver fails to link:
+
+arm-linux-gnueabi-ld: drivers/net/can/kvaser_pciefd.o: in function `kvaser_pciefd_probe':
+kvaser_pciefd.c:(.text+0x2b0): undefined reference to `crc32_be'
+
+Fixes: 26ad340e582d ("can: kvaser_pciefd: Add driver for Kvaser PCIEcan devices")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/net/can/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
+index 424970939fd4..1c28eade6bec 100644
+--- a/drivers/net/can/Kconfig
++++ b/drivers/net/can/Kconfig
+@@ -123,6 +123,7 @@ config CAN_JANZ_ICAN3
+ config CAN_KVASER_PCIEFD
+ 	depends on PCI
+ 	tristate "Kvaser PCIe FD cards"
++	select CRC32
+ 	  help
+ 	  This is a driver for the Kvaser PCI Express CAN FD family.
+ 
+-- 
+2.31.1
+

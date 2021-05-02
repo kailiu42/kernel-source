@@ -1,0 +1,41 @@
+Git-commit: ec8c088242758975e192c4f17e75eed23ee061a9
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Wed, 8 Apr 2020 11:59:39 +0100
+Subject: [PATCH] overlays: Fix dtc warnings in i2c-gpio
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Better late than never.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts b/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
+index 63231b5d7c0c..2323a61edf07 100644
+--- a/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
++++ b/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
+@@ -11,6 +11,9 @@ fragment@0 {
+ 		target-path = "/";
+ 
+ 		__overlay__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
+ 			i2c_gpio: i2c@0 {
+ 				reg = <0xffffffff>;
+ 				compatible = "i2c-gpio";
+-- 
+2.31.1
+

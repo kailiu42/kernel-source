@@ -1,0 +1,56 @@
+Git-commit: d1eacf3bdb56dc6f419aab75599558a6c94bf727
+From: Xiangyou Xie <xiexiangyou@huawei.com>
+Date: Fri, 19 Feb 2021 15:14:31 +0800
+Subject: [PATCH] cpuidle-haltpoll: Use arch_cpu_idle() to replace
+ default_idle()
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.1.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 47727
+CVE: NA
+
+------------------------------
+
+Use arch_cpu_idle() to replace default_idle() in default_enter_idle().
+default_idle() is defined only in x86.
+
+Signed-off-by: Xiangyou Xie <xiexiangyou@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/x86/kernel/process.c          | 1 +
+ drivers/cpuidle/cpuidle-haltpoll.c | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 145a7ac0c19a..d7f23d1c7391 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -689,6 +689,7 @@ void __cpuidle default_idle(void)
+ }
+ #if defined(CONFIG_APM_MODULE) || defined(CONFIG_HALTPOLL_CPUIDLE_MODULE)
+ EXPORT_SYMBOL(default_idle);
++EXPORT_SYMBOL(arch_cpu_idle);
+ #endif
+ 
+ #ifdef CONFIG_XEN
+diff --git a/drivers/cpuidle/cpuidle-haltpoll.c b/drivers/cpuidle/cpuidle-haltpoll.c
+index fcc53215bac8..f2fc7204de54 100644
+--- a/drivers/cpuidle/cpuidle-haltpoll.c
++++ b/drivers/cpuidle/cpuidle-haltpoll.c
+@@ -32,7 +32,7 @@ static int default_enter_idle(struct cpuidle_device *dev,
+ 		local_irq_enable();
+ 		return index;
+ 	}
+-	default_idle();
++	arch_cpu_idle();
+ 	return index;
+ }
+ 
+-- 
+2.31.1
+

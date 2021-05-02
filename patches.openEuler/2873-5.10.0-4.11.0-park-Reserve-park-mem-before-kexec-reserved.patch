@@ -1,0 +1,70 @@
+Git-commit: 1b05988217718699e7ec7aede6f021e8f3504596
+From: Sang Yan <sangyan(a)huawei.com>
+Date: Fri, 12 Mar 2021 10:46:29 +0800
+Subject: [PATCH] park: Reserve park mem before kexec reserved
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.11.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48159
+CVE: N/A
+
+------------------------------
+
+reserve_crashkernel or reserve_quick_kexec may find one sutiable
+memory region and reserves it, which address of the region is
+not fixed.
+
+As a result, cpu park reserves memory could be failed while
+specified address used by crashkernel or quickkexec.
+
+So, move reserve_park_mem before reserve_crashkernel and
+reserve_quick_kexec.
+
+Signed-off-by: Sang Yan <sangyan(a)huawei.com>
+Reviewed-by: Jing Xiangfeng <jingxiangfeng(a)huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/mm/init.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index f22faea1afae..dfb89b7f8d37 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -590,16 +590,25 @@ void __init arm64_memblock_init(void)
+ 	else
+ 		arm64_dma32_phys_limit = PHYS_MASK + 1;
+ 
++	/*
++	 * Reserve park memory before crashkernel and quick kexec.
++	 * Because park memory must be specified by address, but
++	 * crashkernel and quickkexec may be specified by memory length,
++	 * then find one sutiable memory region to reserve.
++	 *
++	 * So reserve park memory firstly is better, but it may cause
++	 * crashkernel or quickkexec reserving failed.
++	 */
++#ifdef CONFIG_ARM64_CPU_PARK
++	reserve_park_mem();
++#endif
++
+ 	reserve_crashkernel();
+ 
+ #ifdef CONFIG_QUICK_KEXEC
+ 	reserve_quick_kexec();
+ #endif
+ 
+-#ifdef CONFIG_ARM64_CPU_PARK
+-	reserve_park_mem();
+-#endif
+-
+ 	reserve_pin_memory_res();
+ 
+ 	reserve_elfcorehdr();
+-- 
+2.31.1
+

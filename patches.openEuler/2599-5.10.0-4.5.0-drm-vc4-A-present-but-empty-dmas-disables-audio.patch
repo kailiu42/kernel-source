@@ -1,0 +1,50 @@
+Git-commit: 0338e99cf6ce92cdf92d78d2b6c04e39367beaf3
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Wed, 31 Jul 2019 17:36:34 +0100
+Subject: [PATCH] drm/vc4: A present but empty dmas disables audio
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Overlays are unable to remove properties in the base DTB, but they
+can overwrite them. Allow a present but empty 'dmas' property
+to also disable the HDMI audio interface.
+
+See: https://github.com/raspberrypi/linux/issues/2489
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 24da24f3f325..cd257ce10045 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1745,10 +1745,12 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *vc4_hdmi)
+ 	const __be32 *addr;
+ 	int index;
+ 	int ret;
++	int len;
+ 
+-	if (!of_find_property(dev->of_node, "dmas", NULL)) {
++	if (!of_find_property(dev->of_node, "dmas", &len) ||
++	    len == 0) {
+ 		dev_warn(dev,
+-			 "'dmas' DT property is missing, no HDMI audio\n");
++			 "'dmas' DT property is missing or empty, no HDMI audio\n");
+ 		return 0;
+ 	}
+ 
+-- 
+2.31.1
+

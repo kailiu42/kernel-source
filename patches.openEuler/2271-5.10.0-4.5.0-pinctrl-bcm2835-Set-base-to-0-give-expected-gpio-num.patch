@@ -1,0 +1,38 @@
+Git-commit: afee73b19d5729bebf80c94593b85dc432bbb3f4
+From: notro <notro@tronnes.org>
+Date: Thu, 10 Jul 2014 13:59:47 +0200
+Subject: [PATCH] pinctrl-bcm2835: Set base to 0 give expected gpio numbering
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Noralf Tronnes <notro@tronnes.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index 1d21129f7751..bbf761c41dc5 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -362,7 +362,7 @@ static const struct gpio_chip bcm2835_gpio_chip = {
+ 	.get = bcm2835_gpio_get,
+ 	.set = bcm2835_gpio_set,
+ 	.set_config = gpiochip_generic_config,
+-	.base = -1,
++	.base = 0,
+ 	.ngpio = BCM2835_NUM_GPIOS,
+ 	.can_sleep = false,
+ };
+-- 
+2.31.1
+

@@ -1,0 +1,43 @@
+Git-commit: 3116be1ee289e187ad28350d56a6f4ad5f7ee48b
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Fri, 22 May 2020 11:35:33 +0100
+Subject: [PATCH] SQUASH: pinctrl: bcm2835: Set base for bcm2711 GPIO to 0
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Without this patch GPIOs don't seem to work properly, primarily
+noticeable as broken LEDs.
+
+Squash with "pinctrl-bcm2835: Set base to 0 give expected gpio numbering"
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/pinctrl/bcm/pinctrl-bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index bda29f421e78..c5d88157f4b2 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -378,7 +378,7 @@ static const struct gpio_chip bcm2711_gpio_chip = {
+ 	.get = bcm2835_gpio_get,
+ 	.set = bcm2835_gpio_set,
+ 	.set_config = gpiochip_generic_config,
+-	.base = -1,
++	.base = 0,
+ 	.ngpio = BCM2711_NUM_GPIOS,
+ 	.can_sleep = false,
+ };
+-- 
+2.31.1
+

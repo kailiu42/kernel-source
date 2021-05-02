@@ -1,0 +1,263 @@
+Git-commit: 73a22f5aae4a8ef197cd8d90031a1f09859d8c30
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Thu, 4 Mar 2021 17:52:01 +0800
+Subject: [PATCH] mm: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following memory related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+6e50000812a mm: Remove the PFN busy warning
+244b41638ef cgroup: Disable cgroup "memory" by default
+a7536dd3b7d zswap: Defer zswap initialisation
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ kernel/cgroup/cgroup.c |   6 ++
+ mm/page_alloc.c        |   4 ++
+ mm/zswap.c             | 123 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 133 insertions(+)
+
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 1b6547fe0fb4..4890144cbe29 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -5682,8 +5682,10 @@ int __init cgroup_init_early(void)
+ }
+ 
+ static u16 cgroup_disable_mask __initdata;
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static u16 cgroup_enable_mask __initdata;
+ static int __init cgroup_disable(char *str);
++#endif
+ 
+ /**
+  * cgroup_init - cgroup initialization
+@@ -5723,11 +5725,13 @@ int __init cgroup_init(void)
+ 
+ 	mutex_unlock(&cgroup_mutex);
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	/* Apply an implicit disable... */
+ 	cgroup_disable("memory");
+ 
+ 	/* ...knowing that an explicit enable will override it. */
+ 	cgroup_disable_mask &= ~cgroup_enable_mask;
++#endif
+ 
+ 	for_each_subsys(ss, ssid) {
+ 		if (ss->early_init) {
+@@ -6276,6 +6280,7 @@ static int __init cgroup_disable(char *str)
+ }
+ __setup("cgroup_disable=", cgroup_disable);
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static int __init cgroup_enable(char *str)
+ {
+ 	struct cgroup_subsys *ss;
+@@ -6297,6 +6302,7 @@ static int __init cgroup_enable(char *str)
+ 	return 1;
+ }
+ __setup("cgroup_enable=", cgroup_enable);
++#endif
+ 
+ void __init __weak enable_debug_cgroup(void) { }
+ 
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index df820235bc1f..31807ad60609 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -8578,6 +8578,10 @@ int alloc_contig_range(unsigned long start, unsigned long end,
+ 
+ 	/* Make sure the range is really isolated. */
+ 	if (test_pages_isolated(outer_start, end, 0)) {
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
++		pr_info_ratelimited("%s: [%lx, %lx) PFNs busy\n",
++			__func__, outer_start, end);
++#endif
+ 		ret = -EBUSY;
+ 		goto done;
+ 	}
+diff --git a/mm/zswap.c b/mm/zswap.c
+index 0ca7f6a68d20..b7455dcc4f1d 100644
+--- a/mm/zswap.c
++++ b/mm/zswap.c
+@@ -592,6 +592,7 @@ static struct zswap_pool *zswap_pool_create(char *type, char *compressor)
+ 	return NULL;
+ }
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static bool zswap_try_pool_create(void)
+ {
+ 	struct zswap_pool *pool;
+@@ -646,6 +647,49 @@ static bool zswap_try_pool_create(void)
+ 
+ 	return zswap_enabled;
+ }
++#else
++static __init struct zswap_pool *__zswap_pool_create_fallback(void)
++{
++	bool has_comp, has_zpool;
++
++	has_comp = crypto_has_comp(zswap_compressor, 0, 0);
++	if (!has_comp && strcmp(zswap_compressor,
++				CONFIG_ZSWAP_COMPRESSOR_DEFAULT)) {
++		pr_err("compressor %s not available, using default %s\n",
++		       zswap_compressor, CONFIG_ZSWAP_COMPRESSOR_DEFAULT);
++		param_free_charp(&zswap_compressor);
++		zswap_compressor = CONFIG_ZSWAP_COMPRESSOR_DEFAULT;
++		has_comp = crypto_has_comp(zswap_compressor, 0, 0);
++	}
++	if (!has_comp) {
++		pr_err("default compressor %s not available\n",
++		       zswap_compressor);
++		param_free_charp(&zswap_compressor);
++		zswap_compressor = ZSWAP_PARAM_UNSET;
++	}
++
++	has_zpool = zpool_has_pool(zswap_zpool_type);
++	if (!has_zpool && strcmp(zswap_zpool_type,
++				 CONFIG_ZSWAP_ZPOOL_DEFAULT)) {
++		pr_err("zpool %s not available, using default %s\n",
++		       zswap_zpool_type, CONFIG_ZSWAP_ZPOOL_DEFAULT);
++		param_free_charp(&zswap_zpool_type);
++		zswap_zpool_type = CONFIG_ZSWAP_ZPOOL_DEFAULT;
++		has_zpool = zpool_has_pool(zswap_zpool_type);
++	}
++	if (!has_zpool) {
++		pr_err("default zpool %s not available\n",
++		       zswap_zpool_type);
++		param_free_charp(&zswap_zpool_type);
++		zswap_zpool_type = ZSWAP_PARAM_UNSET;
++	}
++
++	if (!has_comp || !has_zpool)
++		return NULL;
++
++	return zswap_pool_create(zswap_zpool_type, zswap_compressor);
++}
++#endif
+ 
+ static void zswap_pool_destroy(struct zswap_pool *pool)
+ {
+@@ -814,6 +858,7 @@ static int zswap_zpool_param_set(const char *val,
+ 	return __zswap_param_set(val, kp, NULL, zswap_compressor);
+ }
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static int zswap_enabled_param_set(const char *val,
+ 				   const struct kernel_param *kp)
+ {
+@@ -831,6 +876,22 @@ static int zswap_enabled_param_set(const char *val,
+ 
+ 	return ret;
+ }
++#else
++static int zswap_enabled_param_set(const char *val,
++				   const struct kernel_param *kp)
++{
++	if (zswap_init_failed) {
++		pr_err("can't enable, initialization failed\n");
++		return -ENODEV;
++	}
++	if (!zswap_has_pool && zswap_init_started) {
++		pr_err("can't enable, no pool configured\n");
++		return -ENODEV;
++	}
++
++	return param_set_bool(val, kp);
++}
++#endif
+ 
+ /*********************************
+ * writeback code
+@@ -1328,6 +1389,7 @@ static void __exit zswap_debugfs_exit(void) { }
+ /*********************************
+ * module init and exit
+ **********************************/
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static int __init init_zswap(void)
+ {
+ 	int ret;
+@@ -1376,6 +1438,67 @@ static int __init init_zswap(void)
+ 	zswap_enabled = false;
+ 	return -ENOMEM;
+ }
++#else
++static int __init init_zswap(void)
++{
++	struct zswap_pool *pool;
++	int ret;
++
++	zswap_init_started = true;
++
++	if (zswap_entry_cache_create()) {
++		pr_err("entry cache creation failed\n");
++		goto cache_fail;
++	}
++
++	ret = cpuhp_setup_state(CPUHP_MM_ZSWP_MEM_PREPARE, "mm/zswap:prepare",
++				zswap_dstmem_prepare, zswap_dstmem_dead);
++	if (ret) {
++		pr_err("dstmem alloc failed\n");
++		goto dstmem_fail;
++	}
++
++	ret = cpuhp_setup_state_multi(CPUHP_MM_ZSWP_POOL_PREPARE,
++				      "mm/zswap_pool:prepare",
++				      zswap_cpu_comp_prepare,
++				      zswap_cpu_comp_dead);
++	if (ret)
++		goto hp_fail;
++
++	pool = __zswap_pool_create_fallback();
++	if (pool) {
++		pr_info("loaded using pool %s/%s\n", pool->tfm_name,
++			zpool_get_type(pool->zpool));
++		list_add(&pool->list, &zswap_pools);
++		zswap_has_pool = true;
++	} else {
++		pr_err("pool creation failed\n");
++		zswap_enabled = false;
++	}
++
++	shrink_wq = create_workqueue("zswap-shrink");
++	if (!shrink_wq)
++		goto fallback_fail;
++
++	frontswap_register_ops(&zswap_frontswap_ops);
++	if (zswap_debugfs_init())
++		pr_warn("debugfs initialization failed\n");
++	return 0;
++
++fallback_fail:
++	if (pool)
++		zswap_pool_destroy(pool);
++hp_fail:
++	cpuhp_remove_state(CPUHP_MM_ZSWP_MEM_PREPARE);
++dstmem_fail:
++	zswap_entry_cache_destroy();
++cache_fail:
++	/* if built-in, we aren't unloaded on failure; don't allow use */
++	zswap_init_failed = true;
++	zswap_enabled = false;
++	return -ENOMEM;
++}
++#endif
+ /* must be late so crypto has time to come up */
+ late_initcall(init_zswap);
+ 
+-- 
+2.31.1
+

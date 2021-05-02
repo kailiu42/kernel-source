@@ -1,0 +1,52 @@
+Git-commit: 0d55aab21b843fe3fa8a3d3c83348c5d433467a8
+From: Masahiro Yamada <masahiroy@kernel.org>
+Date: Mon, 25 Jan 2021 07:15:30 +0000
+Subject: [PATCH] kconfig: remove 'kvmconfig' and 'xenconfig' shorthands
+Patch-mainline: v5.10.9
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.9
+commit 17a08680ab6a6c057949cb48c352933e09ea377a
+bugzilla: 47457
+
+--------------------------------
+
+[ Upstream commit 9bba03d4473df0b707224d4d2067b62d1e1e2a77 ]
+
+Linux 5.10 is out. Remove the 'kvmconfig' and 'xenconfig' shorthands
+as previously announced.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ scripts/kconfig/Makefile | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/scripts/kconfig/Makefile b/scripts/kconfig/Makefile
+index e46df0a2d4f9..2c40e68853dd 100644
+--- a/scripts/kconfig/Makefile
++++ b/scripts/kconfig/Makefile
+@@ -94,16 +94,6 @@ configfiles=$(wildcard $(srctree)/kernel/configs/$@ $(srctree)/arch/$(SRCARCH)/c
+ 	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/kconfig/merge_config.sh -m .config $(configfiles)
+ 	$(Q)$(MAKE) -f $(srctree)/Makefile olddefconfig
+ 
+-PHONY += kvmconfig
+-kvmconfig: kvm_guest.config
+-	@echo >&2 "WARNING: 'make $@' will be removed after Linux 5.10"
+-	@echo >&2 "         Please use 'make $<' instead."
+-
+-PHONY += xenconfig
+-xenconfig: xen.config
+-	@echo >&2 "WARNING: 'make $@' will be removed after Linux 5.10"
+-	@echo >&2 "         Please use 'make $<' instead."
+-
+ PHONY += tinyconfig
+ tinyconfig:
+ 	$(Q)$(MAKE) -f $(srctree)/Makefile allnoconfig tiny.config
+-- 
+2.31.1
+

@@ -1,0 +1,41 @@
+Git-commit: 073f3ca15d5a04ca9457dad0e0d5936b117faedc
+From: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date: Thu, 24 Jan 2019 15:09:28 +0000
+Subject: [PATCH] clk: clk-bcm2835: Use %zd when printing size_t
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The debug text for how many clocks have been registered
+uses "%d" with a size_t. Correct it to "%zd".
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/clk/bcm/clk-bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index f1ef788c1194..2674b979a072 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -2382,7 +2382,7 @@ static int bcm2835_clk_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	/* note that we have registered all the clocks */
+-	dev_dbg(dev, "registered %d clocks\n", asize);
++	dev_dbg(dev, "registered %zd clocks\n", asize);
+ 
+ 	return 0;
+ }
+-- 
+2.31.1
+

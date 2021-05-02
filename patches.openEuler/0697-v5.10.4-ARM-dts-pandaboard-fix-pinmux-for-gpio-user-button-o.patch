@@ -1,0 +1,48 @@
+Git-commit: 2b2a6ac0eb15bd8d78daa919664caead2d5f4a1e
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+Date: Thu, 7 Jan 2021 07:46:32 +0000
+Subject: [PATCH] ARM: dts: pandaboard: fix pinmux for gpio user button of
+ Pandaboard ES
+Patch-mainline: v5.10.4
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.4
+commit f02ba166a56d04e1eae3530bdf3f07269816cab8
+bugzilla: 46903
+
+--------------------------------
+
+commit df9dbaf2c415cd94ad520067a1eccfee62f00a33 upstream.
+
+The pinmux control register offset passed to OMAP4_IOPAD is odd.
+
+Fixes: ab9a13665e7c ("ARM: dts: pandaboard: add gpio user button")
+Cc: stable@vger.kernel.org
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/omap4-panda-es.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/omap4-panda-es.dts b/arch/arm/boot/dts/omap4-panda-es.dts
+index cfa85aa3da08..6afa8fd7c412 100644
+--- a/arch/arm/boot/dts/omap4-panda-es.dts
++++ b/arch/arm/boot/dts/omap4-panda-es.dts
+@@ -46,7 +46,7 @@ OMAP4_IOPAD(0x0f6, PIN_OUTPUT | MUX_MODE3)	/* gpio_110 */
+ 
+ 	button_pins: pinmux_button_pins {
+ 		pinctrl-single,pins = <
+-			OMAP4_IOPAD(0x11b, PIN_INPUT_PULLUP | MUX_MODE3) /* gpio_113 */
++			OMAP4_IOPAD(0x0fc, PIN_INPUT_PULLUP | MUX_MODE3) /* gpio_113 */
+ 		>;
+ 	};
+ };
+-- 
+2.31.1
+

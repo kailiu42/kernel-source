@@ -1,0 +1,55 @@
+Git-commit: a0f5c5f2c87a81215ee0932af7608bb6e0931ff1
+From: Mathias Anhalt <mathiasanhalt@web.de>
+Date: Sun, 24 Jan 2021 15:15:01 +0100
+Subject: [PATCH] Fixed picture line bug in all ov9281 modes
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Mathias Anhalt <mathiasanhalt@web.de>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/ov9281.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/i2c/ov9281.c b/drivers/media/i2c/ov9281.c
+index 12621c2dccd5..c646f11ef1d5 100644
+--- a/drivers/media/i2c/ov9281.c
++++ b/drivers/media/i2c/ov9281.c
+@@ -205,7 +205,7 @@ static const struct regval ov9281_common_regs[] = {
+ };
+ 
+ static const struct regval ov9281_1280x800_regs[] = {
+-	{0x3778, 0x10},
++	{0x3778, 0x00},
+ 	{0x3800, 0x00},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
+@@ -241,7 +241,7 @@ static const struct regval ov9281_1280x800_regs[] = {
+ };
+ 
+ static const struct regval ov9281_1280x720_regs[] = {
+-	{0x3778, 0x10},
++	{0x3778, 0x00},
+ 	{0x3800, 0x00},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
+@@ -277,6 +277,7 @@ static const struct regval ov9281_1280x720_regs[] = {
+ };
+ 
+ static const struct regval ov9281_640x400_regs[] = {
++	{0x3778, 0x10},
+ 	{0x3800, 0x00},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
+-- 
+2.31.1
+

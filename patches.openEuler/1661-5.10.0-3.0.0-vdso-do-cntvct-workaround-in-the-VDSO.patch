@@ -1,0 +1,63 @@
+Git-commit: 89d94b6b98b96674ca1ac13e7bb7e822ef1edb48
+From: Yang Yingliang <yangyingliang@huawei.com>
+Date: Thu, 4 Feb 2021 09:48:57 +0800
+Subject: [PATCH] vdso: do cntvct workaround in the VDSO
+Patch-mainline: Queued in openEuler repo, version 5.10.0-3.0.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 47984
+CVE: NA
+
+--------------------------------------------------
+
+If a cntvct workaround is enabled, read CNTVCT_EL0 twice
+in VDSO to avoid the clock bug.
+
+Without this patch on Kunpeng916:
+./gettimeofday -E -C 200 -L -S -W -N "gettimeofday"
+Running:        gettimeofday# ./gettimeofday -E -C 200 -L -S -W -N gettimeofday
+             prc thr   usecs/call      samples   errors cnt/samp
+gettimeofday   1   1      0.31753          198        0    20000
+
+With this patch on Kunpeng916:
+./gettimeofday -E -C 200 -L -S -W -N "gettimeofday"
+Running:        gettimeofday# ./gettimeofday -E -C 200 -L -S -W -N gettimeofday
+             prc thr   usecs/call      samples   errors cnt/samp
+gettimeofday   1   1      0.05244          198        0    20000
+
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/include/asm/vdso/gettimeofday.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/arch/arm64/include/asm/vdso/gettimeofday.h b/arch/arm64/include/asm/vdso/gettimeofday.h
+index 631ab1281633..8911cd118018 100644
+--- a/arch/arm64/include/asm/vdso/gettimeofday.h
++++ b/arch/arm64/include/asm/vdso/gettimeofday.h
+@@ -83,6 +83,17 @@ static __always_inline u64 __arch_get_hw_counter(s32 clock_mode,
+ 	 */
+ 	isb();
+ 	asm volatile("mrs %0, cntvct_el0" : "=r" (res) :: "memory");
++	if (vd->vdso_fix) {
++		u64 new;
++		int retries = 50;
++
++		asm volatile("mrs %0, cntvct_el0" : "=r" (new) :: "memory");
++		while (unlikely((new - res) >> vd->vdso_shift) && retries) {
++			asm volatile("mrs %0, cntvct_el0" : "=r" (res) :: "memory");
++			asm volatile("mrs %0, cntvct_el0" : "=r" (new) :: "memory");
++			retries--;
++		}
++	}
+ 	/*
+ 	 * This isb() is required to prevent that the seq lock is
+ 	 * speculated.#
+-- 
+2.31.1
+

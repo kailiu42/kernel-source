@@ -1,0 +1,45 @@
+Git-commit: a1886e9cec559dc4cc7ac933da99fd590dca277e
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Wed, 29 Apr 2020 22:05:09 +0100
+Subject: [PATCH] media: bcm2835-unicam: Do not stop streaming in
+ unicam_release
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+unicam_release calls _vb2_fop_release, which will call stop_streaming
+if that particular node was streaming. Calling it unconditionally (as
+the code was) means that if a second handle was opened eg to alter
+a setting, on closing that connection it also stopped Unicam.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/platform/bcm2835/bcm2835-unicam.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/media/platform/bcm2835/bcm2835-unicam.c b/drivers/media/platform/bcm2835/bcm2835-unicam.c
+index 0e1d525a0b35..c7e211d04ed3 100644
+--- a/drivers/media/platform/bcm2835/bcm2835-unicam.c
++++ b/drivers/media/platform/bcm2835/bcm2835-unicam.c
+@@ -2204,9 +2204,6 @@ static int unicam_release(struct file *file)
+ 	if (fh_singular)
+ 		v4l2_subdev_call(sd, core, s_power, 0);
+ 
+-	if (node->streaming)
+-		unicam_stop_streaming(&node->buffer_queue);
+-
+ 	node->open--;
+ 	mutex_unlock(&node->lock);
+ 
+-- 
+2.31.1
+

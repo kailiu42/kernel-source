@@ -1,0 +1,49 @@
+Git-commit: 14da43753b4c030775f5183b504b2ea6742a5536
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Mon, 28 Dec 2020 06:54:18 +0000
+Subject: [PATCH] usb: mtu3: fix memory corruption in mtu3_debugfs_regset()
+Patch-mainline: v5.10.3
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.3
+commit 4cfc27cb56208be233915bb524198a5f1da4679a
+bugzilla: 46871
+
+--------------------------------
+
+commit 3f6f6343a29d9ea7429306b83b18e66dc1331d5c upstream.
+
+This code is using the wrong sizeof() so it does not allocate enough
+memory.  It allocates 32 bytes but 72 are required.  That will lead to
+memory corruption.
+
+Fixes: ae07809255d3 ("usb: mtu3: add debugfs interface files")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Link: https://lore.kernel.org/r/X8ikqc4Mo2/0G72j@mwanda
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/usb/mtu3/mtu3_debugfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/mtu3/mtu3_debugfs.c b/drivers/usb/mtu3/mtu3_debugfs.c
+index fdeade6254ae..7537bfd651af 100644
+--- a/drivers/usb/mtu3/mtu3_debugfs.c
++++ b/drivers/usb/mtu3/mtu3_debugfs.c
+@@ -127,7 +127,7 @@ static void mtu3_debugfs_regset(struct mtu3 *mtu, void __iomem *base,
+ 	struct debugfs_regset32 *regset;
+ 	struct mtu3_regset *mregs;
+ 
+-	mregs = devm_kzalloc(mtu->dev, sizeof(*regset), GFP_KERNEL);
++	mregs = devm_kzalloc(mtu->dev, sizeof(*mregs), GFP_KERNEL);
+ 	if (!mregs)
+ 		return;
+ 
+-- 
+2.31.1
+

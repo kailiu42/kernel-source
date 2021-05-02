@@ -1,0 +1,42 @@
+Git-commit: 1aafff94a34d2c131356c75bb20257b5ef7246ef
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Thu, 25 Jun 2020 17:53:32 +0100
+Subject: [PATCH] media: bcm2835-unicam: Add support for 12bit mono packed
+ format
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Now that V4L2_PIX_FMT_Y12P is defined, allow passing raw 12bit
+mono packed data through the peripheral.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/platform/bcm2835/bcm2835-unicam.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/bcm2835/bcm2835-unicam.c b/drivers/media/platform/bcm2835/bcm2835-unicam.c
+index a65e1da55142..5edb58cc9f03 100644
+--- a/drivers/media/platform/bcm2835/bcm2835-unicam.c
++++ b/drivers/media/platform/bcm2835/bcm2835-unicam.c
+@@ -336,7 +336,7 @@ static const struct unicam_fmt formats[] = {
+ 		.depth		= 10,
+ 		.csi_dt		= 0x2b,
+ 	}, {
+-		/* NB There is no packed V4L2 fourcc for this format. */
++		.fourcc		= V4L2_PIX_FMT_Y12P,
+ 		.repacked_fourcc = V4L2_PIX_FMT_Y12,
+ 		.code		= MEDIA_BUS_FMT_Y12_1X12,
+ 		.depth		= 12,
+-- 
+2.31.1
+

@@ -1,0 +1,44 @@
+Git-commit: 31a066b751561f69255b10c6e2300a4309a941ca
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 25 Jan 2016 17:25:12 +0000
+Subject: [PATCH] firmware: Updated mailbox header
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ include/soc/bcm2835/raspberrypi-firmware.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
+index cc9cdbc66403..212cceffcc5c 100644
+--- a/include/soc/bcm2835/raspberrypi-firmware.h
++++ b/include/soc/bcm2835/raspberrypi-firmware.h
+@@ -9,6 +9,8 @@
+ #include <linux/types.h>
+ #include <linux/of_device.h>
+ 
++#define RPI_FIRMWARE_CHAN_FB		1
++
+ struct rpi_firmware;
+ 
+ enum rpi_firmware_property_status {
+@@ -159,5 +161,6 @@ static inline struct rpi_firmware *rpi_firmware_get(struct device_node *firmware
+ 	return NULL;
+ }
+ #endif
++int rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data);
+ 
+ #endif /* __SOC_RASPBERRY_FIRMWARE_H__ */
+-- 
+2.31.1
+

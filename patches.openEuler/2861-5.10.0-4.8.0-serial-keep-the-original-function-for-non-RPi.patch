@@ -1,0 +1,126 @@
+Git-commit: 459ac03f23fab54d848e276b1d619f055dd2d19c
+From: Fang Yafen <yafen@iscas.ac.cn>
+Date: Wed, 3 Mar 2021 15:43:05 +0800
+Subject: [PATCH] serial: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following serial related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+239d5fc76 amba_pl011: Round input clock up
+05884dbf4 amba_pl011: Insert mb() for correct FIFO handling
+1309c3c7d amba_pl011: Add cts-event-workaround DT property
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/tty/serial/amba-pl011.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 760301512509..ab73cb93eb68 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -1407,7 +1407,9 @@ static bool pl011_tx_char(struct uart_amba_port *uap, unsigned char c,
+ 		return false; /* unable to transmit character */
+ 
+ 	pl011_write(c, uap, REG_DR);
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	mb();
++#endif
+ 	uap->port.icount.tx++;
+ 
+ 	return true;
+@@ -1678,6 +1680,7 @@ static void pl011_put_poll_char(struct uart_port *port,
+ 
+ #endif /* CONFIG_CONSOLE_POLL */
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ unsigned long pl011_clk_round(unsigned long clk)
+ {
+ 	unsigned long scaler;
+@@ -1694,6 +1697,7 @@ unsigned long pl011_clk_round(unsigned long clk)
+ 
+ 	return clk;
+ }
++#endif
+ 
+ static int pl011_hwinit(struct uart_port *port)
+ {
+@@ -1711,7 +1715,11 @@ static int pl011_hwinit(struct uart_port *port)
+ 	if (retval)
+ 		return retval;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	uap->port.uartclk = pl011_clk_round(clk_get_rate(uap->clk));
++#else
++	uap->port.uartclk = clk_get_rate(uap->clk);
++#endif
+ 
+ 	/* Clear pending error and receive interrupts */
+ 	pl011_write(UART011_OEIS | UART011_BEIS | UART011_PEIS |
+@@ -2368,7 +2376,11 @@ static int pl011_console_setup(struct console *co, char *options)
+ 			plat->init();
+ 	}
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	uap->port.uartclk = pl011_clk_round(clk_get_rate(uap->clk));
++#else
++	uap->port.uartclk = clk_get_rate(uap->clk);
++#endif
+ 
+ 	if (uap->vendor->fixed_options) {
+ 		baud = uap->fixed_baud;
+@@ -2585,7 +2597,7 @@ static struct uart_driver amba_reg = {
+ 	.cons			= AMBA_CONSOLE,
+ };
+ 
+-#if 0
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
+ static int pl011_probe_dt_alias(int index, struct device *dev)
+ {
+ 	struct device_node *np;
+@@ -2656,12 +2668,16 @@ static int pl011_setup_port(struct device *dev, struct uart_amba_port *uap,
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	/* Don't use DT serial<n> aliases - it causes the device to
+ 	   be renumbered to ttyAMA1 if it is the second serial port in the
+ 	   system, even though the other one is ttyS0. The 8250 driver
+ 	   doesn't use this logic, so always remains ttyS0.
+ 	index = pl011_probe_dt_alias(index, dev);
+ 	*/
++#else
++	index = pl011_probe_dt_alias(index, dev);
++#endif
+ 
+ 	uap->old_cr = 0;
+ 	uap->port.dev = dev;
+@@ -2723,10 +2739,12 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	if (IS_ERR(uap->clk))
+ 		return PTR_ERR(uap->clk);
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (of_property_read_bool(dev->dev.of_node, "cts-event-workaround")) {
+ 	    vendor->cts_event_workaround = true;
+ 	    dev_info(&dev->dev, "cts_event_workaround enabled\n");
+ 	}
++#endif
+ 
+ 	uap->reg_offset = vendor->reg_offset;
+ 	uap->vendor = vendor;
+-- 
+2.31.1
+

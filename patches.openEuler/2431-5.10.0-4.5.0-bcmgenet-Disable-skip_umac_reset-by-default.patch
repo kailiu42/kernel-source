@@ -1,0 +1,40 @@
+Git-commit: 732b8896f4a5339fce476fd0572f2ac9de01c514
+From: popcornmix <popcornmix@gmail.com>
+Date: Wed, 1 Apr 2020 11:22:44 +0100
+Subject: [PATCH] bcmgenet: Disable skip_umac_reset by default
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Possible fixed upstream by 'net: bcmgenet: keep MAC in reset until PHY is up'
+
+Signed-off-by: popcornmix <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+index 8336558e4738..ae7011c1e1f7 100644
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -67,7 +67,7 @@
+ 
+ /* Forward declarations */
+ static void bcmgenet_set_rx_mode(struct net_device *dev);
+-static bool skip_umac_reset = true;
++static bool skip_umac_reset = false;
+ module_param(skip_umac_reset, bool, 0444);
+ MODULE_PARM_DESC(skip_umac_reset, "Skip UMAC reset step");
+ 
+-- 
+2.31.1
+

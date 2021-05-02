@@ -1,0 +1,516 @@
+Git-commit: 0d753f510f996b2cabb43a0d848c41fe509df9ad
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Wed, 10 Mar 2021 23:28:06 +0800
+Subject: [PATCH] arm: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.10.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following arch arm related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+d5c13edbd8 Improve __copy_to_user and __copy_from_user performance
+97145d2a6a Update vfpmodule.c
+bffc462cbd Main bcm2708/bcm2709 linux port
+588cfce788 cache: export clean and invalidate
+41cd350cca ARM: Activate FIQs to avoid __irq_startup warnings
+90607c7aaf ARM: proc-v7: Force misalignment of early stmia
+ee46d0fadf reboot: Use power off rather than busy spinning when
+halt is requested
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/include/asm/string.h      |  2 ++
+ arch/arm/include/asm/uaccess.h     |  2 ++
+ arch/arm/kernel/fiq.c              |  4 ++++
+ arch/arm/kernel/reboot.c           |  6 ++++++
+ arch/arm/lib/Makefile              | 15 +++++++++++++++
+ arch/arm/lib/copy_from_user.S      |  6 ++++++
+ arch/arm/lib/uaccess_with_memcpy.c | 22 +++++++++++++++++++++-
+ arch/arm/mm/cache-v6.S             |  8 ++++++++
+ arch/arm/mm/cache-v7.S             |  8 ++++++++
+ arch/arm/mm/proc-v6.S              |  8 ++++++++
+ arch/arm/mm/proc-v7.S              |  8 ++++++++
+ arch/arm/vfp/vfpmodule.c           | 26 ++++++++++++++++++++++++++
+ 12 files changed, 114 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/include/asm/string.h b/arch/arm/include/asm/string.h
+index c22d5869e7b6..3c4ae6b3c3a6 100644
+--- a/arch/arm/include/asm/string.h
++++ b/arch/arm/include/asm/string.h
+@@ -45,10 +45,12 @@ static inline void *memset64(uint64_t *p, uint64_t v, __kernel_size_t n)
+ 	return __memset64(p, v, n * 8, v >> 32);
+ }
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ #ifdef CONFIG_BCM2835_FAST_MEMCPY
+ #define __HAVE_ARCH_MEMCMP
+ extern int memcmp(const void *, const void *, size_t);
+ #endif
++#endif
+ 
+ /*
+  * For files that are not instrumented (e.g. mm/slub.c) we
+diff --git a/arch/arm/include/asm/uaccess.h b/arch/arm/include/asm/uaccess.h
+index f24d3fabccd6..0d8cba7a9dde 100644
+--- a/arch/arm/include/asm/uaccess.h
++++ b/arch/arm/include/asm/uaccess.h
+@@ -516,8 +516,10 @@ do {									\
+ extern unsigned long __must_check
+ arm_copy_from_user(void *to, const void __user *from, unsigned long n);
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ extern unsigned long __must_check
+ __copy_from_user_std(void *to, const void __user *from, unsigned long n);
++#endif
+ 
+ static inline unsigned long __must_check
+ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+diff --git a/arch/arm/kernel/fiq.c b/arch/arm/kernel/fiq.c
+index c3fe7d3cf482..8116f1e52e1b 100644
+--- a/arch/arm/kernel/fiq.c
++++ b/arch/arm/kernel/fiq.c
+@@ -56,7 +56,9 @@
+ static unsigned long dfl_fiq_insn;
+ static struct pt_regs dfl_fiq_regs;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ extern int irq_activate(struct irq_desc *desc);
++#endif
+ 
+ /* Default reacquire function
+  * - we always relinquish FIQ control
+@@ -142,8 +144,10 @@ static int fiq_start;
+ 
+ void enable_fiq(int fiq)
+ {
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	struct irq_desc *desc = irq_to_desc(fiq + fiq_start);
+ 	irq_activate(desc);
++#endif
+ 	enable_irq(fiq + fiq_start);
+ }
+ 
+diff --git a/arch/arm/kernel/reboot.c b/arch/arm/kernel/reboot.c
+index 63373adab475..ffb170568dcc 100644
+--- a/arch/arm/kernel/reboot.c
++++ b/arch/arm/kernel/reboot.c
+@@ -102,7 +102,13 @@ void machine_shutdown(void)
+  */
+ void machine_halt(void)
+ {
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	machine_power_off();
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++	local_irq_disable();
++	smp_send_stop();
++	while (1);
++#endif
+ }
+ 
+ /*
+diff --git a/arch/arm/lib/Makefile b/arch/arm/lib/Makefile
+index 8271cde92dec..63820a487d4b 100644
+--- a/arch/arm/lib/Makefile
++++ b/arch/arm/lib/Makefile
+@@ -5,6 +5,7 @@
+ # Copyright (C) 1995-2000 Russell King
+ #
+ 
++ifeq ($(CONFIG_OPENEULER_RASPBERRYPI),y)
+ lib-y		:= changebit.o csumipv6.o csumpartial.o               \
+ 		   csumpartialcopy.o csumpartialcopyuser.o clearbit.o \
+ 		   delay.o delay-loop.o findbit.o memchr.o            \
+@@ -15,6 +16,18 @@ lib-y		:= changebit.o csumipv6.o csumpartial.o               \
+ 		   ucmpdi2.o lib1funcs.o div64.o                      \
+ 		   io-readsb.o io-writesb.o io-readsl.o io-writesl.o  \
+ 		   call_with_stack.o bswapsdi2.o
++else
++lib-y		:= changebit.o csumipv6.o csumpartial.o               \
++		   csumpartialcopy.o csumpartialcopyuser.o clearbit.o \
++		   delay.o delay-loop.o findbit.o memchr.o memcpy.o   \
++		   memmove.o memset.o setbit.o                        \
++		   strchr.o strrchr.o                                 \
++		   testchangebit.o testclearbit.o testsetbit.o        \
++		   ashldi3.o ashrdi3.o lshrdi3.o muldi3.o             \
++		   ucmpdi2.o lib1funcs.o div64.o                      \
++		   io-readsb.o io-writesb.o io-readsl.o io-writesl.o  \
++		   call_with_stack.o bswapsdi2.o
++endif
+ 
+ mmu-y		:= clear_user.o copy_page.o getuser.o putuser.o       \
+ 		   copy_from_user.o copy_to_user.o
+@@ -25,6 +38,7 @@ else
+   lib-y	+= backtrace.o
+ endif
+ 
++ifeq ($(CONFIG_OPENEULER_RASPBERRYPI),y)
+ # Choose optimised implementations for Raspberry Pi
+ ifeq ($(CONFIG_BCM2835_FAST_MEMCPY),y)
+   CFLAGS_uaccess_with_memcpy.o += -DCOPY_FROM_USER_THRESHOLD=1600
+@@ -34,6 +48,7 @@ ifeq ($(CONFIG_BCM2835_FAST_MEMCPY),y)
+ else
+   lib-y        += memcpy.o memmove.o memset.o
+ endif
++endif
+ 
+ # using lib_ here won't override already available weak symbols
+ obj-$(CONFIG_UACCESS_WITH_MEMCPY) += uaccess_with_memcpy.o
+diff --git a/arch/arm/lib/copy_from_user.S b/arch/arm/lib/copy_from_user.S
+index ab7bf28dbec0..3f83d8b18b0d 100644
+--- a/arch/arm/lib/copy_from_user.S
++++ b/arch/arm/lib/copy_from_user.S
+@@ -107,8 +107,12 @@
+ 
+ 	.text
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ ENTRY(__copy_from_user_std)
+ WEAK(arm_copy_from_user)
++#else
++ENTRY(arm_copy_from_user)
++#endif
+ #ifdef CONFIG_CPU_SPECTRE
+ 	get_thread_info r3
+ 	ldr	r3, [r3, #TI_ADDR_LIMIT]
+@@ -118,7 +122,9 @@ WEAK(arm_copy_from_user)
+ #include "copy_template.S"
+ 
+ ENDPROC(arm_copy_from_user)
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ ENDPROC(__copy_from_user_std)
++#endif
+ 
+ 	.pushsection .text.fixup,"ax"
+ 	.align 0
+diff --git a/arch/arm/lib/uaccess_with_memcpy.c b/arch/arm/lib/uaccess_with_memcpy.c
+index b483e5713039..ab15ed7f599a 100644
+--- a/arch/arm/lib/uaccess_with_memcpy.c
++++ b/arch/arm/lib/uaccess_with_memcpy.c
+@@ -19,6 +19,7 @@
+ #include <asm/current.h>
+ #include <asm/page.h>
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ #ifndef COPY_FROM_USER_THRESHOLD
+ #define COPY_FROM_USER_THRESHOLD 64
+ #endif
+@@ -26,6 +27,7 @@
+ #ifndef COPY_TO_USER_THRESHOLD
+ #define COPY_TO_USER_THRESHOLD 64
+ #endif
++#endif
+ 
+ static int
+ pin_page_for_write(const void __user *_addr, pte_t **ptep, spinlock_t **ptlp)
+@@ -51,7 +53,11 @@ pin_page_for_write(const void __user *_addr, pte_t **ptep, spinlock_t **ptlp)
+ 		return 0;
+ 
+ 	pmd = pmd_offset(pud, addr);
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (unlikely(pmd_none(*pmd) || pmd_bad(*pmd)))
++#else
++	if (unlikely(pmd_none(*pmd)))
++#endif
+ 		return 0;
+ 
+ 	/*
+@@ -94,6 +100,7 @@ pin_page_for_write(const void __user *_addr, pte_t **ptep, spinlock_t **ptlp)
+ 	return 1;
+ }
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static int
+ pin_page_for_read(const void __user *_addr, pte_t **ptep, spinlock_t **ptlp)
+ {
+@@ -132,8 +139,13 @@ pin_page_for_read(const void __user *_addr, pte_t **ptep, spinlock_t **ptlp)
+ 
+ 	return 1;
+ }
++#endif
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ unsigned long noinline
++#else
++static unsigned long noinline
++#endif
+ __copy_to_user_memcpy(void __user *to, const void *from, unsigned long n)
+ {
+ 	unsigned long ua_flags;
+@@ -186,6 +198,7 @@ __copy_to_user_memcpy(void __user *to, const void *from, unsigned long n)
+ 	return n;
+ }
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ unsigned long noinline
+ __copy_from_user_memcpy(void *to, const void __user *from, unsigned long n)
+ {
+@@ -236,6 +249,7 @@ __copy_from_user_memcpy(void *to, const void __user *from, unsigned long n)
+ out:
+ 	return n;
+ }
++#endif
+ 
+ unsigned long
+ arm_copy_to_user(void __user *to, const void *from, unsigned long n)
+@@ -247,7 +261,11 @@ arm_copy_to_user(void __user *to, const void *from, unsigned long n)
+ 	 * With frame pointer disabled, tail call optimization kicks in
+ 	 * as well making this test almost invisible.
+ 	 */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (n < COPY_TO_USER_THRESHOLD) {
++#else
++	if (n < 64) {
++#endif
+ 		unsigned long ua_flags = uaccess_save_and_enable();
+ 		n = __copy_to_user_std(to, from, n);
+ 		uaccess_restore(ua_flags);
+@@ -258,6 +276,7 @@ arm_copy_to_user(void __user *to, const void *from, unsigned long n)
+ 	return n;
+ }
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ unsigned long __must_check
+ arm_copy_from_user(void *to, const void __user *from, unsigned long n)
+ {
+@@ -283,7 +302,8 @@ arm_copy_from_user(void *to, const void __user *from, unsigned long n)
+ #endif
+ 	return n;
+ }
+-	
++#endif
++
+ static unsigned long noinline
+ __clear_user_memset(void __user *addr, unsigned long n)
+ {
+diff --git a/arch/arm/mm/cache-v6.S b/arch/arm/mm/cache-v6.S
+index 868011801521..614d4ff2a760 100644
+--- a/arch/arm/mm/cache-v6.S
++++ b/arch/arm/mm/cache-v6.S
+@@ -198,7 +198,11 @@ ENTRY(v6_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ ENTRY(v6_dma_inv_range)
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++v6_dma_inv_range:
++#endif
+ #ifdef CONFIG_DMA_CACHE_RWFO
+ 	ldrb	r2, [r0]			@ read for ownership
+ 	strb	r2, [r0]			@ write for ownership
+@@ -243,7 +247,11 @@ ENTRY(v6_dma_inv_range)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ ENTRY(v6_dma_clean_range)
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++v6_dma_clean_range:
++#endif
+ 	bic	r0, r0, #D_CACHE_LINE_SIZE - 1
+ 1:
+ #ifdef CONFIG_DMA_CACHE_RWFO
+diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
+index 536df5db66e4..58df59734e40 100644
+--- a/arch/arm/mm/cache-v7.S
++++ b/arch/arm/mm/cache-v7.S
+@@ -363,8 +363,12 @@ ENDPROC(v7_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ ENTRY(b15_dma_inv_range)
+ ENTRY(v7_dma_inv_range)
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++v7_dma_inv_range:
++#endif
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	tst	r0, r3
+@@ -394,8 +398,12 @@ ENDPROC(v7_dma_inv_range)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ ENTRY(b15_dma_clean_range)
+ ENTRY(v7_dma_clean_range)
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++v7_dma_clean_range:
++#endif
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	bic	r0, r0, r3
+diff --git a/arch/arm/mm/proc-v6.S b/arch/arm/mm/proc-v6.S
+index b3a2fce22eac..b651eaa1ee40 100644
+--- a/arch/arm/mm/proc-v6.S
++++ b/arch/arm/mm/proc-v6.S
+@@ -71,6 +71,7 @@ ENDPROC(cpu_v6_reset)
+  *	IRQs are already disabled.
+  */
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ /* See jira SW-5991 for details of this workaround */
+ ENTRY(cpu_v6_do_idle)
+ 	.align 5
+@@ -84,6 +85,13 @@ ENTRY(cpu_v6_do_idle)
+ 	nop
+ 	bne 1b
+ 	ret	lr
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++ENTRY(cpu_v6_do_idle)
++	mov     r1, #0
++	mcr     p15, 0, r1, c7, c10, 4          @ DWB - WFI may enter a low-power mode
++	mcr     p15, 0, r1, c7, c0, 4           @ wait for interrupt
++	ret     lr
++#endif
+ 
+ ENTRY(cpu_v6_dcache_clean_area)
+ 1:	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
+diff --git a/arch/arm/mm/proc-v7.S b/arch/arm/mm/proc-v7.S
+index 3e77e8982df3..ef0e00249515 100644
+--- a/arch/arm/mm/proc-v7.S
++++ b/arch/arm/mm/proc-v7.S
+@@ -287,8 +287,10 @@ __v7_ca17mp_setup:
+ 	mov	r10, #0
+ 1:	adr	r0, __v7_setup_stack_ptr
+ 	ldr	r12, [r0]
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	tst	r12, #0x1f
+ 	addeq	r12, r12, #4
++#endif
+ 	add	r12, r12, r0			@ the local stack
+ 	stmia	r12, {r1-r6, lr}		@ v7_invalidate_l1 touches r0-r6
+ 	bl      v7_invalidate_l1
+@@ -476,8 +478,10 @@ __v7_setup:
+ 	adr	r0, __v7_setup_stack_ptr
+ 	ldr	r12, [r0]
+ 	add	r12, r12, r0			@ the local stack
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	tst	r12, #0x1f
+ 	addeq	r12, r12, #4
++#endif
+ 	stmia	r12, {r1-r6, lr}		@ v7_invalidate_l1 touches r0-r6
+ 	bl      v7_invalidate_l1
+ 	ldmia	r12, {r1-r6, lr}
+@@ -561,7 +565,11 @@ ENDPROC(__v7_setup)
+ 	.bss
+ 	.align	2
+ __v7_setup_stack:
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	.space	4 * 8				@ 7 registers + 1 spare
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++	.space	4 * 7				@ 7 registers
++#endif
+ 
+ 	__INITDATA
+ 
+diff --git a/arch/arm/vfp/vfpmodule.c b/arch/arm/vfp/vfpmodule.c
+index 1e2dcf81aefa..f7238e00db7c 100644
+--- a/arch/arm/vfp/vfpmodule.c
++++ b/arch/arm/vfp/vfpmodule.c
+@@ -176,11 +176,16 @@ static int vfp_notifier(struct notifier_block *self, unsigned long cmd, void *v)
+ 		 * case the thread migrates to a different CPU. The
+ 		 * restoring is done lazily.
+ 		 */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		if ((fpexc & FPEXC_EN) && vfp_current_hw_state[cpu]) {
+ 			/* vfp_save_state oopses on VFP11 if EX bit set */
+ 			fmxr(FPEXC, fpexc & ~FPEXC_EX);
+ 			vfp_save_state(vfp_current_hw_state[cpu], fpexc);
+ 		}
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++		if ((fpexc & FPEXC_EN) && vfp_current_hw_state[cpu])
++			vfp_save_state(vfp_current_hw_state[cpu], fpexc);
++#endif
+ #endif
+ 
+ 		/*
+@@ -457,16 +462,22 @@ static int vfp_pm_suspend(void)
+ 	/* if vfp is on, then save state for resumption */
+ 	if (fpexc & FPEXC_EN) {
+ 		pr_debug("%s: saving vfp state\n", __func__);
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		/* vfp_save_state oopses on VFP11 if EX bit set */
+ 		fmxr(FPEXC, fpexc & ~FPEXC_EX);
++#endif
+ 		vfp_save_state(&ti->vfpstate, fpexc);
+ 
+ 		/* disable, just in case */
+ 		fmxr(FPEXC, fmrx(FPEXC) & ~FPEXC_EN);
+ 	} else if (vfp_current_hw_state[ti->cpu]) {
+ #ifndef CONFIG_SMP
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		/* vfp_save_state oopses on VFP11 if EX bit set */
+ 		fmxr(FPEXC, (fpexc & ~FPEXC_EX) | FPEXC_EN);
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++		fmxr(FPEXC, fpexc | FPEXC_EN);
++#endif
+ 		vfp_save_state(vfp_current_hw_state[ti->cpu], fpexc);
+ 		fmxr(FPEXC, fpexc);
+ #endif
+@@ -529,8 +540,12 @@ void vfp_sync_hwstate(struct thread_info *thread)
+ 		/*
+ 		 * Save the last VFP state on this CPU.
+ 		 */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		/* vfp_save_state oopses on VFP11 if EX bit set */
+ 		fmxr(FPEXC, (fpexc & ~FPEXC_EX) | FPEXC_EN);
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++		fmxr(FPEXC, fpexc | FPEXC_EN);
++#endif
+ 		vfp_save_state(&thread->vfpstate, fpexc | FPEXC_EN);
+ 		fmxr(FPEXC, fpexc);
+ 	}
+@@ -596,7 +611,9 @@ int vfp_restore_user_hwstate(struct user_vfp *ufp, struct user_vfp_exc *ufp_exc)
+ 	struct thread_info *thread = current_thread_info();
+ 	struct vfp_hard_struct *hwstate = &thread->vfpstate.hard;
+ 	unsigned long fpexc;
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	u32 fpsid = fmrx(FPSID);
++#endif
+ 
+ 	/* Disable VFP to avoid corrupting the new thread state. */
+ 	vfp_flush_hwstate(thread);
+@@ -619,11 +636,16 @@ int vfp_restore_user_hwstate(struct user_vfp *ufp, struct user_vfp_exc *ufp_exc)
+ 	/* Ensure the VFP is enabled. */
+ 	fpexc |= FPEXC_EN;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	/* Mask FPXEC_EX and FPEXC_FP2V if not required by VFP arch */
+ 	if ((fpsid & FPSID_ARCH_MASK) != (1 << FPSID_ARCH_BIT)) {
+ 		/* Ensure FPINST2 is invalid and the exception flag is cleared. */
+ 		fpexc &= ~(FPEXC_EX | FPEXC_FP2V);
+ 	}
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++	/* Ensure FPINST2 is invalid and the exception flag is cleared. */
++	fpexc &= ~(FPEXC_EX | FPEXC_FP2V);
++#endif
+ 
+ 	hwstate->fpexc = fpexc;
+ 
+@@ -738,8 +760,12 @@ void kernel_neon_begin(void)
+ 	cpu = get_cpu();
+ 
+ 	fpexc = fmrx(FPEXC) | FPEXC_EN;
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	/* vfp_save_state oopses on VFP11 if EX bit set */
+ 	fmxr(FPEXC, fpexc & ~FPEXC_EX);
++#else /* !CONFIG_OPENEULER_RASPBERRYPI */
++	fmxr(FPEXC, fpexc);
++#endif
+ 
+ 	/*
+ 	 * Save the userland NEON/VFP state. Under UP,
+-- 
+2.31.1
+

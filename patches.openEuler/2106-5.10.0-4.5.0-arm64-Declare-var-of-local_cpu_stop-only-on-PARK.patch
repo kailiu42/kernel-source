@@ -1,0 +1,45 @@
+Git-commit: cf6340399d3b97e0ddb696c3153a87e2da4c52c4
+From: Sang Yan <sangyan@huawei.com>
+Date: Mon, 1 Mar 2021 10:41:16 +0800
+Subject: [PATCH] arm64: Declare var of local_cpu_stop only on PARK
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48159
+CVE: N/A
+
+Fix compile warning: unused variable 'ops' 'cpu'
+while CONFIG_ARM64_CPU_PARK=n.
+
+Put declaration of 'ops' and 'cpu' under
+CONFIG_ARM64_CPU_PARK in local_cpu_stop.
+
+Signed-off-by: Sang Yan <sangyan@huawei.com>
+Reviewed-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 644bbd71787b..d7b750afcf40 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -1024,8 +1024,10 @@ void arch_irq_work_raise(void)
+ 
+ static void local_cpu_stop(void)
+ {
++#ifdef CONFIG_ARM64_CPU_PARK
+ 	int cpu;
+ 	const struct cpu_operations *ops = NULL;
++#endif
+ 
+ 	set_cpu_online(smp_processor_id(), false);
+ 
+-- 
+2.31.1
+

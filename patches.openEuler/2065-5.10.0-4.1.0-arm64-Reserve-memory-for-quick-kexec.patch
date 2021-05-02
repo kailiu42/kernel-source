@@ -1,0 +1,108 @@
+Git-commit: cbaf3d9ca458b306c335a8669a1d2d8a792b6002
+From: Sang Yan <sangyan@huawei.com>
+Date: Fri, 19 Feb 2021 17:23:38 +0800
+Subject: [PATCH] arm64: Reserve memory for quick kexec
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.1.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48159
+CVE: N/A
+
+------------------------------
+
+Reserve memory for quick kexec on arm64
+with cmdline "quickkexec=".
+
+Signed-off-by: Sang Yan <sangyan@huawei.com>
+Reviewed-by: Jing Xiangfeng <jingxiangfeng@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/setup.c |  6 ++++++
+ arch/arm64/mm/init.c      | 43 +++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 49 insertions(+)
+
+diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
+index 2ffe8d936d94..c1f1fb91e4ce 100644
+--- a/arch/arm64/kernel/setup.c
++++ b/arch/arm64/kernel/setup.c
+@@ -253,6 +253,12 @@ static void __init request_standard_resources(void)
+ 		if (crashk_res.end && crashk_res.start >= res->start &&
+ 		    crashk_res.end <= res->end)
+ 			request_resource(res, &crashk_res);
++#endif
++#ifdef CONFIG_QUICK_KEXEC
++		if (quick_kexec_res.end &&
++		    quick_kexec_res.start >= res->start &&
++		    quick_kexec_res.end <= res->end)
++			request_resource(res, &quick_kexec_res);
+ #endif
+ 	}
+ }
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 794f992cb200..b4d124d19c15 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -129,6 +129,45 @@ static void __init reserve_elfcorehdr(void)
+ }
+ #endif /* CONFIG_CRASH_DUMP */
+ 
++#ifdef CONFIG_QUICK_KEXEC
++static int __init parse_quick_kexec(char *p)
++{
++	if (!p)
++		return 0;
++
++	quick_kexec_res.end = PAGE_ALIGN(memparse(p, NULL));
++
++	return 0;
++}
++early_param("quickkexec", parse_quick_kexec);
++
++static void __init reserve_quick_kexec(void)
++{
++	unsigned long long mem_start, mem_len;
++
++	mem_len = quick_kexec_res.end;
++	if (mem_len == 0)
++		return;
++
++	/* Current arm64 boot protocol requires 2MB alignment */
++	mem_start = memblock_find_in_range(0, arm64_dma32_phys_limit,
++			mem_len, SZ_2M);
++	if (mem_start == 0) {
++		pr_warn("cannot allocate quick kexec mem (size:0x%llx)\n",
++			mem_len);
++		quick_kexec_res.end = 0;
++		return;
++	}
++
++	memblock_reserve(mem_start, mem_len);
++	pr_info("quick kexec mem reserved: 0x%016llx - 0x%016llx (%lld MB)\n",
++		mem_start, mem_start + mem_len,	mem_len >> 20);
++
++	quick_kexec_res.start = mem_start;
++	quick_kexec_res.end = mem_start + mem_len - 1;
++}
++#endif
++
+ /*
+  * Return the maximum physical address for a zone with a given address size
+  * limit. It currently assumes that for memory starting above 4G, 32-bit
+@@ -357,6 +396,10 @@ void __init arm64_memblock_init(void)
+ 
+ 	reserve_crashkernel();
+ 
++#ifdef CONFIG_QUICK_KEXEC
++	reserve_quick_kexec();
++#endif
++
+ 	reserve_elfcorehdr();
+ 
+ 	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
+-- 
+2.31.1
+

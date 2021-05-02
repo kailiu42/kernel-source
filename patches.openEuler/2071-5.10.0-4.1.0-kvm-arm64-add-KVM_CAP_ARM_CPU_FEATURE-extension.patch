@@ -1,0 +1,56 @@
+Git-commit: 65c845c8cb3f9cb3d059f0ed091ca1a0c90844e0
+From: Peng Liang <liangpeng10@huawei.com>
+Date: Mon, 8 Feb 2021 17:16:34 +0800
+Subject: [PATCH] kvm: arm64: add KVM_CAP_ARM_CPU_FEATURE extension
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.1.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48052
+CVE: NA
+
+------------------------------
+
+Add KVM_CAP_ARM_CPU_FEATURE extension for userpace to check whether KVM
+supports to set CPU features in AArch64.
+
+Signed-off-by: zhanghailiang <zhang.zhanghailiang@huawei.com>
+Signed-off-by: Peng Liang <liangpeng10@huawei.com>
+Reviewed-by: Zhanghailiang <zhang.zhanghailiang@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kvm/arm.c     | 1 +
+ include/uapi/linux/kvm.h | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+index 0f7c5b7ba506..9a10693b3f94 100644
+--- a/arch/arm64/kvm/arm.c
++++ b/arch/arm64/kvm/arm.c
+@@ -198,6 +198,7 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
+ 	case KVM_CAP_ARM_IRQ_LINE_LAYOUT_2:
+ 	case KVM_CAP_ARM_NISV_TO_USER:
+ 	case KVM_CAP_ARM_INJECT_EXT_DABT:
++	case KVM_CAP_ARM_CPU_FEATURE:
+ 		r = 1;
+ 		break;
+ 	case KVM_CAP_ARM_SET_DEVICE_ADDR:
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index 9976b79da52a..3c0dcfed4835 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -1062,6 +1062,8 @@ struct kvm_ppc_resize_hpt {
+ #define KVM_CAP_X86_MSR_FILTER 189
+ #define KVM_CAP_ENFORCE_PV_FEATURE_CPUID 190
+ 
++#define KVM_CAP_ARM_CPU_FEATURE 555
++
+ #ifdef KVM_CAP_IRQ_ROUTING
+ 
+ struct kvm_irq_routing_irqchip {
+-- 
+2.31.1
+

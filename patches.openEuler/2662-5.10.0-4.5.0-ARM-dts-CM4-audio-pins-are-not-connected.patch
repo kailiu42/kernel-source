@@ -1,0 +1,38 @@
+Git-commit: 95a8fb81d4e33c7c2840a6023453c3ee8ab84f13
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Mon, 7 Dec 2020 09:35:57 +0000
+Subject: [PATCH] ARM: dts: CM4 audio pins are not connected
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/bcm2711-rpi-cm4.dts | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2711-rpi-cm4.dts b/arch/arm/boot/dts/bcm2711-rpi-cm4.dts
+index 49c69fdaef49..dbe8afe9ac5f 100644
+--- a/arch/arm/boot/dts/bcm2711-rpi-cm4.dts
++++ b/arch/arm/boot/dts/bcm2711-rpi-cm4.dts
+@@ -548,8 +548,6 @@ &phy1 {
+ 
+ &gpio {
+ 	audio_pins: audio_pins {
+-		brcm,pins = <40 41>;
+-		brcm,function = <4>;
+ 	};
+ };
+ 
+-- 
+2.31.1
+

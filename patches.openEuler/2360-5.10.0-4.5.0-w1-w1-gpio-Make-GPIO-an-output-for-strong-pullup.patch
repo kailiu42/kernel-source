@@ -1,0 +1,44 @@
+Git-commit: 51e2024432d28a49deebc7c4a3e5008dae3b9439
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Wed, 12 Jun 2019 17:15:05 +0100
+Subject: [PATCH] w1: w1-gpio: Make GPIO an output for strong pullup
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The logic to drive the data line high to implement a strong pullup
+assumed that the pin was already an output - setting a value does
+not change an input.
+
+See: https://github.com/raspberrypi/firmware/issues/1143
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/w1/masters/w1-gpio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/w1/masters/w1-gpio.c b/drivers/w1/masters/w1-gpio.c
+index d4632aace402..4832cd8c2596 100644
+--- a/drivers/w1/masters/w1-gpio.c
++++ b/drivers/w1/masters/w1-gpio.c
+@@ -30,7 +30,7 @@ static u8 w1_gpio_set_pullup(void *data, int delay)
+ 			 * This will OVERRIDE open drain emulation and force-pull
+ 			 * the line high for some time.
+ 			 */
+-			gpiod_set_raw_value(pdata->gpiod, 1);
++			gpiod_direction_output_raw(pdata->gpiod, 1);
+ 			msleep(pdata->pullup_duration);
+ 			/*
+ 			 * This will simply set the line as input since we are doing
+-- 
+2.31.1
+

@@ -1,0 +1,125 @@
+Git-commit: 9a25e80d93db8288366babc702b27561b694c6bc
+From: Fang Yafen <yafen@iscas.ac.cn>
+Date: Wed, 3 Mar 2021 21:34:45 +0800
+Subject: [PATCH] some drivers: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following mmc/spi driver related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+f3badb78578 of: overlay: Correct symbol path fixups
+8f15010859b mmc: sdhci: Silence MMC warnings
+893e457c2f0 spi: Force CS_HIGH if GPIO descriptors are used
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/mmc/host/sdhci.c | 15 +++++++++++++++
+ drivers/of/overlay.c     |  2 ++
+ drivers/spi/spi.c        |  4 ++++
+ 3 files changed, 21 insertions(+)
+
+diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
+index 97c6634ecf9c..81033eb8f866 100644
+--- a/drivers/mmc/host/sdhci.c
++++ b/drivers/mmc/host/sdhci.c
+@@ -40,8 +40,13 @@
+ #define DBG(f, x...) \
+ 	pr_debug("%s: " DRIVER_NAME ": " f, mmc_hostname(host->mmc), ## x)
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ #define SDHCI_DUMP(f, x...) \
+ 	pr_debug("%s: " DRIVER_NAME ": " f, mmc_hostname(host->mmc), ## x)
++#else
++#define SDHCI_DUMP(f, x...) \
++	pr_err("%s: " DRIVER_NAME ": " f, mmc_hostname(host->mmc), ## x)
++#endif
+ 
+ #define MAX_TUNING_LOOP 40
+ 
+@@ -3120,8 +3125,13 @@ static void sdhci_timeout_timer(struct timer_list *t)
+ 	spin_lock_irqsave(&host->lock, flags);
+ 
+ 	if (host->cmd && !sdhci_data_line_cmd(host->cmd)) {
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		pr_debug("%s: Timeout waiting for hardware cmd interrupt.\n",
+ 		       mmc_hostname(host->mmc));
++#else
++		pr_err("%s: Timeout waiting for hardware cmd interrupt.\n",
++		       mmc_hostname(host->mmc));
++#endif
+ 		sdhci_dumpregs(host);
+ 
+ 		host->cmd->error = -ETIMEDOUT;
+@@ -3142,8 +3152,13 @@ static void sdhci_timeout_data_timer(struct timer_list *t)
+ 
+ 	if (host->data || host->data_cmd ||
+ 	    (host->cmd && sdhci_data_line_cmd(host->cmd))) {
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		pr_debug("%s: Timeout waiting for hardware interrupt.\n",
+ 		       mmc_hostname(host->mmc));
++#else
++		pr_err("%s: Timeout waiting for hardware interrupt.\n",
++		       mmc_hostname(host->mmc));
++#endif
+ 		sdhci_dumpregs(host);
+ 
+ 		if (host->data) {
+diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
+index 7e585d201ba0..d4b68e560f22 100644
+--- a/drivers/of/overlay.c
++++ b/drivers/of/overlay.c
+@@ -245,8 +245,10 @@ static struct property *dup_and_fixup_symbol_prop(
+ 	if (!target_path)
+ 		return NULL;
+ 	target_path_len = strlen(target_path);
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (!strcmp(target_path, "/"))
+ 		target_path_len = 0;
++#endif
+ 
+ 	new_prop = kzalloc(sizeof(*new_prop), GFP_KERNEL);
+ 	if (!new_prop)
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 994576ff2da9..1c4d8b991657 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -3322,7 +3322,9 @@ static int __spi_validate_bits_per_word(struct spi_controller *ctlr,
+  */
+ int spi_setup(struct spi_device *spi)
+ {
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	struct spi_controller *ctlr = spi->controller;
++#endif
+ 	unsigned	bad_bits, ugly_bits;
+ 	int		status;
+ 
+@@ -3341,12 +3343,14 @@ int spi_setup(struct spi_device *spi)
+ 		 SPI_RX_DUAL | SPI_RX_QUAD | SPI_RX_OCTAL)))
+ 		return -EINVAL;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (ctlr->use_gpio_descriptors && ctlr->cs_gpiods &&
+ 	    ctlr->cs_gpiods[spi->chip_select] && !(spi->mode & SPI_CS_HIGH)) {
+ 		dev_dbg(&spi->dev,
+ 			"setup: forcing CS_HIGH (use_gpio_descriptors)\n");
+ 		spi->mode |= SPI_CS_HIGH;
+ 	}
++#endif
+ 
+ 	/* help drivers fail *cleanly* when they need options
+ 	 * that aren't supported with their current controller
+-- 
+2.31.1
+

@@ -1,0 +1,45 @@
+Git-commit: 5b5545b242e94d164b385e6d8df2d012201702ff
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Thu, 2 Jul 2020 13:53:20 +0100
+Subject: [PATCH] serial: 8250: bcm2835aux - defer if clock is zero
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+See: https://github.com/raspberrypi/linux/issues/3700
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/tty/serial/8250/8250_bcm2835aux.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index fd95860cd661..fc36e5963e30 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -148,6 +148,13 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	 */
+ 	up.port.uartclk = clk_get_rate(data->clk) * 2;
+ 
++	/* The clock is only queried at probe time, which means we get one shot
++	 * at this. A zero clock is never going to work and is almost certainly
++	 * due to a parent not being ready, so prefer to defer.
++	 */
++	if (!up.port.uartclk)
++	    return -EPROBE_DEFER;
++
+ 	/* register the port */
+ 	ret = serial8250_register_8250_port(&up);
+ 	if (ret < 0) {
+-- 
+2.31.1
+

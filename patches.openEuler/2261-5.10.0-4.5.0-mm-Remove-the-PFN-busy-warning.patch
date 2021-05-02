@@ -1,0 +1,42 @@
+Git-commit: 6e50000812a52861dc8063e8166d66119664a729
+From: Eric Anholt <eric@anholt.net>
+Date: Thu, 18 Dec 2014 16:07:15 -0800
+Subject: [PATCH] mm: Remove the PFN busy warning
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+See commit dae803e165a11bc88ca8dbc07a11077caf97bbcb -- the warning is
+expected sometimes when using CMA.  However, that commit still spams
+my kernel log with these warnings.
+
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ mm/page_alloc.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index e02a1096f621..df820235bc1f 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -8578,8 +8578,6 @@ int alloc_contig_range(unsigned long start, unsigned long end,
+ 
+ 	/* Make sure the range is really isolated. */
+ 	if (test_pages_isolated(outer_start, end, 0)) {
+-		pr_info_ratelimited("%s: [%lx, %lx) PFNs busy\n",
+-			__func__, outer_start, end);
+ 		ret = -EBUSY;
+ 		goto done;
+ 	}
+-- 
+2.31.1
+

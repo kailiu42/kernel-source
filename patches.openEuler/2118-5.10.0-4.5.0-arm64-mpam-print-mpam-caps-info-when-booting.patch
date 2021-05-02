@@ -1,0 +1,46 @@
+Git-commit: 83d8434b478943f948ff86a370c3d55c008cb2ba
+From: Xie XiuQi <xiexiuqi@huawei.com>
+Date: Fri, 26 Feb 2021 20:21:00 +0800
+Subject: [PATCH] arm64/mpam: print mpam caps info when booting
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+feature: ARM MPAM support
+bugzilla: 48265
+CVE: NA
+
+--------------------------------
+
+Signed-off-by: Xie XiuQi <xiexiuqi@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
+Reviewed-by: Cheng Jian <cj.chengjian@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/mpam.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/kernel/mpam.c b/arch/arm64/kernel/mpam.c
+index b83fd581fca7..4261c64f2a12 100644
+--- a/arch/arm64/kernel/mpam.c
++++ b/arch/arm64/kernel/mpam.c
+@@ -406,8 +406,10 @@ static __init bool get_rdt_mon_resources(void)
+ 
+ static __init bool get_resctrl_resources(void)
+ {
+-	if (!cpus_have_const_cap(ARM64_HAS_MPAM))
++	if (!cpus_have_const_cap(ARM64_HAS_MPAM)) {
++		pr_info("This cpu don't support MPAM feature: pfr0: %016llx\n", read_sysreg_s(SYS_ID_AA64PFR0_EL1));
+ 		return false;
++	}
+ 
+ 	rdt_alloc_capable = get_rdt_alloc_resources();
+ 	rdt_mon_capable = get_rdt_mon_resources();
+-- 
+2.31.1
+

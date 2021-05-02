@@ -1,0 +1,50 @@
+Git-commit: a1856639c18e43e3cc3d49ca0575621b3a783e73
+From: Mario Limonciello <mario.limonciello@dell.com>
+Date: Fri, 19 Feb 2021 16:40:24 +0800
+Subject: [PATCH] thunderbolt: Fix possible NULL pointer dereference in
+ tb_acpi_add_link()
+Patch-mainline: v5.10.15
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.15
+commit 0e5cb872fbbb32308ef5d71ea595ec42b8d2ac1b
+bugzilla: 48167
+
+--------------------------------
+
+commit 4d395c5e74398f664405819330e5a298da37f655 upstream.
+
+When we walk up the device hierarchy in tb_acpi_add_link() make sure we
+break the loop if the device has no parent. Otherwise we may crash the
+kernel by dereferencing a NULL pointer.
+
+Fixes: b2be2b05cf3b ("thunderbolt: Create device links from ACPI description")
+Cc: stable@vger.kernel.org
+Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
+Acked-by: Yehezkel Bernat <YehezkelShB@gmail.com>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/thunderbolt/acpi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
+index a5f988a9f948..b5442f979b4d 100644
+--- a/drivers/thunderbolt/acpi.c
++++ b/drivers/thunderbolt/acpi.c
+@@ -56,7 +56,7 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
+ 	 * managed with the xHCI and the SuperSpeed hub so we create the
+ 	 * link from xHCI instead.
+ 	 */
+-	while (!dev_is_pci(dev))
++	while (dev && !dev_is_pci(dev))
+ 		dev = dev->parent;
+ 
+ 	if (!dev)
+-- 
+2.31.1
+

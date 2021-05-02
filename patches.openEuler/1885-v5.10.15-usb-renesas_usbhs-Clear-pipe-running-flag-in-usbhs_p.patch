@@ -1,0 +1,49 @@
+Git-commit: 1560f8f8a810a83ff2db13aa98f58399b1ab6e7f
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Date: Fri, 19 Feb 2021 16:39:39 +0800
+Subject: [PATCH] usb: renesas_usbhs: Clear pipe running flag in
+ usbhs_pkt_pop()
+Patch-mainline: v5.10.15
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.15
+commit 039656997da316c4828795bef833d81b49a3681d
+bugzilla: 48167
+
+--------------------------------
+
+commit 9917f0e3cdba7b9f1a23f70e3f70b1a106be54a8 upstream.
+
+Should clear the pipe running flag in usbhs_pkt_pop(). Otherwise,
+we cannot use this pipe after dequeue was called while the pipe was
+running.
+
+Fixes: 8355b2b3082d ("usb: renesas_usbhs: fix the behavior of some usbhs_pkt_handle")
+Reported-by: Tho Vu <tho.vu.wh@renesas.com>
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Link: https://lore.kernel.org/r/1612183640-8898-1-git-send-email-yoshihiro.shimoda.uh@renesas.com
+Cc: stable <stable@vger.kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/usb/renesas_usbhs/fifo.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/renesas_usbhs/fifo.c b/drivers/usb/renesas_usbhs/fifo.c
+index ac9a81ae8216..e6fa13701808 100644
+--- a/drivers/usb/renesas_usbhs/fifo.c
++++ b/drivers/usb/renesas_usbhs/fifo.c
+@@ -126,6 +126,7 @@ struct usbhs_pkt *usbhs_pkt_pop(struct usbhs_pipe *pipe, struct usbhs_pkt *pkt)
+ 		}
+ 
+ 		usbhs_pipe_clear_without_sequence(pipe, 0, 0);
++		usbhs_pipe_running(pipe, 0);
+ 
+ 		__usbhsf_pkt_del(pkt);
+ 	}
+-- 
+2.31.1
+

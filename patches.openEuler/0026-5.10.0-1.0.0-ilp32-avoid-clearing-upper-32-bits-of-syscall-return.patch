@@ -1,0 +1,68 @@
+Git-commit: d3a61dd6f73c76febcacdba30518750a4ba8d114
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Date: Tue, 22 Dec 2020 06:41:00 +0000
+Subject: [PATCH] ilp32: avoid clearing upper 32 bits of syscall return value
+ for ilp32
+Patch-mainline: Queued in openEuler repo, version 5.10.0-1.0.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: bugfix
+bugzilla: 46790
+DTS: NA
+
+--------------------------------
+
+The following commit clear upper 32 bits of x0 on syscall return for
+compat application. But it is only suitable for A32 applications. It is
+not correct for ilp32 applications.
+
+Fixes: 15956689a0e60 ("arm64: compat: Ensure upper 32 bits of x0 are zero on syscall return")
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/include/asm/syscall.h | 4 ++--
+ arch/arm64/kernel/syscall.c      | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/include/asm/syscall.h b/arch/arm64/include/asm/syscall.h
+index ebefdefffa3c..6e546ec398b3 100644
+--- a/arch/arm64/include/asm/syscall.h
++++ b/arch/arm64/include/asm/syscall.h
+@@ -39,7 +39,7 @@ static inline long syscall_get_error(struct task_struct *task,
+ {
+ 	unsigned long error = regs->regs[0];
+ 
+-	if (is_compat_thread(task_thread_info(task)))
++	if (is_a32_compat_thread(task_thread_info(task)))
+ 		error = sign_extend64(error, 31);
+ 
+ 	return IS_ERR_VALUE(error) ? error : 0;
+@@ -58,7 +58,7 @@ static inline void syscall_set_return_value(struct task_struct *task,
+ 	if (error)
+ 		val = error;
+ 
+-	if (is_compat_thread(task_thread_info(task)))
++	if (is_a32_compat_thread(task_thread_info(task)))
+ 		val = lower_32_bits(val);
+ 
+ 	regs->regs[0] = val;
+diff --git a/arch/arm64/kernel/syscall.c b/arch/arm64/kernel/syscall.c
+index e39cd7d1229f..28130593777d 100644
+--- a/arch/arm64/kernel/syscall.c
++++ b/arch/arm64/kernel/syscall.c
+@@ -50,7 +50,7 @@ static void invoke_syscall(struct pt_regs *regs, unsigned int scno,
+ 		ret = do_ni_syscall(regs, scno);
+ 	}
+ 
+-	if (is_compat_task())
++	if (is_a32_compat_task())
+ 		ret = lower_32_bits(ret);
+ 
+ 	regs->regs[0] = ret;
+-- 
+2.31.1
+

@@ -1,0 +1,40 @@
+Git-commit: 2108d750fe7548c62d4248770ae3954b12389bfb
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Thu, 12 Nov 2020 17:01:52 +0000
+Subject: [PATCH] dt-bindings: Add compatible for BCM2711 DSI1
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+DSI1 on BCM2711 doesn't require the DMA workaround that is used
+on BCM2835/6/7, therefore it needs a new compatible string.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ Documentation/devicetree/bindings/display/brcm,bcm2835-dsi0.yaml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/display/brcm,bcm2835-dsi0.yaml b/Documentation/devicetree/bindings/display/brcm,bcm2835-dsi0.yaml
+index eb44e072b6e5..90ee069ada8d 100644
+--- a/Documentation/devicetree/bindings/display/brcm,bcm2835-dsi0.yaml
++++ b/Documentation/devicetree/bindings/display/brcm,bcm2835-dsi0.yaml
+@@ -20,6 +20,7 @@ properties:
+     enum:
+       - brcm,bcm2835-dsi0
+       - brcm,bcm2835-dsi1
++      - brcm,bcm2711-dsi1
+ 
+   reg:
+     maxItems: 1
+-- 
+2.31.1
+

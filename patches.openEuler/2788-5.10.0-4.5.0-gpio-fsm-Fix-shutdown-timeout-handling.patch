@@ -1,0 +1,43 @@
+Git-commit: af793e8dc5ee2845b231d7da413a8bc691eb9fc2
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Wed, 17 Feb 2021 09:21:30 +0000
+Subject: [PATCH] gpio-fsm: Fix shutdown timeout handling
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The driver is intended to jump directly to a shutdown state in the
+event of a timeout during shutdown, but the sense of the test was
+inverted.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpio/gpio-fsm.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpio/gpio-fsm.c b/drivers/gpio/gpio-fsm.c
+index d71a81d9b669..306f5123546c 100644
+--- a/drivers/gpio/gpio-fsm.c
++++ b/drivers/gpio/gpio-fsm.c
+@@ -1142,7 +1142,8 @@ static int gpio_fsm_remove(struct platform_device *pdev)
+ 				   gf->current_state->shutdown_target ==
+ 				   gf->current_state,
+ 				   msecs_to_jiffies(gf->shutdown_timeout_ms));
+-		if (gf->current_state->shutdown_target == gf->current_state)
++		/* On failure to reach a shutdown state, jump to one */
++		if (gf->current_state->shutdown_target != gf->current_state)
+ 			gpio_fsm_enter_state(gf, gf->shutdown_state);
+ 	}
+ 	cancel_work_sync(&gf->work);
+-- 
+2.31.1
+

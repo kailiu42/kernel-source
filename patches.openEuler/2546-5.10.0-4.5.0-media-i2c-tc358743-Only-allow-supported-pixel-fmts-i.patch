@@ -1,0 +1,47 @@
+Git-commit: 6319846e63c4297529745a4baf83196bd949fbae
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Fri, 10 Jul 2020 12:40:50 +0100
+Subject: [PATCH] media: i2c: tc358743: Only allow supported pixel fmts in
+ set_fmt
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Fix commit "media: tc358743: Return an appropriate colorspace from
+tc358743_set_fmt" to ensure that the format passed in to set_fmt
+is checked to be valid, and reset to the current format if not.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/tc358743.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/i2c/tc358743.c b/drivers/media/i2c/tc358743.c
+index b3b8d6e15ea2..eef6ab823c6c 100644
+--- a/drivers/media/i2c/tc358743.c
++++ b/drivers/media/i2c/tc358743.c
+@@ -1731,8 +1731,10 @@ static int tc358743_set_fmt(struct v4l2_subdev *sd,
+ 	u32 code = format->format.code; /* is overwritten by get_fmt */
+ 	int ret = tc358743_get_fmt(sd, cfg, format);
+ 
+-	format->format.code = code;
+-	format->format.colorspace = tc358743_g_colorspace(code);
++	if (code == MEDIA_BUS_FMT_RGB888_1X24 ||
++	    code == MEDIA_BUS_FMT_UYVY8_1X16)
++		format->format.code = code;
++	format->format.colorspace = tc358743_g_colorspace(format->format.code);
+ 
+ 	if (ret)
+ 		return ret;
+-- 
+2.31.1
+

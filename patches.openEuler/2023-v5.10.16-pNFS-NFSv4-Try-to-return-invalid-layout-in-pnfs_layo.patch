@@ -1,0 +1,53 @@
+Git-commit: e1783a5e692cf30bd21601e99ad1a7be5c936412
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
+Date: Mon, 22 Feb 2021 16:35:37 +0800
+Subject: [PATCH] pNFS/NFSv4: Try to return invalid layout in
+ pnfs_layout_process()
+Patch-mainline: v5.10.16
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.16
+commit 386b142945d3a8842c615421158f6d8565ef86e7
+bugzilla: 48168
+
+--------------------------------
+
+[ Upstream commit 08bd8dbe88825760e953759d7ec212903a026c75 ]
+
+If the server returns a new stateid that does not match the one in our
+cache, then try to return the one we hold instead of just invalidating
+it on the client side. This ensures that both client and server will
+agree that the stateid is invalid.
+
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ fs/nfs/pnfs.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/fs/nfs/pnfs.c b/fs/nfs/pnfs.c
+index cbadcf6ca4da..2b98286376d4 100644
+--- a/fs/nfs/pnfs.c
++++ b/fs/nfs/pnfs.c
+@@ -2402,7 +2402,13 @@ pnfs_layout_process(struct nfs4_layoutget *lgp)
+ 		 * We got an entirely new state ID.  Mark all segments for the
+ 		 * inode invalid, and retry the layoutget
+ 		 */
+-		pnfs_mark_layout_stateid_invalid(lo, &free_me);
++		struct pnfs_layout_range range = {
++			.iomode = IOMODE_ANY,
++			.length = NFS4_MAX_UINT64,
++		};
++		pnfs_set_plh_return_info(lo, IOMODE_ANY, 0);
++		pnfs_mark_matching_lsegs_return(lo, &lo->plh_return_segs,
++						&range, 0);
+ 		goto out_forget;
+ 	}
+ 
+-- 
+2.31.1
+

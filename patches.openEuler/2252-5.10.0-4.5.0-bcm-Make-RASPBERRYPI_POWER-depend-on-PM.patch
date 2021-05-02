@@ -1,0 +1,36 @@
+Git-commit: 95c76ffe4d24c0feeb7ff2462222787d81b5d397
+From: popcornmix <popcornmix@gmail.com>
+Date: Wed, 9 Nov 2016 13:02:52 +0000
+Subject: [PATCH] bcm: Make RASPBERRYPI_POWER depend on PM
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/soc/bcm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/soc/bcm/Kconfig b/drivers/soc/bcm/Kconfig
+index 24f92a6e882a..a6a705ec30c7 100644
+--- a/drivers/soc/bcm/Kconfig
++++ b/drivers/soc/bcm/Kconfig
+@@ -17,6 +17,7 @@ config RASPBERRYPI_POWER
+ 	bool "Raspberry Pi power domain driver"
+ 	depends on ARCH_BCM2835 || (COMPILE_TEST && OF)
+ 	depends on RASPBERRYPI_FIRMWARE=y
++	depends on PM
+ 	select PM_GENERIC_DOMAINS if PM
+ 	help
+ 	  This enables support for the RPi power domains which can be enabled
+-- 
+2.31.1
+

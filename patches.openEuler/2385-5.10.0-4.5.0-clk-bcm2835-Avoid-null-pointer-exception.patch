@@ -1,0 +1,46 @@
+Git-commit: 8f761988eb48fab4306e75ba8f85e88d7ad9986a
+From: popcornmix <popcornmix@gmail.com>
+Date: Tue, 6 Aug 2019 15:23:14 +0100
+Subject: [PATCH] clk-bcm2835: Avoid null pointer exception
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+clk_desc_array[BCM2835_PLLB] doesn't exist so we dereference null when iterating
+
+Signed-off-by: popcornmix <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/clk/bcm/clk-bcm2835.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index 3c55594684cd..d686c51a68a9 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -2310,9 +2310,11 @@ static bool bcm2835_clk_is_claimed(const char *name)
+ 	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(clk_desc_array); i++) {
+-		const char *clk_name = *(const char **)(clk_desc_array[i].data);
+-		if (!strcmp(name, clk_name))
+-		    return bcm2835_clk_claimed[i];
++		if (clk_desc_array[i].data) {
++			const char *clk_name = *(const char **)(clk_desc_array[i].data);
++			if (!strcmp(name, clk_name))
++				return bcm2835_clk_claimed[i];
++		}
+ 	}
+ 
+ 	return false;
+-- 
+2.31.1
+

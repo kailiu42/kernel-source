@@ -1,0 +1,39 @@
+Git-commit: 9d4b6fde2ed31f35d5cbee3e2789a24137c453b6
+From: Dom Cobley <popcornmix@gmail.com>
+Date: Thu, 7 May 2020 18:16:08 +0100
+Subject: [PATCH] vc4_hdmi: Make irq shared
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 7e11043f0aa8..cdae04162fb0 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1499,7 +1499,8 @@ static int vc4_hdmi_cec_init(struct vc4_hdmi *vc4_hdmi)
+ 	HDMI_WRITE(HDMI_CEC_CNTRL_1, value);
+ 	ret = devm_request_threaded_irq(&pdev->dev, platform_get_irq(pdev, 0),
+ 					vc4_cec_irq_handler,
+-					vc4_cec_irq_handler_thread, 0,
++					vc4_cec_irq_handler_thread,
++					IRQF_SHARED,
+ 					"vc4 hdmi cec", vc4_hdmi);
+ 	if (ret)
+ 		goto err_delete_cec_adap;
+-- 
+2.31.1
+

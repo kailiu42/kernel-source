@@ -1,0 +1,91 @@
+Git-commit: c72454346c284f8613a7948e006bdf1325cfe70b
+From: Fang Yafen <yafen(a)iscas.ac.cn>
+Date: Mon, 8 Mar 2021 17:45:38 +0800
+Subject: [PATCH] kbuild: fix compile error in Makefile.lib
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.9.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+Fix the following compile error when using bcm2711_defconfig (for RPi).
+
+/bin/sh: -c: line 0: syntax error near unexpected token `('
+/bin/sh: -c: line 0: `set -e;
+echo '  DTCO    arch/arm64/boot/dts/overlays/act-led.dtbo';
+mkdir -p arch/arm64/boot/dts/overlays/ ;
+gcc -E -Wp,-MMD,arch/arm64/boot/dts/overlays/.act-led.dtbo.d.pre.tmp
+-nostdinc -I./scripts/dtc/include-prefixes -undef -D__DTS__
+-x assembler-with-cpp
+-o arch/arm64/boot/dts/overlays/.act-led.dtbo.dts.tmp
+arch/arm64/boot/dts/overlays/act-led-overlay.dts ;
+./scripts/dtc/dtc -@ -H epapr -O dtb
+-o arch/arm64/boot/dts/overlays/act-led.dtbo -b 0
+-i arch/arm64/boot/dts/overlays/ -Wno-interrupt_provider
+-Wno-unit_address_vs_reg -Wno-unit_address_format -Wno-gpios_property
+-Wno-avoid_unnecessary_addr_size -Wno-alias_paths
+-Wno-graph_child_address -Wno-simple_bus_reg
+-Wno-unique_unit_address -Wno-pci_device_reg
+-Wno-interrupts_property ifeq (y,y) -Wno-label_is_string
+-Wno-reg_format -Wno-pci_device_bus_num -Wno-i2c_bus_reg
+-Wno-spi_bus_reg -Wno-avoid_default_addr_size endif
+-d arch/arm64/boot/dts/overlays/.act-led.dtbo.d.dtc.tmp
+arch/arm64/boot/dts/overlays/.act-led.dtbo.dts.tmp ;
+cat ...; rm -f arch/arm64/boot/dts/overlays/.act-led.dtbo.d'
+make[2]: *** [scripts/Makefile.lib;363:
+arch/arm64/boot/dts/overlays/act-led.dtbo] Error 1
+make[2]: *** Waiting for unfinished jobs....
+
+Related patches:
+
+ffa2d13ccc3 BCM2708: Add core Device Tree support
+4894352ec98 kbuild: Silence unavoidable dtc overlay warnings
+a4a4d07f0cf kbuild: keep the original function for non-RPi
+
+Signed-off-by: Fang Yafen <yafen(a)iscas.ac.cn>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ scripts/Makefile.lib | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index c23e3ae7ef40..a0e0e2543165 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -342,25 +342,25 @@ endef
+ $(obj)/%.dt.yaml: $(src)/%.dts $(DTC) $(DT_TMP_SCHEMA) FORCE
+ 	$(call if_changed_rule,dtc,yaml)
+ 
++ifeq ($(CONFIG_OPENEULER_RASPBERRYPI),y)
+ quiet_cmd_dtco = DTCO    $@
+ cmd_dtco = mkdir -p $(dir ${dtc-tmp}) ; \
+ 	$(CPP) $(dtc_cpp_flags) -x assembler-with-cpp -o $(dtc-tmp) $< ; \
+ 	$(DTC) -@ -H epapr -O dtb -o $@ -b 0 \
+ 		-i $(dir $<) $(DTC_FLAGS) \
+ 		-Wno-interrupts_property \
+-ifeq ($(CONFIG_OPENEULER_RASPBERRYPI),y) \
+ 		-Wno-label_is_string \
+ 		-Wno-reg_format \
+ 		-Wno-pci_device_bus_num \
+ 		-Wno-i2c_bus_reg \
+ 		-Wno-spi_bus_reg \
+ 		-Wno-avoid_default_addr_size \
+-endif \
+ 		-d $(depfile).dtc.tmp $(dtc-tmp) ; \
+ 	cat $(depfile).pre.tmp $(depfile).dtc.tmp > $(depfile)
+ 
+ $(obj)/%.dtbo: $(src)/%-overlay.dts FORCE
+ 	$(call if_changed_dep,dtco)
++endif
+ 
+ dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
+ 
+-- 
+2.31.1
+

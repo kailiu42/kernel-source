@@ -1,0 +1,71 @@
+Git-commit: b284ae00d8732b6bbb5856284b754531a1303930
+From: Sumit Garg <sumit.garg@linaro.org>
+Date: Tue, 23 Feb 2021 20:39:09 +0800
+Subject: [PATCH] arm64: smp: Assign and setup an IPI as NMI
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.2.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+maillist inclusion
+category: feature
+bugzilla: 49593
+CVE: NA
+Reference: https://www.spinics.net/lists/arm-kernel/msg851005.html
+
+-------------------------------------------------
+
+Assign an unused IPI which can be turned as NMI using ipi_nmi framework.
+Also, invoke corresponding dynamic IPI setup/teardown APIs.
+
+Signed-off-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Wei Li <liwei391@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/smp.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 458db0f98a78..a1e2da0c971b 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -46,6 +46,7 @@
+ #include <asm/daifflags.h>
+ #include <asm/kvm_mmu.h>
+ #include <asm/mmu_context.h>
++#include <asm/nmi.h>
+ #include <asm/numa.h>
+ #include <asm/processor.h>
+ #include <asm/smp_plat.h>
+@@ -1159,6 +1160,8 @@ static void ipi_setup(int cpu)
+ 
+ 	for (i = 0; i < nr_ipi; i++)
+ 		enable_percpu_irq(ipi_irq_base + i, 0);
++
++	dynamic_ipi_setup(cpu);
+ }
+ 
+ #ifdef CONFIG_HOTPLUG_CPU
+@@ -1171,6 +1174,8 @@ static void ipi_teardown(int cpu)
+ 
+ 	for (i = 0; i < nr_ipi; i++)
+ 		disable_percpu_irq(ipi_irq_base + i);
++
++	dynamic_ipi_teardown(cpu);
+ }
+ #endif
+ 
+@@ -1192,6 +1197,9 @@ void __init set_smp_ipi_range(int ipi_base, int n)
+ 		irq_set_status_flags(ipi_base + i, IRQ_HIDDEN);
+ 	}
+ 
++	if (n > nr_ipi)
++		set_smp_dynamic_ipi(ipi_base + nr_ipi);
++
+ 	ipi_irq_base = ipi_base;
+ 
+ 	/* Setup the boot CPU immediately */
+-- 
+2.31.1
+

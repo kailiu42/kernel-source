@@ -1,0 +1,40 @@
+Git-commit: 7d40e82d3511fd0b14743aa9c080e48c78e84a08
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Thu, 12 Nov 2020 18:42:30 +0000
+Subject: [PATCH] dt: Use compatible string for BCM2711 DSI1
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Updates the compatible string for DSI1 on BCM2711 to
+differentiate it from BCM2835.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/bcm2711.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
+index 8ad6c3012fe3..7c2d374cb749 100644
+--- a/arch/arm/boot/dts/bcm2711.dtsi
++++ b/arch/arm/boot/dts/bcm2711.dtsi
+@@ -554,6 +554,7 @@ &dsi0 {
+ 
+ &dsi1 {
+ 	interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
++	compatible = "brcm,bcm2711-dsi1";
+ };
+ 
+ &gpio {
+-- 
+2.31.1
+

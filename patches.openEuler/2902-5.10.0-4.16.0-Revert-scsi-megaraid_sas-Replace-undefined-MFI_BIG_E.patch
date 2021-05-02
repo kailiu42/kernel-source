@@ -1,0 +1,80 @@
+Git-commit: f71eee8a07df1707696fad7e2e0c6998d3240639
+From: Yufen Yu <yuyufen@huawei.com>
+Date: Sat, 20 Mar 2021 18:36:37 +0800
+Subject: [PATCH] Revert "scsi: megaraid_sas: Replace undefined MFI_BIG_ENDIAN
+ macro with __BIG_ENDIAN_BITFIELD macro"
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.16.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+This reverts commit b9d5e3e7f370a817c742fb089ac1a86dfe8947dc.
+
+After commit a7faf81d7858 ("scsi: megaraid_sas: Set no_write_same only
+for Virtual Disk"), write_same is support default for some devices.
+But we found write zero IO is very slow. So, revert it.
+
+Signed-off-by: Yufen Yu <yuyufen@huawei.com>
+Reviewed-by: Jason Yan <yanaijie@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/scsi/megaraid/megaraid_sas.h        | 4 ++--
+ drivers/scsi/megaraid/megaraid_sas_fusion.h | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/scsi/megaraid/megaraid_sas.h b/drivers/scsi/megaraid/megaraid_sas.h
+index 5e4137f10e0e..37d7dc362b78 100644
+--- a/drivers/scsi/megaraid/megaraid_sas.h
++++ b/drivers/scsi/megaraid/megaraid_sas.h
+@@ -511,7 +511,7 @@ union MR_PROGRESS {
+  */
+ struct MR_PD_PROGRESS {
+ 	struct {
+-#ifndef __BIG_ENDIAN_BITFIELD
++#ifndef MFI_BIG_ENDIAN
+ 		u32     rbld:1;
+ 		u32     patrol:1;
+ 		u32     clear:1;
+@@ -537,7 +537,7 @@ struct MR_PD_PROGRESS {
+ 	};
+ 
+ 	struct {
+-#ifndef __BIG_ENDIAN_BITFIELD
++#ifndef MFI_BIG_ENDIAN
+ 		u32     rbld:1;
+ 		u32     patrol:1;
+ 		u32     clear:1;
+diff --git a/drivers/scsi/megaraid/megaraid_sas_fusion.h b/drivers/scsi/megaraid/megaraid_sas_fusion.h
+index 30de4b01f703..d57ecc7f88d8 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_fusion.h
++++ b/drivers/scsi/megaraid/megaraid_sas_fusion.h
+@@ -774,7 +774,7 @@ struct MR_SPAN_BLOCK_INFO {
+ struct MR_CPU_AFFINITY_MASK {
+ 	union {
+ 		struct {
+-#ifndef __BIG_ENDIAN_BITFIELD
++#ifndef MFI_BIG_ENDIAN
+ 		u8 hw_path:1;
+ 		u8 cpu0:1;
+ 		u8 cpu1:1;
+@@ -866,7 +866,7 @@ struct MR_LD_RAID {
+ 	__le16     seqNum;
+ 
+ struct {
+-#ifndef __BIG_ENDIAN_BITFIELD
++#ifndef MFI_BIG_ENDIAN
+ 	u32 ldSyncRequired:1;
+ 	u32 regTypeReqOnReadIsValid:1;
+ 	u32 isEPD:1;
+@@ -889,7 +889,7 @@ struct {
+ 	/* 0x30 - 0x33, Logical block size for the LD */
+ 	u32 logical_block_length;
+ 	struct {
+-#ifndef __BIG_ENDIAN_BITFIELD
++#ifndef MFI_BIG_ENDIAN
+ 	/* 0x34, P_I_EXPONENT from READ CAPACITY 16 */
+ 	u32 ld_pi_exp:4;
+ 	/* 0x34, LOGICAL BLOCKS PER PHYSICAL
+-- 
+2.31.1
+

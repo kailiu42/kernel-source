@@ -1,0 +1,41 @@
+Git-commit: 9315562dc3782632ff14994eee5e08f639919343
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Thu, 17 Dec 2015 13:37:07 +0000
+Subject: [PATCH] hci_h5: Don't send conf_req when ACTIVE
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Without this patch, a modem and kernel can continuously bombard each
+other with conf_req and conf_rsp messages, in a demented game of tag.
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/bluetooth/hci_h5.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+index 78d635f1d156..1981a5a73fd2 100644
+--- a/drivers/bluetooth/hci_h5.c
++++ b/drivers/bluetooth/hci_h5.c
+@@ -343,7 +343,8 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
+ 		h5_link_control(hu, conf_req, 3);
+ 	} else if (memcmp(data, conf_req, 2) == 0) {
+ 		h5_link_control(hu, conf_rsp, 2);
+-		h5_link_control(hu, conf_req, 3);
++		if (h5->state != H5_ACTIVE)
++		    h5_link_control(hu, conf_req, 3);
+ 	} else if (memcmp(data, conf_rsp, 2) == 0) {
+ 		if (H5_HDR_LEN(hdr) > 2)
+ 			h5->tx_win = (data[2] & 0x07);
+-- 
+2.31.1
+

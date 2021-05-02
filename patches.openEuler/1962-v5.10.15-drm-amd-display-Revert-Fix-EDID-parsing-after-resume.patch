@@ -1,0 +1,50 @@
+Git-commit: 09ae55c4659efc5f4fdf2f5cb244795441bbf396
+From: Stylon Wang <stylon.wang@amd.com>
+Date: Fri, 19 Feb 2021 16:40:56 +0800
+Subject: [PATCH] drm/amd/display: Revert "Fix EDID parsing after resume from
+ suspend"
+Patch-mainline: v5.10.15
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.15
+commit 2fd938741a792a7fc3aaef6f7bccb2f08a0f1b3d
+bugzilla: 48167
+
+--------------------------------
+
+commit 1a10e5244778169a5a53a527d7830cf0438132a1 upstream.
+
+This reverts commit b24bdc37d03a0478189e20a50286092840f414fa.
+It caused memory leak after S3 on 4K HDMI displays.
+
+Signed-off-by: Stylon Wang <stylon.wang@amd.com>
+Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Acked-by: Anson Jacob <Anson.Jacob@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index 0f7749e9424d..580880212e55 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -2278,8 +2278,6 @@ void amdgpu_dm_update_connector_after_detect(
+ 
+ 			drm_connector_update_edid_property(connector,
+ 							   aconnector->edid);
+-			drm_add_edid_modes(connector, aconnector->edid);
+-
+ 			if (aconnector->dc_link->aux_mode)
+ 				drm_dp_cec_set_edid(&aconnector->dm_dp_aux.aux,
+ 						    aconnector->edid);
+-- 
+2.31.1
+

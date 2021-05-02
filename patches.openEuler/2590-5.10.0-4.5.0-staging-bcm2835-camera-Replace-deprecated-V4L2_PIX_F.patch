@@ -1,0 +1,47 @@
+Git-commit: a51c0d3bf050b3f370fbf8e626cb0ba51c912bbc
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Thu, 8 Oct 2020 15:35:14 +0100
+Subject: [PATCH] staging: bcm2835-camera: Replace deprecated
+ V4L2_PIX_FMT_BGR32
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+V4L2_PIX_FMT_BGR32 is deprecated as it is ambiguous over where
+the alpha byte is. Cheese/GStreamer appear to get it wrong for
+one, and qv4l2 gets red and blue swapped.
+
+Swap to the newer V4L2_PIX_FMT_BGRX32 format.
+
+https://www.raspberrypi.org/forums/viewtopic.php?f=38&t=267736&p=1738912
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index bea37cb163fc..e0a96dbb843d 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -178,7 +178,7 @@ static struct mmal_fmt formats[] = {
+ 		.ybbp = 1,
+ 		.remove_padding = 1,
+ 	}, {
+-		.fourcc = V4L2_PIX_FMT_BGR32,
++		.fourcc = V4L2_PIX_FMT_BGRX32,
+ 		.mmal = MMAL_ENCODING_BGRA,
+ 		.depth = 32,
+ 		.mmal_component = COMP_CAMERA,
+-- 
+2.31.1
+

@@ -1,0 +1,112 @@
+Git-commit: fc643d36873ac7504ed82b5c4f37e80616b2c9b9
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Date: Sat, 20 Feb 2021 11:01:02 +0800
+Subject: [PATCH] kprobes/arm64: Blacklist sdei watchdog callback functions
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.1.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48046
+CVE: NA
+
+-------------------------------------------------------------------------
+
+Functions called in sdei_handler are not allowed to be kprobed, so
+marked them as NOKPROBE_SYMBOL. There are so many functions in
+'watchdog_check_timestamp()'. Luckily, we don't need
+'CONFIG_HARDLOCKUP_CHECK_TIMESTAMP' now. So just make
+CONFIG_SDEI_WATCHDOG depends on !CONFIG_HARDLOCKUP_CHECK_TIMESTAMP
+in case someone add 'CONFIG_HARDLOCKUP_CHECK_TIMESTAMP' in the future.
+
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Reviewed-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/watchdog_sdei.c | 2 ++
+ kernel/watchdog.c                 | 2 ++
+ kernel/watchdog_hld.c             | 2 ++
+ lib/Kconfig.debug                 | 2 +-
+ 4 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/kernel/watchdog_sdei.c b/arch/arm64/kernel/watchdog_sdei.c
+index c342f86560d5..6352b589e02a 100644
+--- a/arch/arm64/kernel/watchdog_sdei.c
++++ b/arch/arm64/kernel/watchdog_sdei.c
+@@ -14,6 +14,7 @@
+ #include <asm/sdei.h>
+ #include <asm/virt.h>
+ #include <linux/arm_sdei.h>
++#include <linux/kprobes.h>
+ #include <linux/nmi.h>
+ 
+ /* We use the secure physical timer as SDEI NMI watchdog timer */
+@@ -66,6 +67,7 @@ static int sdei_watchdog_callback(u32 event,
+ 
+ 	return 0;
+ }
++NOKPROBE_SYMBOL(sdei_watchdog_callback);
+ 
+ static void sdei_nmi_watchdog_bind(void *data)
+ {
+diff --git a/kernel/watchdog.c b/kernel/watchdog.c
+index 71109065bd8e..4904abeecc13 100644
+--- a/kernel/watchdog.c
++++ b/kernel/watchdog.c
+@@ -16,6 +16,7 @@
+ #include <linux/cpu.h>
+ #include <linux/nmi.h>
+ #include <linux/init.h>
++#include <linux/kprobes.h>
+ #include <linux/module.h>
+ #include <linux/sysctl.h>
+ #include <linux/tick.h>
+@@ -312,6 +313,7 @@ bool is_hardlockup(void)
+ 	__this_cpu_write(hrtimer_interrupts_saved, hrint);
+ 	return false;
+ }
++NOKPROBE_SYMBOL(is_hardlockup);
+ 
+ static void watchdog_interrupt_count(void)
+ {
+diff --git a/kernel/watchdog_hld.c b/kernel/watchdog_hld.c
+index 88f5c314a1df..a3f35067b4d0 100644
+--- a/kernel/watchdog_hld.c
++++ b/kernel/watchdog_hld.c
+@@ -14,6 +14,7 @@
+ 
+ #include <linux/nmi.h>
+ #include <linux/atomic.h>
++#include <linux/kprobes.h>
+ #include <linux/module.h>
+ #include <linux/sched/debug.h>
+ 
+@@ -155,6 +156,7 @@ void watchdog_hardlockup_check(struct pt_regs *regs)
+ 	__this_cpu_write(hard_watchdog_warn, false);
+ 	return;
+ }
++NOKPROBE_SYMBOL(watchdog_hardlockup_check);
+ 
+ #ifdef CONFIG_HARDLOCKUP_DETECTOR_PERF
+ static DEFINE_PER_CPU(struct perf_event *, watchdog_ev);
+diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+index 4afca654db57..7dd44d922ea9 100644
+--- a/lib/Kconfig.debug
++++ b/lib/Kconfig.debug
+@@ -966,7 +966,7 @@ config HARDLOCKUP_DETECTOR_PERF
+ 
+ config SDEI_WATCHDOG
+ 	bool "SDEI NMI Watchdog support"
+-	depends on ARM_SDE_INTERFACE
++	depends on ARM_SDE_INTERFACE && !HARDLOCKUP_CHECK_TIMESTAMP
+ 	select HAVE_HARDLOCKUP_DETECTOR_ARCH
+ 	select HARDLOCKUP_DETECTOR
+ 
+-- 
+2.31.1
+

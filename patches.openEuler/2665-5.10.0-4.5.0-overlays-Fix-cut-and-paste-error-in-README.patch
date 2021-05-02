@@ -1,0 +1,41 @@
+Git-commit: 8829ce60cbc00c0164932766d659038d8556b0b9
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Mon, 7 Dec 2020 17:18:39 +0000
+Subject: [PATCH] overlays: Fix cut-and-paste error in README
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/overlays/README | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index d4cf4176a54b..2fa2bbb943cd 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1257,9 +1257,9 @@ Params: abx80x                  Select one of the ABx80x family:
+ 
+         pcf2129                 Select the PCF2129 device
+ 
+-        pcf85063                Select the PCF85363 device
++        pcf85063                Select the PCF85063 device
+ 
+-        pcf85063a               Select the PCF85363A device
++        pcf85063a               Select the PCF85063A device
+ 
+         pcf8523                 Select the PCF8523 device
+ 
+-- 
+2.31.1
+

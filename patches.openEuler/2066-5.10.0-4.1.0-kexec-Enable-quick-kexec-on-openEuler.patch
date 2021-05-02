@@ -1,0 +1,40 @@
+Git-commit: ee2cd8e7db2dd2b02a865c5b3579c709c95bbf87
+From: Sang Yan <sangyan@huawei.com>
+Date: Fri, 19 Feb 2021 17:23:39 +0800
+Subject: [PATCH] kexec: Enable quick kexec on openEuler
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.1.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48159
+CVE: N/A
+
+------------------------------
+
+Enable quick kexec on openEuler by default.
+
+Signed-off-by: Sang Yan <sangyan@huawei.com>
+Reviewed-by: Jing Xiangfeng <jingxiangfeng@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/configs/openeuler_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/configs/openeuler_defconfig b/arch/arm64/configs/openeuler_defconfig
+index 1743f53a8bd0..c0e3d1510167 100644
+--- a/arch/arm64/configs/openeuler_defconfig
++++ b/arch/arm64/configs/openeuler_defconfig
+@@ -704,6 +704,7 @@ CONFIG_CRYPTO_AES_ARM64_BS=m
+ #
+ CONFIG_CRASH_CORE=y
+ CONFIG_KEXEC_CORE=y
++CONFIG_QUICK_KEXEC=y
+ CONFIG_SET_FS=y
+ CONFIG_KPROBES=y
+ CONFIG_JUMP_LABEL=y
+-- 
+2.31.1
+

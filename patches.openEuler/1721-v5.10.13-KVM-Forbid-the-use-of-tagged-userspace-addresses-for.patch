@@ -1,0 +1,65 @@
+Git-commit: 134877622039971507055b8f4c4ea069e40afbbb
+From: Marc Zyngier <maz@kernel.org>
+Date: Sun, 7 Feb 2021 15:09:16 +0800
+Subject: [PATCH] KVM: Forbid the use of tagged userspace addresses for
+ memslots
+Patch-mainline: v5.10.13
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.13
+commit 256a0040c6c9f6d342044897e33f280426a4e315
+bugzilla: 47995
+
+--------------------------------
+
+commit 139bc8a6146d92822c866cf2fd410159c56b3648 upstream.
+
+The use of a tagged address could be pretty confusing for the
+whole memslot infrastructure as well as the MMU notifiers.
+
+Forbid it altogether, as it never quite worked the first place.
+
+Cc: stable@vger.kernel.org
+Reported-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ Documentation/virt/kvm/api.rst | 3 +++
+ virt/kvm/kvm_main.c            | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index 0cc8130e4512..6ab3fb3b5238 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -1281,6 +1281,9 @@ field userspace_addr, which must point at user addressable memory for
+ the entire memory slot size.  Any object may back this memory, including
+ anonymous memory, ordinary files, and hugetlbfs.
+ 
++On architectures that support a form of address tagging, userspace_addr must
++be an untagged address.
++
+ It is recommended that the lower 21 bits of guest_phys_addr and userspace_addr
+ be identical.  This allows large pages in the guest to be backed by large
+ pages in the host.
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index cbdde1e052e5..b0ddd13485f5 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1294,6 +1294,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
+ 		return -EINVAL;
+ 	/* We can read the guest memory with __xxx_user() later on. */
+ 	if ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
++	    (mem->userspace_addr != untagged_addr(mem->userspace_addr)) ||
+ 	     !access_ok((void __user *)(unsigned long)mem->userspace_addr,
+ 			mem->memory_size))
+ 		return -EINVAL;
+-- 
+2.31.1
+

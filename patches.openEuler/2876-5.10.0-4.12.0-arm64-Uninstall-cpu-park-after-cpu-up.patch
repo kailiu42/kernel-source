@@ -1,0 +1,66 @@
+Git-commit: 246e8d5bf74386a090e2bb2d49db93a4e06fe644
+From: Sang Yan <sangyan@huawei.com>
+Date: Fri, 12 Mar 2021 18:43:37 +0800
+Subject: [PATCH] arm64: Uninstall cpu park after cpu up
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.12.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48159
+CVE: N/A
+
+------------------------------
+
+One cpu in PARK state could not come up in this case:
+	CPU 0			    |   CPU 1
+	boot_secondary(cpu 1)	    |
+	--> write_park_exit(cpu 1)  |
+				    |	cpu uping from PARK
+				    |	...
+	uninstall_cpu_park()	    |
+	--> memset to 0 park text   |
+				    |	...
+				    |	Exception in memory !!
+	wait for cpu up		    |
+
+Cpu 1 uping from PARK may trap into exception while cpu 0
+clear cpu 1's park text memory.
+
+This uninstall_cpu_park should be after waiting for cpu up.
+
+Signed-off-by: Sang Yan <sangyan@huawei.com>
+Reviewed-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/smp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index d7b750afcf40..fb6007dab18c 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -300,15 +300,15 @@ int __cpu_up(unsigned int cpu, struct task_struct *idle)
+ 		return ret;
+ 	}
+ 
+-#ifdef CONFIG_ARM64_CPU_PARK
+-	uninstall_cpu_park(cpu);
+-#endif
+ 	/*
+ 	 * CPU was successfully started, wait for it to come online or
+ 	 * time out.
+ 	 */
+ 	wait_for_completion_timeout(&cpu_running,
+ 				    msecs_to_jiffies(5000));
++#ifdef CONFIG_ARM64_CPU_PARK
++	uninstall_cpu_park(cpu);
++#endif
+ 	if (cpu_online(cpu))
+ 		return 0;
+ 
+-- 
+2.31.1
+

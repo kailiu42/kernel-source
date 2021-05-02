@@ -1,0 +1,44 @@
+Git-commit: da5c718ef46d0662f5f0bd112786587a3669119a
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Fri, 13 Mar 2015 12:43:36 +0000
+Subject: [PATCH] Protect __release_resource against resources without parents
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Without this patch, removing a device tree overlay can crash here.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ kernel/resource.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/kernel/resource.c b/kernel/resource.c
+index 3ae2f56cc79d..2f1a85c23e8b 100644
+--- a/kernel/resource.c
++++ b/kernel/resource.c
+@@ -214,6 +214,12 @@ static int __release_resource(struct resource *old, bool release_child)
+ {
+ 	struct resource *tmp, **p, *chd;
+ 
++	if (!old->parent) {
++		WARN(old->sibling, "sibling but no parent");
++		if (old->sibling)
++			return -EINVAL;
++		return 0;
++	}
+ 	p = &old->parent->child;
+ 	for (;;) {
+ 		tmp = *p;
+-- 
+2.31.1
+

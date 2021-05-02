@@ -1,0 +1,54 @@
+Git-commit: 9700928861ca6ee88b8b507119a1b3fdb6502344
+From: Alex Elder <elder@linaro.org>
+Date: Thu, 7 Jan 2021 07:40:02 +0000
+Subject: [PATCH] arm64: dts: qcom: sc7180: limit IPA iommu streams
+Patch-mainline: v5.10.4
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.4
+commit 57d22f146803223534a238d7ea49b45a8dfbcb10
+bugzilla: 46903
+
+--------------------------------
+
+[ Upstream commit 8f34831d3659d38f480fddccb76d84c6c3e0ac0b ]
+
+Recently we learned that Android and Windows firmware don't seem to
+like using 3 as an iommu mask value for IPA.  A simple fix was to
+specify exactly the streams needed explicitly, rather than implying
+a range with the mask.  Make the same change for the SC7180 platform.
+
+See also:
+  https://lore.kernel.org/linux-arm-msm/20201123052305.157686-1-bjorn.andersson@linaro.org/
+
+Fixes: d82fade846aa8 ("arm64: dts: qcom: sc7180: add IPA information")
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Link: https://lore.kernel.org/r/20201126015457.6557-2-elder@linaro.org
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/boot/dts/qcom/sc7180.dtsi | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index a02776ce77a1..c71f3afc1cc9 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -1394,7 +1394,8 @@ ipa_virt: interconnect@1e00000 {
+ 		ipa: ipa@1e40000 {
+ 			compatible = "qcom,sc7180-ipa";
+ 
+-			iommus = <&apps_smmu 0x440 0x3>;
++			iommus = <&apps_smmu 0x440 0x0>,
++				 <&apps_smmu 0x442 0x0>;
+ 			reg = <0 0x1e40000 0 0x7000>,
+ 			      <0 0x1e47000 0 0x2000>,
+ 			      <0 0x1e04000 0 0x2c000>;
+-- 
+2.31.1
+

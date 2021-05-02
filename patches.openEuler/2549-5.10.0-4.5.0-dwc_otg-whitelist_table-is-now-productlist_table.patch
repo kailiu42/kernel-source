@@ -1,0 +1,37 @@
+Git-commit: e74cdbff1c04ec45d0cf2e52ae93ce60edb3e49f
+From: popcornmix <popcornmix@gmail.com>
+Date: Thu, 3 Sep 2020 14:02:41 +0100
+Subject: [PATCH] dwc_otg: whitelist_table is now productlist_table
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/usb/core/otg_productlist.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/core/otg_productlist.h b/drivers/usb/core/otg_productlist.h
+index 1839e169469b..b16e528859a8 100644
+--- a/drivers/usb/core/otg_productlist.h
++++ b/drivers/usb/core/otg_productlist.h
+@@ -139,7 +139,7 @@ static int is_targeted(struct usb_device *dev)
+ 		/* NOTE: can't use usb_match_id() since interface caches
+ 		 * aren't set up yet. this is cut/paste from that code.
+ 		 */
+-		for (id = whitelist_table; id->match_flags; id++) {
++		for (id = productlist_table; id->match_flags; id++) {
+ #ifdef DEBUG
+ 			dev_dbg(&dev->dev,
+ 				"ID: V:%04x P:%04x DC:%04x SC:%04x PR:%04x \n",
+-- 
+2.31.1
+

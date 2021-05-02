@@ -1,0 +1,189 @@
+Git-commit: e1a2bef3c651693cd709f472a977ef066d896a19
+From: Fang Yafen <yafen@iscas.ac.cn>
+Date: Wed, 3 Mar 2021 15:10:03 +0800
+Subject: [PATCH] net: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following net related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+5e6ba3d smsc95xx: Experimental: Enable turbo_mode and packetsize=2560 by default
+ab8cdd9 lan78xx: use default alignment for rx buffers
+03c2e3c net:phy:2711 Change the default ethernet LED actions
+ae5b52c brcmfmac: Prefer a ccode from OTP over nvram file
+83998d2 brcmfmac: Increase power saving delay to 2s
+cd40cb1 net: lan78xx: Ack pending PHY ints when resetting
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/net/phy/broadcom.c                    |  5 +++++
+ drivers/net/usb/lan78xx.c                     |  6 ++++++
+ drivers/net/usb/smsc95xx.c                    | 15 +++++++++++++
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c    | 21 +++++++++++++++++++
+ 4 files changed, 47 insertions(+)
+
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 3130377108b1..e8e3da119399 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -263,8 +263,13 @@ static void bcm54xx_adjust_rxrefclk(struct phy_device *phydev)
+ static int bcm54xx_config_init(struct phy_device *phydev)
+ {
+ 	int reg, err, val;
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	u32 led_modes[] = {BCM_LED_MULTICOLOR_LINK_ACT,
+ 			   BCM_LED_MULTICOLOR_LINK};
++#else
++	u32 led_modes[] = {BCM_LED_MULTICOLOR_LINK_ACT,
++			   BCM_LED_MULTICOLOR_LINK_ACT};
++#endif
+ 	struct device_node *np = phydev->mdio.dev.of_node;
+ 
+ 	reg = phy_read(phydev, MII_BCM54XX_ECR);
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 3cf5ad0bf0c1..6a8fedcbbabb 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -1181,8 +1181,10 @@ static int lan78xx_link_reset(struct lan78xx_net *dev)
+ 	if (unlikely(ret < 0))
+ 		return -EIO;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	/* Acknowledge any pending PHY interrupt, lest it be the last */
+ 	phy_read(phydev, LAN88XX_INT_STS);
++#endif
+ 
+ 	phy_read_status(phydev);
+ 
+@@ -3164,7 +3166,11 @@ static int rx_submit(struct lan78xx_net *dev, struct urb *urb, gfp_t flags)
+ 	size_t size = dev->rx_urb_size;
+ 	int ret = 0;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	skb = netdev_alloc_skb(dev->net, size);
++#else
++	skb = netdev_alloc_skb_ip_align(dev->net, size);
++#endif
+ 	if (!skb) {
+ 		usb_free_urb(urb);
+ 		return -ENOMEM;
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 09d4c1963b2c..a558301cd330 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -72,9 +72,11 @@ static bool truesize_mode = false;
+ module_param(truesize_mode, bool, 0644);
+ MODULE_PARM_DESC(truesize_mode, "Report larger truesize value");
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ static int packetsize = 2560;
+ module_param(packetsize, int, 0644);
+ MODULE_PARM_DESC(packetsize, "Override the RX URB packet size");
++#endif
+ 
+ static char *macaddr = ":";
+ module_param(macaddr, charp, 0);
+@@ -963,6 +965,7 @@ static int smsc95xx_reset(struct usbnet *dev)
+ 		  "Read Value from HW_CFG after writing HW_CFG_BIR_: 0x%08x\n",
+ 		  read_buf);
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (!turbo_mode) {
+ 		burst_cap = 0;
+ 		dev->rx_urb_size = packetsize ? packetsize : MAX_SINGLE_PACKET_SIZE;
+@@ -973,6 +976,18 @@ static int smsc95xx_reset(struct usbnet *dev)
+ 		dev->rx_urb_size = packetsize ? packetsize : DEFAULT_FS_BURST_CAP_SIZE;
+ 		burst_cap = dev->rx_urb_size / FS_USB_PKT_SIZE;
+ 	}
++#else
++	if (!turbo_mode) {
++		burst_cap = 0;
++		dev->rx_urb_size = MAX_SINGLE_PACKET_SIZE;
++	} else if (dev->udev->speed == USB_SPEED_HIGH) {
++		burst_cap = DEFAULT_HS_BURST_CAP_SIZE / HS_USB_PKT_SIZE;
++		dev->rx_urb_size = DEFAULT_HS_BURST_CAP_SIZE;
++	} else {
++		burst_cap = DEFAULT_FS_BURST_CAP_SIZE / FS_USB_PKT_SIZE;
++		dev->rx_urb_size = DEFAULT_FS_BURST_CAP_SIZE;
++	}
++#endif
+ 
+ 	netif_dbg(dev, ifup, dev->net, "rx_urb_size=%ld\n",
+ 		  (ulong)dev->rx_urb_size);
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 525bf62d5b3c..16772328f39f 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -2938,7 +2938,11 @@ brcmf_cfg80211_set_power_mgmt(struct wiphy *wiphy, struct net_device *ndev,
+ 		brcmf_dbg(INFO, "Do not enable power save for P2P clients\n");
+ 		pm = PM_OFF;
+ 	}
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	brcmf_info("power save %s\n", (pm ? "enabled" : "disabled"));
++#else
++	brcmf_dbg(INFO, "power save %s\n", (pm ? "enabled" : "disabled"));
++#endif
+ 
+ 	err = brcmf_fil_cmd_int_set(ifp, BRCMF_C_SET_PM, pm);
+ 	if (err) {
+@@ -2948,7 +2952,9 @@ brcmf_cfg80211_set_power_mgmt(struct wiphy *wiphy, struct net_device *ndev,
+ 			bphy_err(drvr, "error (%d)\n", err);
+ 	}
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	timeout = 2000; /* 2000ms - the maximum */
++#endif
+ 	err = brcmf_fil_iovar_int_set(ifp, "pm2_sleep_ret",
+ 				min_t(u32, timeout, BRCMF_PS_MAX_TIMEOUT_MS));
+ 	if (err)
+@@ -7413,6 +7419,7 @@ static void brcmf_cfg80211_reg_notifier(struct wiphy *wiphy,
+ 	s32 err;
+ 	int i;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	err = brcmf_fil_iovar_data_get(ifp, "country", &ccreq, sizeof(ccreq));
+ 	if (err) {
+ 		bphy_err(drvr, "Country code iovar returned err = %d\n", err);
+@@ -7435,6 +7442,12 @@ static void brcmf_cfg80211_reg_notifier(struct wiphy *wiphy,
+ 		pr_debug("brcmfmac: substituting saved ccode %c%c\n",
+ 			 alpha2[0], alpha2[1]);
+ 	}
++#else
++	/* The country code gets set to "00" by default at boot, ignore */
++	alpha2 = req->alpha2;
++	if (req->alpha2[0] == '0' && req->alpha2[1] == '0')
++		return;
++#endif
+ 
+ 	/* ignore non-ISO3166 country codes */
+ 	for (i = 0; i < 2; i++)
+@@ -7447,6 +7460,14 @@ static void brcmf_cfg80211_reg_notifier(struct wiphy *wiphy,
+ 	brcmf_dbg(TRACE, "Enter: initiator=%d, alpha=%c%c\n", req->initiator,
+ 		  alpha2[0], alpha2[1]);
+ 
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
++	err = brcmf_fil_iovar_data_get(ifp, "country", &ccreq, sizeof(ccreq));
++	if (err) {
++		bphy_err(drvr, "Country code iovar returned err = %d\n", err);
++		return;
++	}
++#endif
++
+ 	err = brcmf_translate_country_code(ifp->drvr, alpha2, &ccreq);
+ 	if (err)
+ 		return;
+-- 
+2.31.1
+

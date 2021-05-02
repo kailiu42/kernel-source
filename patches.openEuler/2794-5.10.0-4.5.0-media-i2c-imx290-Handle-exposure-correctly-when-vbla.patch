@@ -1,0 +1,59 @@
+Git-commit: 02c0db0cac765b289fc5df17527050a842763a6e
+From: David Plowman <david.plowman@raspberrypi.com>
+Date: Thu, 18 Feb 2021 11:58:29 +0000
+Subject: [PATCH] media: i2c: imx290: Handle exposure correctly when vblank
+ changes
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+When vblank changes we must modify the exposure range. Also, with this
+sensor, the effective exposure time implicitly changes when vblank
+does, so we have to reset it after every vblank update.
+
+Signed-off-by: David Plowman <david.plowman@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/imx290.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/drivers/media/i2c/imx290.c b/drivers/media/i2c/imx290.c
+index 43e2f294a53b..255f66985306 100644
+--- a/drivers/media/i2c/imx290.c
++++ b/drivers/media/i2c/imx290.c
+@@ -618,6 +618,24 @@ static int imx290_set_vmax(struct imx290 *imx290, u32 val)
+ 	if (ret)
+ 		dev_err(imx290->dev, "Unable to write vmax\n");
+ 
++	/*
++	 * Changing vblank changes the allowed range for exposure.
++	 * We don't supply the current exposure as default here as it
++	 * may lie outside the new range. We will reset it just below.
++	 */
++	__v4l2_ctrl_modify_range(imx290->exposure,
++				 IMX290_EXPOSURE_MIN,
++				 vmax - 2,
++				 IMX290_EXPOSURE_STEP,
++				 vmax - 2);
++
++	/*
++	 * Becuse of the way exposure works for this sensor, updating
++	 * vblank causes the effective exposure to change, so we must
++	 * set it back to the "new" correct value.
++	 */
++	imx290_set_exposure(imx290, imx290->exposure->val);
++
+ 	return ret;
+ }
+ 
+-- 
+2.31.1
+

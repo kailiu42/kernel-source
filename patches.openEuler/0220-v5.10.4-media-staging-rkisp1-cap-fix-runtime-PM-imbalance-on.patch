@@ -1,0 +1,49 @@
+Git-commit: b6de1db3fd79ba8c2e4b7e4860e3377c997e6505
+From: Zhang Qilong <zhangqilong3@huawei.com>
+Date: Thu, 7 Jan 2021 07:38:35 +0000
+Subject: [PATCH] media: staging: rkisp1: cap: fix runtime PM imbalance on
+ error
+Patch-mainline: v5.10.4
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.4
+commit d5b2529aa572bb0da814146f6794f49b5e9110be
+bugzilla: 46903
+
+--------------------------------
+
+[ Upstream commit 4cbbe2aaa0536b0e7b3dfbd7febc3bc2ec300559 ]
+
+pm_runtime_get_sync will increment pm usage counter even it
+failed. Forgetting to pm_runtime_put_noidle will result in
+reference imbalance in rkisp1_vb2_start_streaming, so we
+should fix it.
+
+Fixes: 56e3b29f9f6b2 ("media: staging: rkisp1: add streaming paths")
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/media/rkisp1/rkisp1-capture.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/media/rkisp1/rkisp1-capture.c b/drivers/staging/media/rkisp1/rkisp1-capture.c
+index b6f497ce3e95..0c934ca5adaa 100644
+--- a/drivers/staging/media/rkisp1/rkisp1-capture.c
++++ b/drivers/staging/media/rkisp1/rkisp1-capture.c
+@@ -992,6 +992,7 @@ rkisp1_vb2_start_streaming(struct vb2_queue *queue, unsigned int count)
+ 
+ 	ret = pm_runtime_get_sync(cap->rkisp1->dev);
+ 	if (ret < 0) {
++		pm_runtime_put_noidle(cap->rkisp1->dev);
+ 		dev_err(cap->rkisp1->dev, "power up failed %d\n", ret);
+ 		goto err_destroy_dummy;
+ 	}
+-- 
+2.31.1
+

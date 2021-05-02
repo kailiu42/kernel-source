@@ -1,0 +1,97 @@
+Git-commit: c5383ad9433d1347d3a9defddc9fb579f7cf7e15
+From: Zheng Zengkai <zhengzengkai@huawei.com>
+Date: Thu, 4 Mar 2021 22:09:31 +0800
+Subject: [PATCH] arm64: keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following arch arm64 related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+154e93c8af38 ARM64: Force hardware emulation of deprecated instructions
+40cdf60c916b arch/arm64: Add Revision, Serial, Model to cpuinfo
+
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/kernel/armv8_deprecated.c | 4 ++--
+ arch/arm64/kernel/cpuinfo.c          | 6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/kernel/armv8_deprecated.c b/arch/arm64/kernel/armv8_deprecated.c
+index 989ea8fe49d0..ad5349b4906e 100644
+--- a/arch/arm64/kernel/armv8_deprecated.c
++++ b/arch/arm64/kernel/armv8_deprecated.c
+@@ -182,15 +182,15 @@ static void __init register_insn_emulation(struct insn_emulation_ops *ops)
+ 
+ 	switch (ops->status) {
+ 	case INSN_DEPRECATED:
+-#if 0
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
+ 		insn->current_mode = INSN_EMULATE;
+ 		/* Disable the HW mode if it was turned on at early boot time */
+ 		run_all_cpu_set_hw_mode(insn, false);
+ #else
+ 		insn->current_mode = INSN_HW;
+ 		run_all_cpu_set_hw_mode(insn, true);
+-		insn->max = INSN_HW;
+ #endif
++		insn->max = INSN_HW;
+ 		break;
+ 	case INSN_OBSOLETE:
+ 		insn->current_mode = INSN_UNDEF;
+diff --git a/arch/arm64/kernel/cpuinfo.c b/arch/arm64/kernel/cpuinfo.c
+index a0ce6bd92713..e91a3bfdcaf4 100644
+--- a/arch/arm64/kernel/cpuinfo.c
++++ b/arch/arm64/kernel/cpuinfo.c
+@@ -17,7 +17,9 @@
+ #include <linux/elf.h>
+ #include <linux/init.h>
+ #include <linux/kernel.h>
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ #include <linux/of_platform.h>
++#endif
+ #include <linux/personality.h>
+ #include <linux/preempt.h>
+ #include <linux/printk.h>
+@@ -138,10 +140,12 @@ static int c_show(struct seq_file *m, void *v)
+ {
+ 	int i, j;
+ 	bool aarch32 = personality(current->personality) == PER_LINUX32;
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	struct device_node *np;
+ 	const char *model;
+ 	const char *serial;
+ 	u32 revision;
++#endif
+ 
+ 	for_each_online_cpu(i) {
+ 		struct cpuinfo_arm64 *cpuinfo = &per_cpu(cpu_data, i);
+@@ -202,6 +206,7 @@ static int c_show(struct seq_file *m, void *v)
+ 		seq_printf(m, "CPU revision\t: %d\n\n", MIDR_REVISION(midr));
+ 	}
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	seq_printf(m, "Hardware\t: BCM2835\n");
+ 
+ 	np = of_find_node_by_path("/system");
+@@ -221,6 +226,7 @@ static int c_show(struct seq_file *m, void *v)
+ 			seq_printf(m, "Model\t\t: %s\n", model);
+ 		of_node_put(np);
+ 	}
++#endif
+ 
+ 	return 0;
+ }
+-- 
+2.31.1
+

@@ -1,0 +1,108 @@
+Git-commit: f8a28dd28a672bd8531e63ffda365a44e9cd0b0a
+From: Xi Wang <wangxi11@huawei.com>
+Date: Fri, 19 Mar 2021 11:47:14 +0800
+Subject: [PATCH] RDMA/hns: Optimize the base address table config for MTR
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.15.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+driver inclusion
+category: bugfix
+bugzilla: 50786
+
+------------------------------
+
+The base address table is allocated by dma allocator, and the size is
+always aligned to PAGE_SIZE. If use the fixed size to allocated the table,
+the base address entries which stored in table will be smaller than the
+actual memory space can store.
+
+Signed-off-by: Xi Wang <wangxi11@huawei.com>
+Reviewed-by: Weihang Li <liweihang@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/infiniband/hw/hns/hns_roce_cq.c    | 2 +-
+ drivers/infiniband/hw/hns/hns_roce_hw_v2.c | 4 ++--
+ drivers/infiniband/hw/hns/hns_roce_mr.c    | 2 +-
+ drivers/infiniband/hw/hns/hns_roce_qp.c    | 2 +-
+ drivers/infiniband/hw/hns/hns_roce_srq.c   | 2 +-
+ 5 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/infiniband/hw/hns/hns_roce_cq.c b/drivers/infiniband/hw/hns/hns_roce_cq.c
+index da346129f6e9..d18448887e55 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_cq.c
++++ b/drivers/infiniband/hw/hns/hns_roce_cq.c
+@@ -156,7 +156,7 @@ static int alloc_cq_buf(struct hns_roce_dev *hr_dev, struct hns_roce_cq *hr_cq,
+ 	buf_attr.fixed_page = true;
+ 
+ 	err = hns_roce_mtr_create(hr_dev, &hr_cq->mtr, &buf_attr,
+-				  hr_dev->caps.cqe_ba_pg_sz + HNS_HW_PAGE_SHIFT,
++				  hr_dev->caps.cqe_ba_pg_sz + PAGE_SHIFT,
+ 				  udata, addr);
+ 	if (err)
+ 		ibdev_err(ibdev, "Failed to alloc CQ mtr, err %d\n", err);
+diff --git a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+index 5c29c7d8c50e..8fdb274191e1 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
++++ b/drivers/infiniband/hw/hns/hns_roce_hw_v2.c
+@@ -5861,7 +5861,7 @@ static int alloc_eq_buf(struct hns_roce_dev *hr_dev, struct hns_roce_eq *eq)
+ 	else
+ 		eq->hop_num = hr_dev->caps.eqe_hop_num;
+ 
+-	buf_attr.page_shift = hr_dev->caps.eqe_buf_pg_sz + HNS_HW_PAGE_SHIFT;
++	buf_attr.page_shift = hr_dev->caps.eqe_buf_pg_sz + PAGE_SHIFT;
+ 	buf_attr.region[0].size = eq->entries * eq->eqe_size;
+ 	buf_attr.region[0].hopnum = eq->hop_num;
+ 	buf_attr.region_count = 1;
+@@ -5869,7 +5869,7 @@ static int alloc_eq_buf(struct hns_roce_dev *hr_dev, struct hns_roce_eq *eq)
+ 
+ 	err = hns_roce_mtr_create(hr_dev, &eq->mtr, &buf_attr,
+ 				  hr_dev->caps.eqe_ba_pg_sz +
+-				  HNS_HW_PAGE_SHIFT, NULL, 0);
++				  PAGE_SHIFT, NULL, 0);
+ 	if (err)
+ 		dev_err(hr_dev->dev, "Failed to alloc EQE mtr, err %d\n", err);
+ 
+diff --git a/drivers/infiniband/hw/hns/hns_roce_mr.c b/drivers/infiniband/hw/hns/hns_roce_mr.c
+index 7f81a695e9af..613cb5f6b0c0 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_mr.c
++++ b/drivers/infiniband/hw/hns/hns_roce_mr.c
+@@ -130,7 +130,7 @@ static int alloc_mr_pbl(struct hns_roce_dev *hr_dev, struct hns_roce_mr *mr,
+ 	buf_attr.mtt_only = is_fast;
+ 
+ 	err = hns_roce_mtr_create(hr_dev, &mr->pbl_mtr, &buf_attr,
+-				  hr_dev->caps.pbl_ba_pg_sz + HNS_HW_PAGE_SHIFT,
++				  hr_dev->caps.pbl_ba_pg_sz + PAGE_SHIFT,
+ 				  udata, start);
+ 	if (err)
+ 		ibdev_err(ibdev, "failed to alloc pbl mtr, ret = %d.\n", err);
+diff --git a/drivers/infiniband/hw/hns/hns_roce_qp.c b/drivers/infiniband/hw/hns/hns_roce_qp.c
+index ef1452215b17..3d2de0037cba 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_qp.c
++++ b/drivers/infiniband/hw/hns/hns_roce_qp.c
+@@ -670,7 +670,7 @@ static int alloc_qp_buf(struct hns_roce_dev *hr_dev, struct hns_roce_qp *hr_qp,
+ 		goto err_inline;
+ 	}
+ 	ret = hns_roce_mtr_create(hr_dev, &hr_qp->mtr, &buf_attr,
+-				  HNS_HW_PAGE_SHIFT + hr_dev->caps.mtt_ba_pg_sz,
++				  PAGE_SHIFT + hr_dev->caps.mtt_ba_pg_sz,
+ 				  udata, addr);
+ 	if (ret) {
+ 		ibdev_err(ibdev, "failed to create WQE mtr, ret = %d.\n", ret);
+diff --git a/drivers/infiniband/hw/hns/hns_roce_srq.c b/drivers/infiniband/hw/hns/hns_roce_srq.c
+index 75d74f4bb52c..308f547940c5 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_srq.c
++++ b/drivers/infiniband/hw/hns/hns_roce_srq.c
+@@ -226,7 +226,7 @@ static int alloc_srq_idx(struct hns_roce_dev *hr_dev, struct hns_roce_srq *srq,
+ 	buf_attr.fixed_page = true;
+ 
+ 	err = hns_roce_mtr_create(hr_dev, &idx_que->mtr, &buf_attr,
+-				  hr_dev->caps.idx_ba_pg_sz + HNS_HW_PAGE_SHIFT,
++				  hr_dev->caps.idx_ba_pg_sz + PAGE_SHIFT,
+ 				  udata, addr);
+ 	if (err) {
+ 		ibdev_err(ibdev, "Failed to alloc SRQ idx mtr, err %d\n", err);
+-- 
+2.31.1
+

@@ -1,0 +1,101 @@
+Git-commit: ca68225d919f12b6a937c6c45ffa409d447e1e52
+From: Phil Elwell <phil@raspberrypi.org>
+Date: Sat, 12 May 2018 21:35:43 +0100
+Subject: [PATCH] firmware/raspberrypi: Notify firmware of a reboot
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Register for reboot notifications, sending RPI_FIRMWARE_NOTIFY_REBOOT
+over the mailbox interface on reception.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/firmware/raspberrypi.c | 40 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
+index abb16e80a36c..05a0ae2a8eb7 100644
+--- a/drivers/firmware/raspberrypi.c
++++ b/drivers/firmware/raspberrypi.c
+@@ -11,6 +11,7 @@
+ #include <linux/module.h>
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
++#include <linux/reboot.h>
+ #include <linux/slab.h>
+ #include <soc/bcm2835/raspberrypi-firmware.h>
+ 
+@@ -177,6 +178,26 @@ int rpi_firmware_property(struct rpi_firmware *fw,
+ }
+ EXPORT_SYMBOL_GPL(rpi_firmware_property);
+ 
++static int rpi_firmware_notify_reboot(struct notifier_block *nb,
++				      unsigned long action,
++				      void *data)
++{
++	struct rpi_firmware *fw;
++	struct platform_device *pdev = g_pdev;
++
++	if (!pdev)
++		return 0;
++
++	fw = platform_get_drvdata(pdev);
++	if (!fw)
++		return 0;
++
++	(void)rpi_firmware_property(fw, RPI_FIRMWARE_NOTIFY_REBOOT,
++				    0, 0);
++
++	return 0;
++}
++
+ static void
+ rpi_firmware_print_firmware_revision(struct rpi_firmware *fw)
+ {
+@@ -318,15 +339,32 @@ static struct platform_driver rpi_firmware_driver = {
+ 	.remove		= rpi_firmware_remove,
+ };
+ 
++static struct notifier_block rpi_firmware_reboot_notifier = {
++	.notifier_call = rpi_firmware_notify_reboot,
++};
++
+ static int __init rpi_firmware_init(void)
+ {
+-	return platform_driver_register(&rpi_firmware_driver);
++	int ret = register_reboot_notifier(&rpi_firmware_reboot_notifier);
++	if (ret)
++		goto out1;
++	ret = platform_driver_register(&rpi_firmware_driver);
++	if (ret)
++		goto out2;
++
++	return 0;
++
++out2:
++	unregister_reboot_notifier(&rpi_firmware_reboot_notifier);
++out1:
++	return ret;
+ }
+ subsys_initcall(rpi_firmware_init);
+ 
+ static void __init rpi_firmware_exit(void)
+ {
+ 	platform_driver_unregister(&rpi_firmware_driver);
++	unregister_reboot_notifier(&rpi_firmware_reboot_notifier);
+ }
+ module_exit(rpi_firmware_exit);
+ 
+-- 
+2.31.1
+

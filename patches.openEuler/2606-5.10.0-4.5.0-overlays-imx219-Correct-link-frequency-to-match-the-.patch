@@ -1,0 +1,42 @@
+Git-commit: 6a72ae3ae6544573bada40851d8a9a65cfdb15f8
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Wed, 11 Mar 2020 12:07:57 +0000
+Subject: [PATCH] overlays: imx219: Correct link frequency to match the
+ upstream driver
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The upstream driver is checking the link frequency parameter, and
+the overlay had the wrong value.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/overlays/imx219-overlay.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/overlays/imx219-overlay.dts b/arch/arm/boot/dts/overlays/imx219-overlay.dts
+index 3484bde5a9e8..dce07b335c4e 100644
+--- a/arch/arm/boot/dts/overlays/imx219-overlay.dts
++++ b/arch/arm/boot/dts/overlays/imx219-overlay.dts
+@@ -36,7 +36,7 @@ imx219_0: endpoint {
+ 						data-lanes = <1 2>;
+ 						clock-noncontinuous;
+ 						link-frequencies =
+-							/bits/ 64 <297000000>;
++							/bits/ 64 <456000000>;
+ 					};
+ 				};
+ 			};
+-- 
+2.31.1
+

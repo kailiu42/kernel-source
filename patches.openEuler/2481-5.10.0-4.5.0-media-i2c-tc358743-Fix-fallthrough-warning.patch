@@ -1,0 +1,37 @@
+Git-commit: c7515bd093b2644ae1750ea14785945f97bb022e
+From: Jacko Dirks <jdirks.linuxdev@gmail.com>
+Date: Tue, 5 May 2020 14:28:14 +0200
+Subject: [PATCH] media: i2c: tc358743: Fix fallthrough warning
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Jacko Dirks <jdirks.linuxdev@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/media/i2c/tc358743.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/media/i2c/tc358743.c b/drivers/media/i2c/tc358743.c
+index 0a8a25ff7872..b3b8d6e15ea2 100644
+--- a/drivers/media/i2c/tc358743.c
++++ b/drivers/media/i2c/tc358743.c
+@@ -2005,6 +2005,7 @@ static int tc358743_probe_of(struct tc358743_state *state)
+ 	switch (bps_pr_lane) {
+ 	default:
+ 		dev_warn(dev, "untested bps per lane: %u bps\n", bps_pr_lane);
++		/* fall through */
+ 	case 594000000U:
+ 		state->pdata.lineinitcnt = 0xe80;
+ 		state->pdata.lptxtimecnt = 0x003;
+-- 
+2.31.1
+

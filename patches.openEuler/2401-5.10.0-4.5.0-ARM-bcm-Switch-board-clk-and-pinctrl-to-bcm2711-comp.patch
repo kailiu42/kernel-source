@@ -1,0 +1,42 @@
+Git-commit: f4ffa3008fc4da4393d3466edf768a04ea6a9201
+From: Stefan Wahren <wahrenst@gmx.net>
+Date: Thu, 19 Sep 2019 20:45:30 +0200
+Subject: [PATCH] ARM: bcm: Switch board, clk and pinctrl to bcm2711 compatible
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+After the decision to use bcm2711 compatible for upstream, we should
+switch all accepted compatibles to bcm2711. So we can boot with
+one DTB the down- and the upstream kernel.
+
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/mach-bcm/board_bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-bcm/board_bcm2835.c b/arch/arm/mach-bcm/board_bcm2835.c
+index 282a023027fc..e538e0f899a5 100644
+--- a/arch/arm/mach-bcm/board_bcm2835.c
++++ b/arch/arm/mach-bcm/board_bcm2835.c
+@@ -109,7 +109,7 @@ static const char * const bcm2835_compat[] = {
+ #ifdef CONFIG_ARCH_MULTI_V7
+ 	"brcm,bcm2836",
+ 	"brcm,bcm2837",
+-	"brcm,bcm2838",
++	"brcm,bcm2711",
+ #endif
+ 	NULL
+ };
+-- 
+2.31.1
+

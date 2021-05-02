@@ -1,0 +1,64 @@
+Git-commit: 22d02cc68fe44c7324f13e6a68d301e1f85cb404
+From: ZhuLing <zhuling8(a)huawei.com>
+Date: Fri, 12 Mar 2021 10:19:21 +0800
+Subject: [PATCH] pmem: Enable legacy pmem on openEuler
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.11.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+hulk inclusion
+category: feature
+bugzilla: 48159
+CVE: NA
+
+------------------------------
+
+Enable legacy pmem on openEuler defconfig both
+arm64 and x86
+
+Signed-off-by: ZhuLing <zhuling8(a)huawei.com>
+Signed-off-by: Sang Yan <sangyan(a)huawei.com>
+Acked-by: Hanjun Guo <guohanjun(a)huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/configs/openeuler_defconfig | 3 +++
+ arch/x86/configs/openeuler_defconfig   | 1 +
+ 2 files changed, 4 insertions(+)
+
+diff --git a/arch/arm64/configs/openeuler_defconfig b/arch/arm64/configs/openeuler_defconfig
+index 9d3dd3d0aec0..c898da48a8df 100644
+--- a/arch/arm64/configs/openeuler_defconfig
++++ b/arch/arm64/configs/openeuler_defconfig
+@@ -275,6 +275,8 @@ CONFIG_PGTABLE_LEVELS=3
+ CONFIG_ARCH_SUPPORTS_UPROBES=y
+ CONFIG_ARCH_PROC_KCORE_TEXT=y
+ CONFIG_ARM64_CPU_PARK=y
++CONFIG_ARM64_PMEM_RESERVE=y
++CONFIG_ARM64_PMEM_LEGACY_DEVICE=y
+ 
+ #
+ # Platform selection
+@@ -6001,6 +6003,7 @@ CONFIG_ND_BTT=m
+ CONFIG_BTT=y
+ CONFIG_OF_PMEM=m
+ CONFIG_NVDIMM_KEYS=y
++CONFIG_PMEM_LEGACY=m
+ CONFIG_DAX_DRIVER=y
+ CONFIG_DAX=y
+ CONFIG_DEV_DAX=m
+diff --git a/arch/x86/configs/openeuler_defconfig b/arch/x86/configs/openeuler_defconfig
+index 44b7c7340d59..c310e38fd6e7 100644
+--- a/arch/x86/configs/openeuler_defconfig
++++ b/arch/x86/configs/openeuler_defconfig
+@@ -7373,6 +7373,7 @@ CONFIG_NVDIMM_PFN=y
+ CONFIG_NVDIMM_DAX=y
+ CONFIG_OF_PMEM=m
+ CONFIG_NVDIMM_KEYS=y
++CONFIG_PMEM_LEGACY=m
+ CONFIG_DAX_DRIVER=y
+ CONFIG_DAX=y
+ CONFIG_DEV_DAX=m
+-- 
+2.31.1
+

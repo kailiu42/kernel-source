@@ -1,0 +1,44 @@
+Git-commit: e4f501b14b96707be467f9f2fbb4e07eee27eae9
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Wed, 6 May 2020 18:09:04 +0100
+Subject: [PATCH] staging: vchiq-mmal: Add support for 14bit Bayer
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Add in the missing defines.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h b/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h
+index 44ba91aa6d47..be8af09a6c80 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-encodings.h
+@@ -90,6 +90,12 @@
+ #define MMAL_ENCODING_BAYER_SGBRG12P   MMAL_FOURCC('p', 'G', '1', '2')
+ #define MMAL_ENCODING_BAYER_SRGGB12P   MMAL_FOURCC('p', 'R', '1', '2')
+ 
++//14 bit per pixel Bayer formats.
++#define MMAL_ENCODING_BAYER_SBGGR14P   MMAL_FOURCC('p', 'B', 'E', 'E')
++#define MMAL_ENCODING_BAYER_SGBRG14P   MMAL_FOURCC('p', 'G', 'E', 'E')
++#define MMAL_ENCODING_BAYER_SGRBG14P   MMAL_FOURCC('p', 'g', 'E', 'E')
++#define MMAL_ENCODING_BAYER_SRGGB14P   MMAL_FOURCC('p', 'R', 'E', 'E')
++
+ /* 16 bit per pixel Bayer formats. */
+ #define MMAL_ENCODING_BAYER_SBGGR16    MMAL_FOURCC('B', 'G', '1', '6')
+ #define MMAL_ENCODING_BAYER_SGBRG16    MMAL_FOURCC('G', 'B', '1', '6')
+-- 
+2.31.1
+

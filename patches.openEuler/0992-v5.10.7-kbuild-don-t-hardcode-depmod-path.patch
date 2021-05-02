@@ -1,0 +1,46 @@
+Git-commit: 2ce81cbad7458cb3252db2a304b681539b5b474e
+From: Dominique Martinet <asmadeus@codewreck.org>
+Date: Tue, 19 Jan 2021 11:25:52 +0000
+Subject: [PATCH] kbuild: don't hardcode depmod path
+Patch-mainline: v5.10.7
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.7
+commit 3ca425885bb74e8b286308707c067aaabc6f4fce
+bugzilla: 47429
+
+--------------------------------
+
+commit 436e980e2ed526832de822cbf13c317a458b78e1 upstream.
+
+depmod is not guaranteed to be in /sbin, just let make look for
+it in the path like all the other invoked programs
+
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index e30cf02da8b8..29c3eecd7b30 100644
+--- a/Makefile
++++ b/Makefile
+@@ -450,7 +450,7 @@ LEX		= flex
+ YACC		= bison
+ AWK		= awk
+ INSTALLKERNEL  := installkernel
+-DEPMOD		= /sbin/depmod
++DEPMOD		= depmod
+ PERL		= perl
+ PYTHON		= python
+ PYTHON3		= python3
+-- 
+2.31.1
+

@@ -1,0 +1,59 @@
+Git-commit: fef4c142b631c9c4433517994e79e689a968d576
+From: Fang Yafen <yafen@iscas.ac.cn>
+Date: Fri, 26 Feb 2021 13:38:29 +0800
+Subject: [PATCH] arm64: add Raspberry Pi specific config:
+ CONFIG_OPENEULER_RASPBERRYPI for openEuler
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+Add new config CONFIG_OPENEULER_RASPBERRYPI to denote that the compiled kernel will be used for Raspberry Pi.
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm64/configs/bcm2711_defconfig | 1 +
+ drivers/soc/bcm/Kconfig              | 7 +++++++
+ 2 files changed, 8 insertions(+)
+
+diff --git a/arch/arm64/configs/bcm2711_defconfig b/arch/arm64/configs/bcm2711_defconfig
+index 8a643571a458..d01424f8106c 100644
+--- a/arch/arm64/configs/bcm2711_defconfig
++++ b/arch/arm64/configs/bcm2711_defconfig
+@@ -1353,6 +1353,7 @@ CONFIG_MAILBOX=y
+ CONFIG_BCM2835_MBOX=y
+ # CONFIG_IOMMU_SUPPORT is not set
+ CONFIG_RASPBERRYPI_POWER=y
++CONFIG_OPENEULER_RASPBERRYPI=y
+ CONFIG_EXTCON_ARIZONA=m
+ CONFIG_IIO=m
+ CONFIG_IIO_BUFFER_CB=m
+diff --git a/drivers/soc/bcm/Kconfig b/drivers/soc/bcm/Kconfig
+index a6a705ec30c7..29885aa7075d 100644
+--- a/drivers/soc/bcm/Kconfig
++++ b/drivers/soc/bcm/Kconfig
+@@ -23,6 +23,13 @@ config RASPBERRYPI_POWER
+ 	  This enables support for the RPi power domains which can be enabled
+ 	  or disabled via the RPi firmware.
+ 
++config OPENEULER_RASPBERRYPI
++	bool "Raspberry Pi specific config for openEuler"
++	default n
++	select ARCH_BCM2835
++	help
++	  This enables support for the Raspberry Pi devices specific code in openEuler kernel.
++
+ config SOC_BCM63XX
+ 	bool "Broadcom 63xx SoC drivers"
+ 	depends on BMIPS_GENERIC || COMPILE_TEST
+-- 
+2.31.1
+

@@ -1,0 +1,61 @@
+Git-commit: 622b2462649b276cdce7b2e3fdffbca05a56f276
+From: Ard Biesheuvel <ardb@kernel.org>
+Date: Thu, 31 Dec 2020 12:27:31 +0000
+Subject: [PATCH] ARM: head.S: use PC relative insn sequence to calculate
+ PHYS_OFFSET
+Patch-mainline: v5.11-rc1
+References: openEuler-21.03
+
+mainline inclusion
+from mainline-5.11-rc1
+commit 3bcf906b194cebb6817cbb2f07b69e12aa5d7f51
+category: bugfix
+bugzilla: 46882
+CVE: NA
+
+-------------------------------------------------
+Replace the open coded arithmetic with a simple adr_l/sub pair. This
+removes some open coded arithmetic involving virtual addresses, avoids
+literal pools on v7+, and slightly reduces the footprint of the code.
+
+Reviewed-by: Nicolas Pitre <nico@fluxnic.net>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+(cherry picked from commit 3bcf906b194cebb6817cbb2f07b69e12aa5d7f51)
+Signed-off-by: Zhao Hongjiang <zhaohongjiang@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/kernel/head.S | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/kernel/head.S b/arch/arm/kernel/head.S
+index 8dd5b2d13a51..d97d3dd6a1f0 100644
+--- a/arch/arm/kernel/head.S
++++ b/arch/arm/kernel/head.S
+@@ -103,10 +103,8 @@ ENTRY(stext)
+ #endif
+ 
+ #ifndef CONFIG_XIP_KERNEL
+-	adr	r3, 2f
+-	ldmia	r3, {r4, r8}
+-	sub	r4, r3, r4			@ (PHYS_OFFSET - PAGE_OFFSET)
+-	add	r8, r8, r4			@ PHYS_OFFSET
++	adr_l	r8, _text			@ __pa(_text)
++	sub	r8, r8, #TEXT_OFFSET		@ PHYS_OFFSET
+ #else
+ 	ldr	r8, =PLAT_PHYS_OFFSET		@ always constant in this case
+ #endif
+@@ -158,10 +156,6 @@ ENTRY(stext)
+ 1:	b	__enable_mmu
+ ENDPROC(stext)
+ 	.ltorg
+-#ifndef CONFIG_XIP_KERNEL
+-2:	.long	.
+-	.long	PAGE_OFFSET
+-#endif
+ 
+ /*
+  * Setup the initial page tables.  We only setup the barest
+-- 
+2.31.1
+

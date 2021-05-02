@@ -1,0 +1,49 @@
+Git-commit: 9c038498af151ad80ee9159fc431ab9e8883b617
+From: Qinglang Miao <miaoqinglang@huawei.com>
+Date: Thu, 7 Jan 2021 07:40:44 +0000
+Subject: [PATCH] platform/x86: dell-smbios-base: Fix error return code in
+ dell_smbios_init
+Patch-mainline: v5.10.4
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.4
+commit e94331e0d7d2568157f18ab4d19df5b770de35f5
+bugzilla: 46903
+
+--------------------------------
+
+[ Upstream commit 2425ccd30fd78ce35237350fe8baac31dc18bd45 ]
+
+Fix to return the error code -ENODEV when fails to init wmi and
+smm.
+
+Fixes: 41e36f2f85af ("platform/x86: dell-smbios: Link all dell-smbios-* modules together")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+Reviewed-by: Mario Limonciello <mario.limonciello@dell.com>
+Link: https://lore.kernel.org/r/20201125065032.154125-1-miaoqinglang@huawei.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/platform/x86/dell-smbios-base.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/platform/x86/dell-smbios-base.c b/drivers/platform/x86/dell-smbios-base.c
+index 2e2cd565926a..3a1dbf199441 100644
+--- a/drivers/platform/x86/dell-smbios-base.c
++++ b/drivers/platform/x86/dell-smbios-base.c
+@@ -594,6 +594,7 @@ static int __init dell_smbios_init(void)
+ 	if (wmi && smm) {
+ 		pr_err("No SMBIOS backends available (wmi: %d, smm: %d)\n",
+ 			wmi, smm);
++		ret = -ENODEV;
+ 		goto fail_create_group;
+ 	}
+ 
+-- 
+2.31.1
+

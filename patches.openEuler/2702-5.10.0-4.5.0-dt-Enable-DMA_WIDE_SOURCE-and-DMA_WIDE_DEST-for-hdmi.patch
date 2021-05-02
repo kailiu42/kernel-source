@@ -1,0 +1,61 @@
+Git-commit: 7154c45693da69eb9feb11c13524aa0cfecb37b4
+From: popcornmix <popcornmix@gmail.com>
+Date: Mon, 11 Jan 2021 13:06:23 +0000
+Subject: [PATCH] dt: Enable DMA_WIDE_SOURCE and DMA_WIDE_DEST for hdmi audio
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: popcornmix <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/bcm2711-rpi.dtsi    | 4 ++--
+ arch/arm/boot/dts/bcm2835-common.dtsi | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm/boot/dts/bcm2711-rpi.dtsi b/arch/arm/boot/dts/bcm2711-rpi.dtsi
+index 4f903a787d65..3dbfd601ca39 100644
+--- a/arch/arm/boot/dts/bcm2711-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2711-rpi.dtsi
+@@ -179,7 +179,7 @@ &pixelvalve4 {
+ };
+ 
+ &hdmi0 {
+-	dmas = <&dma (10|(1<<27))>;
++	dmas = <&dma (10|(1<<27)|(1<<24))>;
+ 	status = "disabled";
+ };
+ 
+@@ -188,7 +188,7 @@ &ddc0 {
+ };
+ 
+ &hdmi1 {
+-	dmas = <&dma (17|(1<<27))>;
++	dmas = <&dma (17|(1<<27)|(1<<24))>;
+ 	status = "disabled";
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2835-common.dtsi b/arch/arm/boot/dts/bcm2835-common.dtsi
+index bd77ba3a3562..47b958428d0c 100644
+--- a/arch/arm/boot/dts/bcm2835-common.dtsi
++++ b/arch/arm/boot/dts/bcm2835-common.dtsi
+@@ -123,7 +123,7 @@ hdmi: hdmi@7e902000 {
+ 			clocks = <&clocks BCM2835_PLLH_PIX>,
+ 				 <&clocks BCM2835_CLOCK_HSM>;
+ 			clock-names = "pixel", "hdmi";
+-			dmas = <&dma (17|(1<<27))>;
++			dmas = <&dma (17|(1<<27)|(1<<24))>;
+ 			dma-names = "audio-rx";
+ 			status = "disabled";
+ 		};
+-- 
+2.31.1
+

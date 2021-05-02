@@ -1,0 +1,44 @@
+Git-commit: 8a34d6a04f2acb13533f9de36365ba776cc70ef8
+From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date: Fri, 15 May 2020 13:42:10 +0100
+Subject: [PATCH] staging: vc04_services: mmal-vchiq: Update parameters list
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Adds in a couple of new MMAL parameter defines.
+
+Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h b/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h
+index 27bafc5f01d2..89059bca0b77 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h
+@@ -612,6 +612,12 @@ enum mmal_parameter_video_type {
+ 
+ 	/**< Takes a @ref MMAL_PARAMETER_UINT32_T */
+ 	MMAL_PARAMETER_VIDEO_DROPPABLE_PFRAME_LENGTH,
++
++	/**< Take a @ref MMAL_PARAMETER_VIDEO_STALL_T */
++	MMAL_PARAMETER_VIDEO_STALL_THRESHOLD,
++
++	/**< Take a @ref MMAL_PARAMETER_BOOLEAN_T */
++	MMAL_PARAMETER_VIDEO_ENCODE_HEADERS_WITH_FRAME,
+ };
+ 
+ /** Valid mirror modes */
+-- 
+2.31.1
+

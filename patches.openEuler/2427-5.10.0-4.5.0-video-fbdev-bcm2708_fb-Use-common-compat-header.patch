@@ -1,0 +1,40 @@
+Git-commit: 229dd4522b14d44068ad57704b410f806011f6e9
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Mon, 2 Mar 2020 14:42:23 +0000
+Subject: [PATCH] video: fbdev: bcm2708_fb: Use common compat header
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+The definition of compat_ptr is now common for most platforms, but
+requires the inclusion of <linux/compat.h>.
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/video/fbdev/bcm2708_fb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/video/fbdev/bcm2708_fb.c b/drivers/video/fbdev/bcm2708_fb.c
+index 0e9ec3f593b8..17e9260655e4 100644
+--- a/drivers/video/fbdev/bcm2708_fb.c
++++ b/drivers/video/fbdev/bcm2708_fb.c
+@@ -38,6 +38,7 @@
+ #include <linux/cred.h>
+ #include <soc/bcm2835/raspberrypi-firmware.h>
+ #include <linux/mutex.h>
++#include <linux/compat.h>
+ 
+ //#define BCM2708_FB_DEBUG
+ #define MODULE_NAME "bcm2708_fb"
+-- 
+2.31.1
+

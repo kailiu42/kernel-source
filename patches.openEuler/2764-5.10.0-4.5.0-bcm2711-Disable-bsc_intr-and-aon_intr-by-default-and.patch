@@ -1,0 +1,72 @@
+Git-commit: e6cce33ea0b5ea7f326b65d11948af1ca3ba5b78
+From: Dom Cobley <popcornmix@gmail.com>
+Date: Wed, 9 Dec 2020 16:37:01 +0000
+Subject: [PATCH] bcm2711: Disable bsc_intr and aon_intr by default and enable
+ in overlay
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Dom Cobley <popcornmix@gmail.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/boot/dts/bcm2711.dtsi                     |  2 ++
+ .../boot/dts/overlays/vc4-kms-v3d-pi4-overlay.dts  | 14 ++++++++++++++
+ 2 files changed, 16 insertions(+)
+
+diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
+index 9e0d9b2ca586..0ef7bde01555 100644
+--- a/arch/arm/boot/dts/bcm2711.dtsi
++++ b/arch/arm/boot/dts/bcm2711.dtsi
+@@ -314,6 +314,7 @@ bsc_intr: interrupt-controller@7ef00040 {
+ 			interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <1>;
++			status = "disabled";
+ 		};
+ 
+ 		aon_intr: interrupt-controller@7ef00100 {
+@@ -322,6 +323,7 @@ aon_intr: interrupt-controller@7ef00100 {
+ 			interrupts = <GIC_SPI 96 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <1>;
++			status = "disabled";
+ 		};
+ 
+ 		hdmi0: hdmi@7ef00700 {
+diff --git a/arch/arm/boot/dts/overlays/vc4-kms-v3d-pi4-overlay.dts b/arch/arm/boot/dts/overlays/vc4-kms-v3d-pi4-overlay.dts
+index f721f12d729d..8e9220f303f0 100644
+--- a/arch/arm/boot/dts/overlays/vc4-kms-v3d-pi4-overlay.dts
++++ b/arch/arm/boot/dts/overlays/vc4-kms-v3d-pi4-overlay.dts
+@@ -166,6 +166,20 @@ __dormant__  {
+ 		};
+ 	};
+ 
++	fragment@23 {
++		target = <&bsc_intr>;
++		__overlay__  {
++			status = "okay";
++		};
++	};
++
++	fragment@24 {
++		target = <&aon_intr>;
++		__overlay__  {
++			status = "okay";
++		};
++	};
++
+ 	__overrides__ {
+ 		audio   = <0>,"!17";
+ 		audio1   = <0>,"!18";
+-- 
+2.31.1
+

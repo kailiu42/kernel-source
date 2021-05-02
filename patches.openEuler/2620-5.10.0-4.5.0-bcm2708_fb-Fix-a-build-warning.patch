@@ -1,0 +1,39 @@
+Git-commit: d4421adde62c45bcffff5e9b8ddd455a032b23d9
+From: Phil Elwell <phil@raspberrypi.com>
+Date: Tue, 27 Oct 2020 12:12:22 +0000
+Subject: [PATCH] bcm2708_fb: Fix a build warning
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/video/fbdev/bcm2708_fb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/video/fbdev/bcm2708_fb.c b/drivers/video/fbdev/bcm2708_fb.c
+index dac5c021ce52..365c5b96b8a0 100644
+--- a/drivers/video/fbdev/bcm2708_fb.c
++++ b/drivers/video/fbdev/bcm2708_fb.c
+@@ -693,7 +693,8 @@ static long vc_mem_copy(struct bcm2708_fb *fb, struct fb_dmacopy *ioparam)
+ 		u8 *q = (u8 *)ioparam->dst + offset;
+ 
+ 		dma_memcpy(fb, bus_addr,
+-			   INTALIAS_L1L2_NONALLOCATING((dma_addr_t)p), size);
++			   INTALIAS_L1L2_NONALLOCATING((u32)(uintptr_t)p),
++						       size);
+ 		if (copy_to_user(q, buf, s) != 0) {
+ 			pr_err("[%s]: failed to copy-to-user\n", __func__);
+ 			rc = -EFAULT;
+-- 
+2.31.1
+

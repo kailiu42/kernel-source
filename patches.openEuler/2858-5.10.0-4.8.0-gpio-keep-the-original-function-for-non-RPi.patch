@@ -1,0 +1,151 @@
+Git-commit: d027ebc9b6ea79a63a8c906f0debf633612b50ce
+From: Fang Yafen <yafen@iscas.ac.cn>
+Date: Wed, 3 Mar 2021 14:11:55 +0800
+Subject: [PATCH] gpio:keep the original function for non-RPi
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.8.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+------------------------------
+
+This patch adjusts following gpio related patches for
+raspberry pi on non-Raspberry Pi platforms, using specific
+config CONFIG_OPENEULER_RASPBERRYPI to distinguish them:
+
+680d5826012 Revert "mailbox: avoid timer start from callback"
+1088c5d4205 gpiolib: Don't prevent IRQ usage of output GPIOs
+54bc28b4d2e gpio-poweroff: Allow it to work on Raspberry Pi
+26b77aae545 i2c-gpio: Also set bus numbers from reg property
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Reviewed-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/gpio/gpiolib.c              | 14 ++++++++------
+ drivers/i2c/busses/i2c-gpio.c       |  4 ++++
+ drivers/mailbox/mailbox.c           | 14 ++++++++++++--
+ drivers/power/reset/gpio-poweroff.c |  2 ++
+ 4 files changed, 26 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index c9d687769e06..da9dd9dbc0b7 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -51,8 +51,6 @@
+ #define	extra_checks	0
+ #endif
+ 
+-#define dont_test_bit(b,d) (0)
+-
+ /* Device and char device-related information */
+ static DEFINE_IDA(gpio_ida);
+ static dev_t gpio_devt;
+@@ -2439,13 +2437,15 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
+ 		value = !!value;
+ 
+ 	/* GPIOs used for enabled IRQs shall not be set as output */
+-	if (dont_test_bit(FLAG_USED_AS_IRQ, &desc->flags) &&
+-	    dont_test_bit(FLAG_IRQ_IS_ENABLED, &desc->flags)) {
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
++	if (test_bit(FLAG_USED_AS_IRQ, &desc->flags) &&
++	    test_bit(FLAG_IRQ_IS_ENABLED, &desc->flags)) {
+ 		gpiod_err(desc,
+ 			  "%s: tried to set a GPIO tied to an IRQ as output\n",
+ 			  __func__);
+ 		return -EIO;
+ 	}
++#endif
+ 
+ 	if (test_bit(FLAG_OPEN_DRAIN, &desc->flags)) {
+ 		/* First see if we can enable open drain in hardware */
+@@ -3245,13 +3245,15 @@ int gpiochip_lock_as_irq(struct gpio_chip *gc, unsigned int offset)
+ 	}
+ 
+ 	/* To be valid for IRQ the line needs to be input or open drain */
+-	if (dont_test_bit(FLAG_IS_OUT, &desc->flags) &&
+-	    !dont_test_bit(FLAG_OPEN_DRAIN, &desc->flags)) {
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
++	if (test_bit(FLAG_IS_OUT, &desc->flags) &&
++	    !test_bit(FLAG_OPEN_DRAIN, &desc->flags)) {
+ 		chip_err(gc,
+ 			 "%s: tried to flag a GPIO set as output for IRQ\n",
+ 			 __func__);
+ 		return -EIO;
+ 	}
++#endif
+ 
+ 	set_bit(FLAG_USED_AS_IRQ, &desc->flags);
+ 	set_bit(FLAG_IRQ_IS_ENABLED, &desc->flags);
+diff --git a/drivers/i2c/busses/i2c-gpio.c b/drivers/i2c/busses/i2c-gpio.c
+index cfbcf3952ddc..6216623865b7 100644
+--- a/drivers/i2c/busses/i2c-gpio.c
++++ b/drivers/i2c/busses/i2c-gpio.c
+@@ -445,9 +445,13 @@ static int i2c_gpio_probe(struct platform_device *pdev)
+ 	adap->dev.parent = dev;
+ 	adap->dev.of_node = np;
+ 
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	if (pdev->id != PLATFORM_DEVID_NONE || !pdev->dev.of_node ||
+ 	    of_property_read_u32(pdev->dev.of_node, "reg", &adap->nr))
+ 		adap->nr = pdev->id;
++#else
++	adap->nr = pdev->id;
++#endif
+ 	ret = i2c_bit_add_numbered_bus(adap);
+ 	if (ret)
+ 		return ret;
+diff --git a/drivers/mailbox/mailbox.c b/drivers/mailbox/mailbox.c
+index 0b821a5b2db8..03a534a8b55b 100644
+--- a/drivers/mailbox/mailbox.c
++++ b/drivers/mailbox/mailbox.c
+@@ -82,9 +82,16 @@ static void msg_submit(struct mbox_chan *chan)
+ exit:
+ 	spin_unlock_irqrestore(&chan->lock, flags);
+ 
+-	if (!err && (chan->txdone_method & TXDONE_BY_POLL))
+-		/* kick start the timer immediately to avoid delays */
++	/* kick start the timer immediately to avoid delays */
++	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
++#else
++		/* but only if not already active */
++		if (!hrtimer_active(&chan->mbox->poll_hrt))
++			hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
++#endif
++	}
+ }
+ 
+ static void tx_tick(struct mbox_chan *chan, int r)
+@@ -122,6 +129,9 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
+ 		struct mbox_chan *chan = &mbox->chans[i];
+ 
+ 		if (chan->active_req && chan->cl) {
++#ifndef CONFIG_OPENEULER_RASPBERRYPI
++			resched = true;
++#endif
+ 			txdone = chan->mbox->ops->last_tx_done(chan);
+ 			if (txdone)
+ 				tx_tick(chan, 0);
+diff --git a/drivers/power/reset/gpio-poweroff.c b/drivers/power/reset/gpio-poweroff.c
+index 3acbe711b792..a2a79ee38c34 100644
+--- a/drivers/power/reset/gpio-poweroff.c
++++ b/drivers/power/reset/gpio-poweroff.c
+@@ -54,7 +54,9 @@ static int gpio_poweroff_probe(struct platform_device *pdev)
+ 	bool export = false;
+ 
+ 	/* If a pm_power_off function has already been added, leave it alone */
++#ifdef CONFIG_OPENEULER_RASPBERRYPI
+ 	force = of_property_read_bool(pdev->dev.of_node, "force");
++#endif
+ 	if (!force && (pm_power_off != NULL)) {
+ 		dev_err(&pdev->dev,
+ 			"%s: pm_power_off function already registered\n",
+-- 
+2.31.1
+

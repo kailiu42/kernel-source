@@ -1,0 +1,51 @@
+Git-commit: 09a6059c49a87f0e09f915135fef76bff3100d49
+From: Arnold Gozum <arngozum@gmail.com>
+Date: Tue, 9 Feb 2021 14:46:32 +0800
+Subject: [PATCH] platform/x86: intel-vbtn: Support for tablet mode on Dell
+ Inspiron 7352
+Patch-mainline: v5.10.14
+References: openEuler-21.03
+
+stable inclusion
+from stable-5.10.14
+commit a55c4bf2c8f0363a55c307ecc181466a7916c3ba
+bugzilla: 48051
+
+--------------------------------
+
+[ Upstream commit fcd38f178b785623c0325958225744f0d8a075c0 ]
+
+The Dell Inspiron 7352 is a 2-in-1 model that has chassis-type "Notebook".
+Add this model to the dmi_switches_allow_list.
+
+Signed-off-by: Arnold Gozum <arngozum@gmail.com>
+Link: https://lore.kernel.org/r/20201226205307.249659-1-arngozum@gmail.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Acked-by: Xie XiuQi <xiexiuqi@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ drivers/platform/x86/intel-vbtn.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/platform/x86/intel-vbtn.c b/drivers/platform/x86/intel-vbtn.c
+index 65fb3a303147..30a9062d2b4b 100644
+--- a/drivers/platform/x86/intel-vbtn.c
++++ b/drivers/platform/x86/intel-vbtn.c
+@@ -216,6 +216,12 @@ static const struct dmi_system_id dmi_switches_allow_list[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Switch SA5-271"),
+ 		},
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 7352"),
++		},
++	},
+ 	{} /* Array terminator */
+ };
+ 
+-- 
+2.31.1
+

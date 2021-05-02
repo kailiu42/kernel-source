@@ -1,0 +1,73 @@
+Git-commit: 588cfce788d155c6efe2b6115a969792843e1671
+From: popcornmix <popcornmix@gmail.com>
+Date: Fri, 25 Aug 2017 19:18:13 +0100
+Subject: [PATCH] cache: export clean and invalidate
+Patch-mainline: Queued in openEuler repo, version 5.10.0-4.5.0
+References: openEuler-21.03
+Git-repo: https://gitee.com/openeuler/kernel.git
+
+raspberrypi inclusion
+category: feature
+bugzilla: 50432
+
+--------------------------------
+
+hack: cache: Fix linker error
+
+Signed-off-by: Fang Yafen <yafen@iscas.ac.cn>
+Signed-off-by: Zheng Zengkai <zhengzengkai@huawei.com>
+Signed-off-by: Kai Liu <kai.liu@suse.com>
+---
+ arch/arm/mm/cache-v6.S | 4 ++--
+ arch/arm/mm/cache-v7.S | 6 ++++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/mm/cache-v6.S b/arch/arm/mm/cache-v6.S
+index f0f65eb073e4..868011801521 100644
+--- a/arch/arm/mm/cache-v6.S
++++ b/arch/arm/mm/cache-v6.S
+@@ -198,7 +198,7 @@ ENTRY(v6_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v6_dma_inv_range:
++ENTRY(v6_dma_inv_range)
+ #ifdef CONFIG_DMA_CACHE_RWFO
+ 	ldrb	r2, [r0]			@ read for ownership
+ 	strb	r2, [r0]			@ write for ownership
+@@ -243,7 +243,7 @@ v6_dma_inv_range:
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v6_dma_clean_range:
++ENTRY(v6_dma_clean_range)
+ 	bic	r0, r0, #D_CACHE_LINE_SIZE - 1
+ 1:
+ #ifdef CONFIG_DMA_CACHE_RWFO
+diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
+index dc8f152f3556..536df5db66e4 100644
+--- a/arch/arm/mm/cache-v7.S
++++ b/arch/arm/mm/cache-v7.S
+@@ -363,7 +363,8 @@ ENDPROC(v7_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v7_dma_inv_range:
++ENTRY(b15_dma_inv_range)
++ENTRY(v7_dma_inv_range)
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	tst	r0, r3
+@@ -393,7 +394,8 @@ ENDPROC(v7_dma_inv_range)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v7_dma_clean_range:
++ENTRY(b15_dma_clean_range)
++ENTRY(v7_dma_clean_range)
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	bic	r0, r0, r3
+-- 
+2.31.1
+
