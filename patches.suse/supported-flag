@@ -19,23 +19,23 @@ Changes:
 
 Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
 ---
- .../admin-guide/kernel-parameters.txt         |  8 ++
- Documentation/admin-guide/sysctl/kernel.rst   | 54 +++++++-----
- Makefile                                      |  5 ++
- include/linux/kernel.h                        | 20 +++++
- include/linux/module.h                        |  3 +
- init/Kconfig.suse                             | 18 ++++
- kernel/ksysfs.c                               | 27 ++++++
- kernel/module.c                               | 84 +++++++++++++++++++
- kernel/panic.c                                |  3 +
- kernel/sysctl.c                               |  9 ++
- scripts/Makefile.modpost                      |  6 +-
- scripts/mod/modpost.c                         | 80 +++++++++++++++++-
+ Documentation/admin-guide/kernel-parameters.txt |    8 ++
+ Documentation/admin-guide/sysctl/kernel.rst     |   54 +++++++++------
+ Makefile                                        |    5 +
+ include/linux/kernel.h                          |   20 +++++
+ include/linux/module.h                          |    3 
+ init/Kconfig.suse                               |   18 +++++
+ kernel/ksysfs.c                                 |   27 +++++++
+ kernel/module.c                                 |   84 ++++++++++++++++++++++++
+ kernel/panic.c                                  |    3 
+ kernel/sysctl.c                                 |    9 ++
+ scripts/Makefile.modpost                        |    6 +
+ scripts/mod/modpost.c                           |   80 ++++++++++++++++++++++
  12 files changed, 295 insertions(+), 22 deletions(-)
 
 --- a/Documentation/admin-guide/kernel-parameters.txt
 +++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5576,6 +5576,14 @@
+@@ -5582,6 +5582,14 @@
  	unknown_nmi_panic
  			[X86] Cause panic on unknown NMI.
  
@@ -122,7 +122,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  
 --- a/Makefile
 +++ b/Makefile
-@@ -339,6 +339,11 @@ else # !mixed-build
+@@ -341,6 +341,11 @@ else # !mixed-build
  
  include scripts/Kbuild.include
  
@@ -136,7 +136,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 --- a/include/linux/kernel.h
 +++ b/include/linux/kernel.h
-@@ -393,6 +393,9 @@ extern bool panic_on_taint_nousertaint;
+@@ -398,6 +398,9 @@ extern bool panic_on_taint_nousertaint;
  extern int sysctl_panic_on_rcu_stall;
  extern int sysctl_max_rcu_stall_to_panic;
  extern int sysctl_panic_on_stackoverflow;
@@ -146,7 +146,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  
  extern bool crash_kexec_post_notifiers;
  
-@@ -461,6 +464,23 @@ extern enum system_states {
+@@ -466,6 +469,23 @@ extern enum system_states {
  #define TAINT_FLAGS_COUNT		18
  #define TAINT_FLAGS_MAX			((1UL << TAINT_FLAGS_COUNT) - 1)
  
@@ -172,7 +172,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  	char c_false;	/* character printed when not tainted */
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
-@@ -547,6 +547,9 @@ bool is_module_address(unsigned long addr);
+@@ -544,6 +544,9 @@ bool is_module_address(unsigned long add
  bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr);
  bool is_module_percpu_address(unsigned long addr);
  bool is_module_text_address(unsigned long addr);
@@ -207,7 +207,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
 +
 --- a/kernel/ksysfs.c
 +++ b/kernel/ksysfs.c
-@@ -208,6 +208,30 @@ static struct bin_attribute notes_attr __ro_after_init  = {
+@@ -217,6 +217,30 @@ static struct bin_attribute notes_attr _
  struct kobject *kernel_kobj;
  EXPORT_SYMBOL_GPL(kernel_kobj);
  
@@ -238,16 +238,16 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  static struct attribute * kernel_attrs[] = {
  	&fscaps_attr.attr,
  	&uevent_seqnum_attr.attr,
-@@ -228,6 +252,9 @@ static struct attribute * kernel_attrs[] = {
- #ifndef CONFIG_TINY_RCU
+@@ -238,6 +262,9 @@ static struct attribute * kernel_attrs[]
  	&rcu_expedited_attr.attr,
  	&rcu_normal_attr.attr,
-+#endif
+ #endif
 +#ifdef CONFIG_SUSE_KERNEL_SUPPORTED
 +	&supported_attr.attr,
++#endif
+ #ifdef CONFIG_PREEMPT_RT
+ 	&realtime_attr.attr,
  #endif
- 	NULL
- };
 --- a/kernel/module.c
 +++ b/kernel/module.c
 @@ -80,6 +80,22 @@
@@ -273,7 +273,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  /*
   * Mutex protects:
   * 1) List of modules (also safely readable with preempt_disable),
-@@ -1127,6 +1143,12 @@ static size_t module_flags_taint(struct module *mod, char *buf)
+@@ -1127,6 +1143,12 @@ static size_t module_flags_taint(struct
  			buf[l++] = taint_flags[i].c_true;
  	}
  
@@ -286,7 +286,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  	return l;
  }
  
-@@ -1198,6 +1220,33 @@ static ssize_t show_taint(struct module_attribute *mattr,
+@@ -1198,6 +1220,33 @@ static ssize_t show_taint(struct module_
  static struct module_attribute modinfo_taint =
  	__ATTR(taint, 0444, show_taint, NULL);
  
@@ -320,7 +320,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  static struct module_attribute *modinfo_attrs[] = {
  	&module_uevent,
  	&modinfo_version,
-@@ -1206,6 +1255,9 @@ static struct module_attribute *modinfo_attrs[] = {
+@@ -1206,6 +1255,9 @@ static struct module_attribute *modinfo_
  	&modinfo_coresize,
  	&modinfo_initsize,
  	&modinfo_taint,
@@ -330,7 +330,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  #ifdef CONFIG_MODULE_UNLOAD
  	&modinfo_refcnt,
  #endif
-@@ -1868,8 +1920,37 @@ static int mod_sysfs_setup(struct module *mod,
+@@ -1868,8 +1920,37 @@ static int mod_sysfs_setup(struct module
  	add_sect_attrs(mod, info);
  	add_notes_attrs(mod, info);
  
@@ -380,7 +380,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  #ifdef CONFIG_MODVERSIONS
 --- a/kernel/panic.c
 +++ b/kernel/panic.c
-@@ -386,6 +386,9 @@ const struct taint_flag taint_flags[TAINT_FLAGS_COUNT] = {
+@@ -388,6 +388,9 @@ const struct taint_flag taint_flags[TAIN
  	[ TAINT_LIVEPATCH ]		= { 'K', ' ', true },
  	[ TAINT_AUX ]			= { 'X', ' ', true },
  	[ TAINT_RANDSTRUCT ]		= { 'T', ' ', true },
@@ -484,7 +484,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  static void read_symbols(const char *modname)
  {
  	const char *symname;
-@@ -2232,6 +2277,15 @@ static void add_staging_flag(struct buffer *b, const char *name)
+@@ -2232,6 +2277,15 @@ static void add_staging_flag(struct buff
  		buf_printf(b, "\nMODULE_INFO(staging, \"Y\");\n");
  }
  
@@ -500,7 +500,7 @@ Signed-off-by: Andreas Gruenbacher <agruen@suse.de>
  /**
   * Record CRCs for unresolved symbols
   **/
-@@ -2370,6 +2424,15 @@ static void write_if_changed(struct buffer *b, const char *fname)
+@@ -2370,6 +2424,15 @@ static void write_if_changed(struct buff
  	write_buf(b, fname);
  }
  
