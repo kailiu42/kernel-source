@@ -100,10 +100,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
   * explicit rescheduling in places that are safe. The return
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
-@@ -180,7 +180,14 @@ static bool ptrace_freeze_traced(struct
- 
+@@ -196,7 +196,14 @@ static bool ptrace_freeze_traced(struct
  	spin_lock_irq(&task->sighand->siglock);
- 	if (task_is_traced(task) && !__fatal_signal_pending(task)) {
+ 	if (task_is_traced(task) && !looks_like_a_spurious_pid(task) &&
+ 	    !__fatal_signal_pending(task)) {
 -		task->state = __TASK_TRACED;
 +		unsigned long flags;
 +
@@ -118,7 +118,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	spin_unlock_irq(&task->sighand->siglock);
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2596,6 +2596,18 @@ int migrate_swap(struct task_struct *cur
+@@ -2596,6 +2596,18 @@ out:
  }
  #endif /* CONFIG_NUMA_BALANCING */
  
