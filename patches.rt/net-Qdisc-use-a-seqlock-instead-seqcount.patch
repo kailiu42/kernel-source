@@ -104,7 +104,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #include <linux/refcount.h>
  #include <linux/workqueue.h>
  #include <linux/mutex.h>
-@@ -100,7 +101,7 @@ struct Qdisc {
+@@ -101,7 +102,7 @@ struct Qdisc {
  	struct sk_buff_head	gso_skb ____cacheline_aligned_in_smp;
  	struct qdisc_skb_head	q;
  	struct gnet_stats_basic_packed bstats;
@@ -113,7 +113,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct gnet_stats_queue	qstats;
  	unsigned long		state;
  	struct Qdisc            *next_sched;
-@@ -141,7 +142,11 @@ static inline bool qdisc_is_running(stru
+@@ -142,7 +143,11 @@ static inline bool qdisc_is_running(stru
  {
  	if (qdisc->flags & TCQ_F_NOLOCK)
  		return spin_is_locked(&qdisc->seqlock);
@@ -125,7 +125,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  static inline bool qdisc_is_percpu_stats(const struct Qdisc *q)
-@@ -165,17 +170,27 @@ static inline bool qdisc_run_begin(struc
+@@ -191,17 +196,27 @@ nolock_empty:
  	} else if (qdisc_is_running(qdisc)) {
  		return false;
  	}
@@ -150,10 +150,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +#else
  	write_seqcount_end(&qdisc->running);
 +#endif
- 	if (qdisc->flags & TCQ_F_NOLOCK)
+ 	if (qdisc->flags & TCQ_F_NOLOCK) {
  		spin_unlock(&qdisc->seqlock);
- }
-@@ -540,7 +555,7 @@ static inline spinlock_t *qdisc_root_sle
+ 
+@@ -573,7 +588,7 @@ static inline spinlock_t *qdisc_root_sle
  	return qdisc_lock(root);
  }
  
@@ -193,7 +193,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  				 lock, running, opt);
 --- a/net/core/gen_stats.c
 +++ b/net/core/gen_stats.c
-@@ -137,7 +137,7 @@ static void
+@@ -137,7 +137,7 @@ __gnet_stats_copy_basic_cpu(struct gnet_
  }
  
  void
@@ -202,7 +202,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			struct gnet_stats_basic_packed *bstats,
  			struct gnet_stats_basic_cpu __percpu *cpu,
  			struct gnet_stats_basic_packed *b)
-@@ -150,15 +150,15 @@ void
+@@ -150,15 +150,15 @@ __gnet_stats_copy_basic(const seqcount_t
  	}
  	do {
  		if (running)
@@ -221,7 +221,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			 struct gnet_dump *d,
  			 struct gnet_stats_basic_cpu __percpu *cpu,
  			 struct gnet_stats_basic_packed *b,
-@@ -204,7 +204,7 @@ static int
+@@ -204,7 +204,7 @@ ___gnet_stats_copy_basic(const seqcount_
   * if the room in the socket buffer was not sufficient.
   */
  int
@@ -252,7 +252,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		if (sch->flags & TCQ_F_MQROOT) {
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -553,7 +553,11 @@ struct Qdisc noop_qdisc = {
+@@ -578,7 +578,11 @@ struct Qdisc noop_qdisc = {
  	.ops		=	&noop_qdisc_ops,
  	.q.lock		=	__SPIN_LOCK_UNLOCKED(noop_qdisc.q.lock),
  	.dev_queue	=	&noop_netdev_queue,
@@ -264,7 +264,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	.busylock	=	__SPIN_LOCK_UNLOCKED(noop_qdisc.busylock),
  	.gso_skb = {
  		.next = (struct sk_buff *)&noop_qdisc.gso_skb,
-@@ -845,9 +849,15 @@ struct Qdisc *qdisc_alloc(struct netdev_
+@@ -889,9 +893,15 @@ struct Qdisc *qdisc_alloc(struct netdev_
  	lockdep_set_class(&sch->busylock,
  			  dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
  
